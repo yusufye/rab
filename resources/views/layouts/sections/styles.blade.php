@@ -18,6 +18,12 @@
 'resources/assets/vendor/libs/typeahead-js/typeahead.scss'])
 @yield('vendor-style')
 
+{{-- DataTables --}}
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}">
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/flatpickr/flatpickr.css')}}" />
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/sweetalert2/sweetalert2.css')}}"/>
+<link rel="stylesheet" href="{{asset('assets/vendor/libs/toastr/toastr.css')}}"/>
 
 <!-- Page Styles -->
 @yield('page-style')

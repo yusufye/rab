@@ -211,4 +211,8 @@ class Helpers
       }
     }
   }
+
+  public static function parseCurrency($value) {
+    return (int) str_replace(['Rp ', '.'], '', $value);
+  }
 }
