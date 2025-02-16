@@ -7,6 +7,7 @@ use App\Http\Controllers\pages\Page2;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,3 +33,17 @@ Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-e
 // authentication
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
+
+// order
+Route::get('/order', [OrderController::class, 'index'])->name('order');
+Route::get('/order/create', [OrderController::class, 'create'])->name('order');
+Route::post('/order/submit', [OrderController::class, 'store']);
+Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order');
+Route::post('/order/{order}/update', [OrderController::class, 'update']);
+Route::post('/order/mak/submit', [OrderController::class, 'storeMak']);
+Route::post('/order/mak/delete', [OrderController::class, 'deleteMak']);
+Route::post('/order/title/submit', [OrderController::class, 'storeTitle']);
+Route::post('/order/title/delete', [OrderController::class, 'deleteTitle']);
+Route::post('/order/item/submit', [OrderController::class, 'storeItem']);
+Route::post('/order/item/delete', [OrderController::class, 'deleteItem']);
+
