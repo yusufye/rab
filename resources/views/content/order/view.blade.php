@@ -208,22 +208,7 @@
 
 @endforelse
 
-@include('/modals/orders/add_mak_modal')
-@include('/modals/orders/add_title_modal')
-@include('/modals/orders/add_item_modal')
+
 @endsection
 
-@php
-    $dateFrom = old('date_from', isset($order) ? \Carbon\Carbon::parse($order->date_from)->format('d-M-Y') : now());
-    $dateTo = old('date_to', isset($order) ? \Carbon\Carbon::parse($order->date_to)->format('d-M-Y') : now());
-@endphp
 
-@section('page-script')
-    <script type="module">
-        window.dateFrom = @json($dateFrom);
-        window.dateTo = @json($dateTo);
-        window.orderId = @json($order->id);
-
-    </script>
-    <script type="module" src="{{ asset('assets/js_custom/edit_order.js') }}?v={{ time() }}"></script>
-@endsection
