@@ -3,23 +3,32 @@
 @section('title', 'Order')
 
 @section('content')
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-bordered datatables-orders">
+                        <thead>
+                            <tr>
+                                <th>Job Number</th>
+                                <th>Status</th>
+                                <th>Customer</th>
+                                <th>Nilai Kontrak</th>
+                                <th>Biaya Operasional</th>
+                                <th>Profit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                
+                        </tbody>
+                </table>
+        
+            </div>
+        </div>
 
-<table class="table table-bordered datatables-orders">
-        <thead>
-            <tr>
-                <th>Job Number</th>
-                <th>Status</th>
-                <th>Customer</th>
-                <th>Nilai Kontrak</th>
-                <th>Biaya Operasional</th>
-                <th>Profit</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-</table>
+    </div>
+</div>
 
 @endsection
 

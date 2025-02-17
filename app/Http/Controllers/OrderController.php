@@ -68,19 +68,21 @@ class OrderController extends Controller
     {
 
         $validated = $request->validate([
-            'job_number' => 'required|max:50',
+            'job_number' => 'required|max:50|unique:orders,job_number',
             'title' => 'required|max:100',
             'group' => 'required|max:100',
             'customer' => 'required|max:100',
             'study_lab' => 'required|max:100',
             'date_range' => 'required',
             'category_id' => 'required',
+        ], [
+            'job_number.unique' => 'Job Number sudah tersedia',
         ]);
         
         try{
              DB::beginTransaction();
              $dates = explode(' to ', $request->date_range);
-            //  dd($request->date_range);
+           
 
              $dateFrom = \Carbon\Carbon::createFromFormat('d-M-Y', trim($dates[0]))->format('Y-m-d');
              $dateTo = isset($dates[1]) ? \Carbon\Carbon::createFromFormat('d-M-Y', trim($dates[1]))->format('Y-m-d') : $dateFrom;             
@@ -127,7 +129,7 @@ class OrderController extends Controller
         ? Division::whereIn('id', $order->split_to)->pluck('id')->toArray()
         : [];
 
-        $divisions_by_order_header = Division::whereIn('id', $order->split_to)->get();
+        $divisions_by_order_header = $order->split_to ? Division::whereIn('id', $order->split_to)->get():[];
 
         $order_mak = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
 
@@ -137,13 +139,15 @@ class OrderController extends Controller
     public function update(Request $request,Order $order)
     {
         $validated = $request->validate([
-            'job_number' => 'required|max:50',
+            'job_number' => 'required|max:50|unique:orders,job_number,'.$order->id,
             'title' => 'required|max:100',
             'group' => 'required|max:100',
             'customer' => 'required|max:100',
             'study_lab' => 'required|max:100',
             'date_range' => 'required',
             'category_id' => 'required',
+        ], [
+            'job_number.unique' => 'Job Number sudah tersedia',
         ]);
         
         try{
@@ -199,7 +203,7 @@ class OrderController extends Controller
                 $orders = OrderMak::create([
                     'order_id' => $request->order_id,
                     'mak_id' => $request->mak,
-                    'is_split' => $request->has('is_split') ? 1 : 0,
+                    'is_split' => $request->is_split ? 1 : 0,
                     'split_to' => $request->split_to??null,
                  ]);                
             }else{
@@ -388,5 +392,21 @@ class OrderController extends Controller
         }
     }
 
-    
+    public function view(Order $order){
+
+        $divisions = Division::all();
+        $categorys = Category::all();
+        $maks = Mak::all();
+
+        $divisions_id = isset($order->split_to) && is_array($order->split_to)
+        ? Division::whereIn('id', $order->split_to)->pluck('id')->toArray()
+        : [];
+
+        $divisions_by_order_header = $order->split_to ? Division::whereIn('id', $order->split_to)->get():[];
+
+        $order_mak = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
+
+        return view('content.order.view',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak'));
+    }
+
 }

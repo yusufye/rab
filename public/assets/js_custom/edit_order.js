@@ -712,7 +712,7 @@ function updateTotalQty() {
     var qty2 = parseInt($('#order_item_qty_2').val()) || 0;
     var qty3 = parseInt($('#order_item_qty_3').val()) || 0;
 
-    var qty_total = qty1 + qty2 + qty3;
+    var qty_total = qty1 * qty2 * qty3;
 
     $('#qty_total').val(qty_total); 
 
