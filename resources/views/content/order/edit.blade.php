@@ -54,7 +54,7 @@
         <div class="col-12">
             <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">{{ __('Add Order') }}</h5>
+                    <h5 class="card-title mb-0">{{ __('Edit Order') }}</h5>
                    <div class="badge  rounded-pill {{ $badgeClass }}">
                         {{ $order->status }}
                     </div>
@@ -83,7 +83,7 @@
                                 data-placeholder="{{ __('Select Category') }}" required>
                                 <option value="">{{ __('Select Category') }}</option>
                                 @forelse($categorys as $c)
-                                    <option value="{{$c->id}}" {{ $order->category_id == $c->id ? 'selected' : '' }}>{{$c->category_name}}</option>
+                                    <option value="{{$c->id}}" {{ old('category_id',$order->category_id) == $c->id ? 'selected' : '' }}>{{$c->category_name}}</option>
                                 @empty
                                 @endforelse
                             </select>
@@ -234,9 +234,12 @@
                                     </thead>
                               
                                 
+                            <tbody>
+                                @php
+                                    $sumTotalPrice = 0;
+                                @endphp
                         @foreach($title->orderItem as $orderItem)
 
-                            <tbody>
                                 <tr>
                                     <td style="white-space: nowrap;">{{$orderItem->item}}</td>
                                     <td style="white-space: nowrap;">{{$orderItem->qty_1??''}}</td>
@@ -273,15 +276,25 @@
                                     </td>
 
                                 </tr>
-                            </tbody>
-                            @endforeach
 
+                                @php
+                                    $sumTotalPrice += $orderItem->total_price ?? 0;
+                                @endphp
+
+                                @endforeach
+                                <tr>
+                                    <td colspan="10" class="text-center" style="font-weight: bold">Total</td>
+                                    <td style="white-space:nowrap;font-weight: bold">Rp {{ number_format($sumTotalPrice, 0, ',', '.') }}</td>
+                                    <td></td>
+                                </tr>
+                                
+                            </tbody>
                         </table>
                         </div>
 
 
                         @endif
-                        <hr>
+                        
                         </div>
                        
                     @empty
