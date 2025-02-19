@@ -11,6 +11,12 @@
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
       "name": "Order",
       "slug": "order"
+    },
+    {
+      "url": "/mak",
+      "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
+      "name": "MAK",
+      "slug": "mak"
     }
   ]
 }
