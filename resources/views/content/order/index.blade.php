@@ -33,5 +33,12 @@
 @endsection
 
 @section('page-script')
+
+<script type="module">
+   window.isAdmin = @json($isAdmin);
+   window.isSuperAdmin = @json($isSuperAdmin);
+</script>
+
+
 <script type="module" src="{{ asset('assets/js_custom/index_order.js') }}?v={{ time() }}"></script>
 @endsection

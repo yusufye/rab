@@ -94,7 +94,7 @@
                                     </td>
 
                                 </tr>
-                                @if($order->split_price != 0 && $divisions_by_order_header->isNotEmpty())
+                                @if($order->split_price != 0 && !empty($divisions_by_order_header))
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">Division</td>
                                     <td style="width: 5%;">:</td>

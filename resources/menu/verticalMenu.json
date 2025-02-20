@@ -4,19 +4,22 @@
       "url": "/",
       "name": "Home",
       "icon": "menu-icon tf-icons mdi mdi-home-outline",
-      "slug": "pages-home"
+      "slug": "pages-home",
+      "permission_name":"home"
     },
     {
       "url": "/order",
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
       "name": "Order",
-      "slug": "order"
+      "slug": "order",
+      "permission_name":"order"
     },
     {
       "url": "/mak",
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
       "name": "MAK",
-      "slug": "mak"
+      "slug": "mak",
+      "permission_name":"mak"
     }
   ]
 }

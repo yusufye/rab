@@ -61,15 +61,13 @@ $(document).ready(function() {
                 '<"col-sm-12 col-md-6"i>' +
                 '<"col-sm-12 col-md-6"p>' +
                 '>',  
-                buttons:[
-                    {
-                        text: '<i class="mdi mdi-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add</span>',
-                        className: 'add-new btn btn-primary ms-n1 waves-effect waves-light',
-                        action: function () {
-                            window.location.href = addOrder;
-                        },
+                buttons: (isAdmin || isSuperAdmin) ? [{
+                    text: '<i class="mdi mdi-plus me-0 me-sm-1"></i><span class="d-none d-sm-inline-block">Add</span>',
+                    className: 'add-new btn btn-primary ms-n1 waves-effect waves-light',
+                    action: function () {
+                        window.location.href = addOrder;
                     },
-                ],
+                }] : [],
             initComplete: function () {
             }
         });
