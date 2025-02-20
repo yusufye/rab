@@ -53,9 +53,11 @@
                             <select id="category_id" class="select2 form-select required-field" data-required="Category" name="category_id"
                                 data-placeholder="{{ __('Select Category') }}" required>
                                 <option value="">{{ __('Select Category') }}</option>
-                                @forelse($categorys as $c)
-                                    <option value="{{$c->id}}">{{$c->category_name}}</option>
-                                @empty
+                                    @forelse($categorys as $c)
+                                    <option value="{{ $c->id }}" {{ old('category_id') == $c->id ? 'selected' : '' }}>
+                                        {{ $c->category_name }}
+                                    </option>
+                                    @empty
                                 @endforelse
                             </select>
                             <label for="category_id" class="required">{{ __('Kategori') }}</label>
