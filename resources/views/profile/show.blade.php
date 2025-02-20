@@ -4,6 +4,9 @@
             {{ __('Profile') }}
         </h2>
     </x-slot>
+    <x-slot name="logo">
+        <img src="{{ url('logo.png') }}" />
+    </x-slot>
 
     <div>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
@@ -33,13 +36,13 @@
                 @livewire('profile.logout-other-browser-sessions-form')
             </div>
 
-            @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
+            {{-- @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
                 <x-section-border />
 
                 <div class="mt-10 sm:mt-0">
                     @livewire('profile.delete-user-form')
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 </x-app-layout>
