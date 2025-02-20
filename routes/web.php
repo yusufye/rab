@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order/create', [OrderController::class, 'create'])->name('order');
     Route::post('/order/submit', [OrderController::class, 'store']);
     Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order');
+    Route::get('/order/{order}', [OrderController::class, 'view'])->name('order');
     Route::post('/order/{order}/update', [OrderController::class, 'update']);
     Route::post('/order/mak/submit', [OrderController::class, 'storeMak']);
     Route::post('/order/mak/delete', [OrderController::class, 'deleteMak']);
