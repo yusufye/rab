@@ -461,31 +461,36 @@ class OrderController extends Controller
             $invalid++;
            }
            if ($invalid==0) {
-            //copy header
-            $order_detail       = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
-            $order_detail_mak='';
-            $order_detail_title='';
-            $order_detail_item='';
-            foreach ($order_detail as $key => $value_detail) {
-                $order_detail_mak   = $value_detail->mak;
-                $order_detail_title = $value_detail->orderTitle;
-                $order_detail_item  = $value_detail->orderItem;
-            }
-            
-            
-            $new_order              = $order->replicate();
-            $new_order_detail_mak   = $order_detail_mak->replicate();
-            // $new_order_detail_title = $order_detail_title->replicate();
-            // $new_order_detail_item  = $order_detail_item->replicate();
-            
-            $new_order->status='DRAFT';
-            $new_order->rev=$order->rev+1;
-            $new_order->save();
-            $new_order_detail_mak->save();
-            // $new_order_detail_title->save();
-            // $new_order_detail_item->save();
+                
+                $new_order         = $order->replicate();
+                $new_order->status = 'DRAFT';
+                $new_order->rev    = $order->rev+1;
+                $new_order->save();
 
-           }
+                $order_maks = OrderMak::with(['orderTitle.orderItem']) ->where('order_id', $order->id) ->get();
+
+                foreach ($order_maks as $order_mak) {
+                    // 3. Replicate OrderMak
+                    $new_order_mak = $order_mak->replicate();
+                    $new_order_mak->order_id = $new_order->id;
+                    $new_order_mak->save();
+
+                    foreach ($order_mak->orderTitle as $order_title) {
+                        // 4. Replicate OrderTitle
+                        $new_order_title = $order_title->replicate();
+                        $new_order_title->order_mak_id = $new_order_mak->id;
+                        $new_order_title->save();
+
+                        foreach ($order_title->orderItem as $order_item) {
+                            // 5. Replicate OrderItem
+                            $new_order_item = $order_item->replicate();
+                            $new_order_item->order_title_id = $new_order_title->id;
+                            $new_order_item->save();
+                        }
+                    }
+                }
+            }
+           
             return redirect('/order')->with($message);
         } catch (Exception $e) {
             DB::rollBack();
