@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Models\Mak;
+use App\Models\Order;
 use App\Helpers\Helpers;
 use App\Models\Category;
 use App\Models\Division;
-use App\Models\Mak;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\OrderMak;
+use App\Models\OrderItem;
 use App\Models\OrderTitle;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -442,6 +443,62 @@ class OrderController extends Controller
         $order_mak = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
 
         return view('content.order.view',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak'));
+    }
+
+    public function revise(Order $order){
+        try {
+            $invalid=0;
+            $message = ['success' => 'Order berhasil di simpan'];
+           //validate
+           //valid user
+        //    if (Auth::id()<>$order->user_id) {
+        //     $message = ['error' => 'Revise Order Failed, Invalid Users'];
+        //     $invalid++;
+        //    }
+
+           if (in_array($order->status,['DRAFT','CLOSED'])) {
+            $message = ['success' => "Revise Order Failed, {$order->status} Can't Revise" ];
+            $invalid++;
+           }
+           if ($invalid==0) {
+                
+                $new_order         = $order->replicate();
+                $new_order->status = 'DRAFT';
+                $new_order->rev    = $order->rev+1;
+                $new_order->save();
+
+                $order_maks = OrderMak::with(['orderTitle.orderItem']) ->where('order_id', $order->id) ->get();
+
+                foreach ($order_maks as $order_mak) {
+                    // 3. Replicate OrderMak
+                    $new_order_mak = $order_mak->replicate();
+                    $new_order_mak->order_id = $new_order->id;
+                    $new_order_mak->save();
+
+                    foreach ($order_mak->orderTitle as $order_title) {
+                        // 4. Replicate OrderTitle
+                        $new_order_title = $order_title->replicate();
+                        $new_order_title->order_mak_id = $new_order_mak->id;
+                        $new_order_title->save();
+
+                        foreach ($order_title->orderItem as $order_item) {
+                            // 5. Replicate OrderItem
+                            $new_order_item = $order_item->replicate();
+                            $new_order_item->order_title_id = $new_order_title->id;
+                            $new_order_item->save();
+                        }
+                    }
+                }
+            }
+           
+            return redirect('/order')->with($message);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            $message = ['failed' => 'Order gagal di simpan'];
+            return redirect('/order')->with($message);
+        }
+        
     }
 
 }
