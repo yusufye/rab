@@ -18,11 +18,33 @@ use Illuminate\Support\Facades\Log;
 class OrderController extends Controller
 {
 
-    public function index(Request $request)  {       
+    public function index(Request $request)  {    
         
+        $user = auth()->user();
 
-        if($request->ajax()){
-            $orders = Order::all();
+        if($request->ajax()){            
+
+            $orders = Order::query();
+
+            if ($user->hasRole('reviewer')) {
+                $orders->where('status','TO REVIEW');                     
+            }
+
+            if ($user->hasRole('approval_satu')) {
+                $orders->where('status','REVIEWED');                    
+            }
+
+            if ($user->hasRole('approval_dua')) {
+                $orders->where('status','APPROVED');                     
+                $orders->where('approval_step',1);                     
+            }
+
+            if ($user->hasRole('approval_tiga')) {
+                $orders->where('status','APPROVED');                     
+                $orders->where('approval_step',2);                     
+            }         
+
+            $orders->get();
 
             return datatables()
             ->of($orders)
@@ -35,23 +57,36 @@ class OrderController extends Controller
             ->addColumn('profit_formatted', function ($row) {
                 return 'Rp ' . number_format($row->profit, 0, ',', '.');
             })
-            ->addColumn('actions', function ($row) {
+            ->addColumn('actions', function ($row) use ($user) {
                 $editUrl = url('order/' . $row->id . '/edit');
                 $viewUrl = url('order/' . $row->id);
                 $reviseUrl = url('order/' . $row->id . '/revise');
+
+                if ($user->hasAnyRole(['admin', 'Super_admin'])) {
+                    return '
+                        <a href="'.$editUrl.'" class="btn btn-sm btn-success">Edit</a>
+                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
+                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-warning">Revise</a>
+                    ';                    
+                }else{
+                    return '
+                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
+                    ';                    
+
+                }              
+
+
+                return '';
+
             
-                return '
-                    <a href="'.$editUrl.'" class="btn btn-sm btn-success">Edit</a>
-                    <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
-                    <a href="'.$reviseUrl.'" class="btn btn-sm btn-warning">Revise</a>
-                ';
             })
             ->rawColumns(['price_formatted', 'split_price_formatted', 'profit_formatted','actions'])
             ->toJson();
         }
-
-
-        return view('content.order.index');
+       
+        $isAdmin = $user->hasRole('admin');
+        $isSuperAdmin = $user->hasRole('Super_admin');
+        return view('content.order.index',compact('isAdmin','isSuperAdmin'));
         
     }
 

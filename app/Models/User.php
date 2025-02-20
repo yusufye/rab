@@ -6,12 +6,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    use HasRoles;
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
@@ -58,4 +63,175 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function create_role($roles){
+        foreach ($roles as $roleName) {
+            Role::firstOrCreate([
+                'name' => $roleName,
+                'guard_name' => 'web',
+            ]);
+
+            
+        }
+    }
+
+    public function create_permissions()
+    {
+        $roles = Role::get();
+        $prefix = ['create', 'read', 'update', 'delete'];
+        $horizontalMenuJson = file_get_contents(base_path('resources/menu/verticalMenu.json'));
+        $horizontalMenuData = json_decode($horizontalMenuJson, true);
+        $menu_list = $horizontalMenuData;
+    
+        $menu_with_prefix = [];
+        foreach ($menu_list['menu'] as $menu) {
+            $menu_with_prefix = array_merge($menu_with_prefix, $this->processMenu($menu, $prefix));
+        }
+    
+        $combined_menu = $menu_with_prefix;
+    
+        $superAdminRole = Role::where('name', 'Super_admin')->first();
+    
+        if ($superAdminRole) {
+            $superAdminPermissionsMapped = [];
+            foreach ($combined_menu as $permissionName) {
+                Permission::firstOrCreate(['name' => $permissionName]);
+                $superAdminPermissionsMapped[] = $permissionName;
+            }
+            $superAdminRole->syncPermissions(
+                Permission::whereIn('name', $superAdminPermissionsMapped)->get()
+            );
+        }
+    
+        foreach ($roles as $role) {
+            if ($role->name === 'Admin') {
+                $adminPermission = ['Order','home'];
+    
+                $adminPermissionsMapped = [];
+                foreach ($adminPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $adminPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $adminPermissionsMapped)->get()
+                );
+            }
+            if ($role->name === 'reviewer') {
+                $reviewerPermission = ['Order'];
+    
+                $reviewerPermissionsMapped = [];
+                foreach ($reviewerPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $reviewerPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $reviewerPermissionsMapped)->get()
+                );
+            }
+            if ($role->name === 'approval_satu') {
+                $approvalSatuPermission = ['Order'];
+    
+                $approvalSatuPermissionsMapped = [];
+                foreach ($approvalSatuPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $approvalSatuPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $approvalSatuPermissionsMapped)->get()
+                );
+            }
+            if ($role->name === 'approval_dua') {
+                $approvalDuaPermission = ['Order'];
+    
+                $approvalDuaPermissionsMapped = [];
+                foreach ($approvalDuaPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $approvalDuaPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $approvalDuaPermissionsMapped)->get()
+                );
+            }
+            if ($role->name === 'approval_tiga') {
+                $approvalTigaPermission = ['Order'];
+    
+                $approvalTigaPermissionsMapped = [];
+                foreach ($approvalTigaPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $approvalTigaPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $approvalTigaPermissionsMapped)->get()
+                );
+            }
+            if ($role->name === 'checker') {
+                $checkerPermission = ['Order'];
+    
+                $checkerPermissionsMapped = [];
+                foreach ($checkerPermission as $permission) {
+                    foreach ($prefix as $op) {
+                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $checkerPermissionsMapped[] = $permissionName;
+                    }
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $checkerPermissionsMapped)->get()
+                );
+            }
+        }
+    }
+    
+
+    public function processMenu($menu, $prefix)
+    {
+        $permissions = [];
+    
+        if (isset($menu['name'])) {
+            foreach ($prefix as $p) {
+                $permissions[] = "{$p}_" . str_replace(' ', '_', strtolower($menu['name']));
+            }
+        }
+    
+        if (isset($menu['submenu']) && is_array($menu['submenu'])) {
+            foreach ($menu['submenu'] as $submenu) {
+                $permissions = array_merge($permissions, $this->processMenu($submenu, $prefix));
+            }
+        }
+    
+        return $permissions;
+    }
 }
