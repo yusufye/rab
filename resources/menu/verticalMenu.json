@@ -13,6 +13,13 @@
       "name": "Order",
       "slug": "order",
       "permission_name":"order"
+    },
+    {
+      "url": "/mak",
+      "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
+      "name": "MAK",
+      "slug": "mak",
+      "permission_name":"mak"
     }
   ]
 }

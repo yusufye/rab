@@ -36,14 +36,14 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('Job Number') }}"
                                     name="job_number" aria-label="Name" required value="{{ old('job_number') }}" data-required="Job Number">
-                                <label for="job_number" class="required">{{ __('Job Number') }}</label>
+                                <label for="job_number" class="required">{{ __('Nomor Job') }}</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
                                     name="title" aria-label="Title" required value="{{ old('title') }}" data-required="Title">
-                                <label for="title" class="required">{{ __('Title') }}</label>
+                                <label for="title" class="required">{{ __('Judul') }}</label>
                             </div>
                         </div>
                     </div>
@@ -60,14 +60,14 @@
                                     @empty
                                 @endforelse
                             </select>
-                            <label for="category_id" class="required">{{ __('Category') }}</label>
+                            <label for="category_id" class="required">{{ __('Kategori') }}</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Group') }}"
                                     name="group" aria-label="Group" required value="{{ old('group') }}" data-required="Group">
-                                <label for="group" class="required">{{ __('Group') }}</label>
+                                <label for="group" class="required">{{ __('Kelompok') }}</label>
                             </div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
                                     name="customer" aria-label="Customer" required value="{{ old('customer') }}" data-required="Customer">
-                                <label for="customer" class="required">{{ __('Customer') }}</label>
+                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
                             </div>
                         </div>
                         <div class="col">
@@ -98,7 +98,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
                                     name="price" aria-label="Price" required value="{{ old('price') }}">
-                                <label for="price" class="required">{{ __('Price') }}</label>
+                                <label for="price" class="required">{{ __('Nilai Kontrak') }}</label>
                             </div>
                         </div>
                     </div>
@@ -119,7 +119,7 @@
                                 @empty
                                 @endforelse
                             </select>
-                            <label for="division" class="required">{{ __('Division') }}</label>
+                            <label for="division" class="required">{{ __('Split to') }}</label>
                         </div>
                         </div>
                     </div>
