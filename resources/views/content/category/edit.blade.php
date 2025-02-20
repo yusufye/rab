@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Edit mak')
+@section('title', 'Edit category')
 
 <style>
     .readonly {
@@ -13,11 +13,11 @@
 </style>
 
 @section('content')
-<form action="{{url('mak/'.$mak->id.'/update')}}" method="POST" id="form-edit-mak">
+<form action="{{url('category/'.$category->id.'/update')}}" method="POST" id="form-edit-category">
     @csrf
 
 
-    <div class="alert alert-danger" style="display: none;" id="alert-create-mak"></div>
+    <div class="alert alert-danger" style="display: none;" id="alert-create-category"></div>
 
     @if (session()->has('success'))
         <div class="formSuccessSubmit" data-message="{{ session('success') }}"></div>
@@ -43,7 +43,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item">
-                        <a href="{{url('/mak')}}">MAK</a>
+                        <a href="{{url('/category')}}">Category</a>
                         </li>
                         <li class="breadcrumb-item active">Edit</li>
                     </ol>
@@ -53,16 +53,9 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
-                                    <input type="number" class="form-control required-field" id="mak_code" placeholder="{{ __('MAK Code') }}"
-                                        name="mak_code" aria-label="Code" required value="{{ old('mak_code', $mak->mak_code ?? '') }}" data-required="Job Number">
-                                <label for="mak_code" class="required">{{ __('MAK Code') }}</label>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="mak_name" placeholder="{{ __('MAK Name') }}"
-                                    name="mak_name" aria-label="mak_name" required value="{{ old('name',$mak->mak_name??'') }}" data-required="mak_name">
-                                <label for="mak_name" class="required">{{ __('MAK Name') }}</label>
+                                <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Category Name') }}"
+                                    name="category_name" aria-label="category_name" required value="{{ old('name',$category->category_name??'') }}" data-required="category_name">
+                                <label for="category_name" class="required">{{ __('Category Name') }}</label>
                             </div>
                         </div>
                     </div>
@@ -80,7 +73,7 @@
 
 @section('page-script')
     <script type="module">
-        window.makId = @json($mak->id);
+        window.categoryId = @json($category->id);
     </script>
-    <script type="module" src="{{ asset('assets/js_custom/edit_mak.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset('assets/js_custom/edit_category.js') }}?v={{ time() }}"></script>
 @endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\MakController;
 use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\pages\MiscError;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\authentications\RegisterBasic;
@@ -57,6 +58,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/mak/submit', [MakController::class, 'store']);
     Route::get('/mak/{mak}/edit', [MakController::class, 'edit'])->name('mak');
     Route::post('/mak/{mak}/update', [MakController::class, 'update']);
+
+    //master category
+    Route::get('/category', [CategoryController::class, 'index'])->name('category');
+    Route::get('/category/create', [CategoryController::class, 'create'])->name('category');
+    Route::post('/category/submit', [CategoryController::class, 'store']);
+    Route::get('/category/{category}/edit', [CategoryController::class, 'edit'])->name('category');
+    Route::post('/category/{category}/update', [CategoryController::class, 'update']);
 });
 
 Route::middleware([
