@@ -1,13 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\language\LanguageController;
-use App\Http\Controllers\pages\HomePage;
 use App\Http\Controllers\pages\Page2;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MakController;
+use App\Http\Controllers\pages\HomePage;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\pages\MiscError;
 use App\Http\Controllers\authentications\LoginBasic;
+use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\authentications\RegisterBasic;
-use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order/title/delete', [OrderController::class, 'deleteTitle']);
     Route::post('/order/item/submit', [OrderController::class, 'storeItem']);
     Route::post('/order/item/delete', [OrderController::class, 'deleteItem']);
+
+    //master mak
+    Route::get('/mak', [MakController::class, 'index'])->name('mak');
+    Route::get('/mak/create', [MakController::class, 'create'])->name('mak');
+    Route::post('/mak/submit', [MakController::class, 'store']);
+    Route::get('/mak/{mak}/edit', [MakController::class, 'edit'])->name('mak');
+    Route::post('/mak/{mak}/update', [MakController::class, 'update']);
 });
 
 Route::middleware([
