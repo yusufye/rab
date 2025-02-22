@@ -24,4 +24,11 @@ class OrderMak extends Model
     public function orderTitle() : HasMany {
         return $this->hasMany(OrderTitle::class);
     }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'split_to');
+    }
+
+    
 }

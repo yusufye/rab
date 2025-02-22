@@ -15,4 +15,9 @@ class Division extends Model
     public function user():HasMany{
         return $this->hasMany(User::class);
     }
+
+    public function splitOrders()
+    {
+        return $this->hasMany(OrderMak::class, 'split_to');
+    }
 }
