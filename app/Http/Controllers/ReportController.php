@@ -20,18 +20,17 @@ class ReportController extends Controller
     public function show(Request $request){
         // $orders=Order::with(['orderMak.orderTitle.orderItem'])->whereIn('job_number',$request->order)->get();
         $orders = Order::with([
-            'orderMak.mak',
+            'orderMak.mak', 
+            'orderMak.division', // Ambil data divisi
             'orderMak.orderTitle.orderItem'
         ])
         ->whereIn('job_number', $request->order)
-        ->orderBy('job_number') // Urutkan berdasarkan job_number
-        ->orderBy('rev') // Urutkan berdasarkan revisi
+        ->orderBy('job_number')
+        ->orderBy('rev')
         ->get()
         ->groupBy('job_number');
     
-    // Ambil semua revisi unik
     $revisions = $orders->flatten()->pluck('rev')->unique()->sort()->values();
-    
 
         // dd($order_header);
         return view('content.report.order_show',compact('orders','revisions'));

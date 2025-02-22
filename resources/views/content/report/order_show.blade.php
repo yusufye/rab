@@ -27,21 +27,31 @@
             <tr>
                 <td colspan="{{ count($revisions) * 9 + 1 }}"><strong>{{ $jobNumber }}</strong></td>
             </tr>
-    
-            @foreach ($orderGroup->pluck('orderMak')->flatten()->groupBy('mak.mak_name') as $makName => $ordersByMak)
+
+            @foreach ($orderGroup->pluck('orderMak')->flatten()->groupBy(fn($mak) => json_encode([
+                'mak_name' => $mak->mak->mak_name,
+                'division' => $mak->is_split ? ($mak->division->division_name ?? 'Tanpa Divisi') : 'Tidak Terbagi'
+            ])) as $groupKey => $ordersByMak)
+                @php
+                    $groupKeys = json_decode($groupKey, true);
+                    $makName = $groupKeys['mak_name'];
+                    $divisionInfo = $groupKeys['division'];
+                @endphp
+                
+                {{-- MAK Name + Split Information --}}
                 <tr>
-                    <td><strong>{{ $makName ?? 'Tanpa MAK' }}</strong></td>
+                    <td><strong>{{ $makName }} {{ $divisionInfo !== 'Tidak Terbagi' ? "(Split ke: $divisionInfo)" : '' }}</strong></td>
                 </tr>
-    
+
                 @foreach ($ordersByMak->pluck('orderTitle')->flatten()->groupBy('title') as $title => $orderTitles)
                     <tr>
                         <td>&nbsp;&nbsp;&nbsp;{{ $title ?? 'Tanpa Judul' }}</td>
                     </tr>
-    
+
                     @foreach ($orderTitles->pluck('orderItem')->flatten()->groupBy('item') as $itemName => $orderItems)
                         <tr>
                             <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $itemName ?? 'Tanpa Item' }}</td>
-    
+
                             @foreach ($revisions as $rev)
                                 @php
                                     $revData = $orderGroup->where('rev', $rev)->pluck('orderMak')
@@ -66,5 +76,4 @@
             @endforeach
         @endforeach
     </tbody>
-    
 </table>
