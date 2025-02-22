@@ -55,10 +55,21 @@
             <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">{{ __('Edit Order') }}</h5>
-                   <div class="badge  rounded-pill {{ $badgeClass }}">
-                        {{ $order->status }}
+                    
+                    <div class="d-flex align-items-center ms-auto">
+                        <div class="badge rounded-pill {{ $badgeClass }} py-2 px-3 fw-semibold text-center">
+                            {{ $order->status }}                        
+                        </div>                       
+                       
+                        <button type="button" class="btn btn-primary ms-2" id="button-edit" 
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}>Save</button>
+
+                        <button type="button" class="btn btn-success ms-2" id="button-to-review" 
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}>Submit</button>
+                      
                     </div>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -122,21 +133,6 @@
                             </div>
                         </div>
                         <div class="col">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
-                                    name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
-                                <label for="price" class="required">{{ __('Price') }}</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">                        
-                        <div class="col-6">
-                        <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control format-currency" id="split_price" placeholder="{{ __('Split Price') }}" name="split_price" aria-label="Split Price" required value="{{ old('split_price', isset($order) ? number_format($order->split_price, 0, ',', '') : '') }}">
-                                <label for="split_price" class="required">{{ __('Split Price') }}</label>
-                            </div>
-                        </div>
-                        <div class="col-6" style="display: none;" id="div_division">
                             <div class="form-floating form-floating-outline">
                                                         <select id="division" class="select2 form-select" multiple name="division[]"
                                 data-placeholder="{{ __('Select Division') }}" required>
@@ -152,11 +148,54 @@
 
                             <label for="division" class="required">{{ __('Division') }}</label>
                         </div>
-                        </div>
+                        </div>                        
                     </div>
-                </div>
-                <div class="card-footer text-end">
-                    <button type="button" class="btn btn-primary" id="button-edit">Submit</button>
+                    <div class="row">  
+                        <div class="col-6">
+                        <div class="row">
+
+                       
+                        <div class="col-12">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
+                                    name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
+                                <label for="price" class="required">{{ __('Price') }}</label>
+                            </div>
+                        </div>
+                        @forelse($sum_array as $key => $sum)
+                            @if($key !== 'split_totals')
+                                @php
+                                $key_label = match ($key) {
+                                    'biaya_operasional' => 'Biaya Operasional',
+                                    'profit' => 'Profit',
+                                };
+                                @endphp
+                                <div class="col-12">
+                                    <div class="form-floating form-floating-outline mb-4">
+                                        <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key_label) }}" aria-label="{{ __($key_label) }}" value="{{ number_format($sum ?? 0, 0, ',', '') }}">
+                                        <label for="{{ __($key) }}">{{ __($key_label) }}</label>
+                                    </div>
+                                </div>
+                            @endif
+                        @empty
+                        @endforelse
+                        </div>
+                        </div>
+                        <div class="col-6">
+                        <div class="row">
+                        @forelse($sum_array['split_totals'] as $key => $sum)
+                            <div class="col-12">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key) }}" aria-label="{{ __($key) }}"  value="{{ number_format($sum ?? 0, 0, ',', '') }}">
+                                    <label for="{{$key}}">{{ __($key) }}</label>
+                                </div>
+                            </div>
+                        @empty
+                        @endforelse
+                        </div>
+                    
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -323,6 +362,7 @@
         window.dateFrom = @json($dateFrom);
         window.dateTo = @json($dateTo);
         window.orderId = @json($order->id);
+        window.statusOrder = @json($order->status);
 
     </script>
     <script type="module" src="{{ asset('assets/js_custom/edit_order.js') }}?v={{ time() }}"></script>

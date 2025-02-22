@@ -48,7 +48,21 @@ class UserSeeder extends Seeder
         $admin->assignRole(['name' => 'admin']);
             
             
-            // reviewer
+        // head reviewer
+         $reviewer =  User::create([
+                'division_id' => $divisionId,
+                'nip' => fake()->unique()->numerify(str_repeat('#', 16)),
+                'name' => 'head_reviewer',
+                'email' => 'head_reviewer@example.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('test1234'),
+                'remember_token' => Str::random(10),
+                'active' => 1,
+        ]);
+
+        $reviewer->assignRole(['name' => 'head_reviewer']);
+
+        // reviewer
          $reviewer =  User::create([
                 'division_id' => $divisionId,
                 'nip' => fake()->unique()->numerify(str_repeat('#', 16)),
@@ -58,7 +72,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('test1234'),
                 'remember_token' => Str::random(10),
                 'active' => 1,
-            ]);
+        ]);
 
          $reviewer->assignRole(['name' => 'reviewer']);
 

@@ -102,14 +102,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">                        
+                    <div class="row">       
                         <div class="col-6">
-                        <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control format-currency" id="split_price" placeholder="{{ __('Split Price') }}" name="split_price" aria-label="Split Price" required value="{{ old('split_price') }}">
-                                <label for="split_price" class="required">{{ __('Split Price') }}</label>
-                            </div>
-                        </div>
-                        <div class="col-6" style="display: none;" id="div_division">
                             <div class="form-floating form-floating-outline">
                             <select id="division" class="select2 form-select" multiple name="division[]"
                                 data-placeholder="{{ __('Select Division') }}" required>
