@@ -81,7 +81,8 @@ $(document).ready(function () {
                 }
               }).then(() => {
                 // location.reload();
-                Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+                window.Livewire.dispatch('refreshOrderMak');
               });
             } else {
               Swal.fire({
@@ -125,7 +126,7 @@ $(document).ready(function () {
     });
   });
 
-  $('.edit-mak').on('click', function () {
+  $(document).on('click', '.edit-mak', function () {
     var makId = $(this).data('mak-id');
     var orderMakId = $(this).data('order-mak-id');
     var is_split = $(this).data('order-is-split');
@@ -200,7 +201,8 @@ $(document).ready(function () {
               }
             }).then(() => {
               // location.reload();
-              Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+              window.Livewire.dispatch('refreshOrderMak');
             });
           } else {
             Swal.fire({
@@ -223,7 +225,7 @@ $(document).ready(function () {
   // order mak
 
   // order title
-  $('.add-title').on('click', function () {
+  $(document).on('click', '.add-title', function () {
     var orderMakId = $(this).data('order-mak-id');
     var dataMak = $(this).data('mak');
     $('#add-title-modal').modal('show');
@@ -234,7 +236,7 @@ $(document).ready(function () {
     $('#order_title').val('');
   });
 
-  $('.edit-title').on('click', function () {
+  $(document).on('click', '.edit-title', function () {
     var orderMakId = $(this).data('order-mak-id');
     var orderTitleId = $(this).data('order-title-id');
     var dataMak = $(this).data('mak');
@@ -289,7 +291,8 @@ $(document).ready(function () {
               }
             }).then(() => {
               // location.reload();
-              Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+              window.Livewire.dispatch('refreshOrderMak');
             });
           } else {
             Swal.fire({
@@ -312,7 +315,7 @@ $(document).ready(function () {
   // order title
 
   // order item
-  $('.add-item').on('click', function () {
+  $(document).on('click', '.add-item', function () {
     var orderTitleId = $(this).data('order-mak-id');
     var dataMak = $(this).data('mak');
     var dataTitle = $(this).data('title');
@@ -338,7 +341,7 @@ $(document).ready(function () {
     $('#total_price').val('');
   });
 
-  $('.edit-item').on('click', function () {
+  $(document).on('click', '.edit-item', function () {
     var orderTitleId = $(this).data('order-title-id');
     var orderItemId = $(this).data('order-item-id');
     var dataMak = $(this).data('mak');
@@ -489,8 +492,9 @@ $(document).ready(function () {
                 confirmButton: 'btn btn-success'
               }
             }).then(() => {
-              //    location.reload();
-              Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+              // location.reload();
+
+              window.Livewire.dispatch('refreshOrderMak');
             });
           } else {
             Swal.fire({
@@ -514,7 +518,7 @@ $(document).ready(function () {
   // order item
 
   // delete mak
-  $('.delete-mak').on('click', function () {
+  $(document).on('click', '.delete-mak', function () {
     var makId = $(this).data('order-mak-id');
 
     Swal.fire({
@@ -548,7 +552,8 @@ $(document).ready(function () {
                 }
               }).then(() => {
                 // location.reload();
-                Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+                window.Livewire.dispatch('refreshOrderMak');
               });
             } else {
               Swal.fire({
@@ -572,7 +577,7 @@ $(document).ready(function () {
   // delete mak
 
   // delete title
-  $('.delete-title').on('click', function () {
+  $(document).on('click', '.delete-title', function () {
     var titleId = $(this).data('order-title-id');
 
     Swal.fire({
@@ -606,7 +611,8 @@ $(document).ready(function () {
                 }
               }).then(() => {
                 // location.reload();
-                Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+                window.Livewire.dispatch('refreshOrderMak');
               });
             } else {
               Swal.fire({
@@ -630,7 +636,7 @@ $(document).ready(function () {
   // delete title
 
   // delete item
-  $('.delete-item').on('click', function () {
+  $(document).on('click', '.delete-item', function () {
     var itemId = $(this).data('order-item-id');
 
     Swal.fire({
@@ -664,7 +670,8 @@ $(document).ready(function () {
                 }
               }).then(() => {
                 // location.reload();
-                Livewire.emit('refreshOrderMak'); // Refresh komponen Livewire
+
+                window.Livewire.dispatch('refreshOrderMak');
               });
             } else {
               Swal.fire({

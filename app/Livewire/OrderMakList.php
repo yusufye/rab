@@ -20,15 +20,29 @@ class OrderMakList extends Component
 
     public function loadOrderMaks()
     {
-        $this->orderMaks = Order::with([
+        $order = Order::with([
+            'orderMak' => function ($query) {
+                $query->orderBy('is_split', 'asc')->orderBy('id', 'asc');
+            },
             'orderMak.mak',
             'orderMak.division',
             'orderMak.orderTitle.orderItem'
         ])->find($this->orderId);
+
+        $this->orderMaks = $order ? $order->orderMak : [];
     }
 
     public function render()
     {
-        return view('livewire.order-mak-list');
+        return view('livewire.order-mak-list', [
+            'orderMaks' => $this->orderMaks
+        ]);
     }
+
+    public function getTotalPriceForMak($orderMak)
+    {
+        return $orderMak->orderTitle->sum(function ($title) {
+        return $title->orderItem->sum('total_price');
+    });
+}
 }

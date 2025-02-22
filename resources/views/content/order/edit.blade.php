@@ -5,8 +5,8 @@
 <style>
     .readonly {
         pointer-events: none; 
-        background-color: #e9ecef;
-        color: #6c757d;
+        background-color: #e9ecef !important;
+        color: #6c757d !important;
         opacity: 0.7; 
         cursor: not-allowed; 
     }
@@ -205,15 +205,15 @@
 {{-- Livewire Component --}}
 @livewire('order-mak-list', ['orderId' => $order->id])
 
-<div class="row mb-2">
+{{-- <div class="row mb-2">
     <div class="col-12 text-end">
         <button type="button" class="btn btn-warning" id="add-mak">Add Mak</button>
     </div>
-</div>
+</div> --}}
 
 <!-- order mak -->
 
-@forelse($order_mak as $om)
+{{-- @forelse($order_mak as $om)
     <div class="row mb-2">
         <div class="col-12">
             <div class="card">
@@ -348,8 +348,8 @@
     </div>
 @empty
 
-@endforelse
-
+@endforelse --}}
+@livewireScripts
 @include('/modals/orders/add_mak_modal')
 @include('/modals/orders/add_title_modal')
 @include('/modals/orders/add_item_modal')
