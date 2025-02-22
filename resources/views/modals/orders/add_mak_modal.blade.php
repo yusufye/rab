@@ -17,7 +17,7 @@
                 <input type="hidden" id="order_mak_id" name="order_mak_id" readonly>
 
                 <div class="row">
-                    <div class="col-6">
+                    <div class="col-{{!empty($divisions_by_order_header) ? '6' : '12'}}">
                         <div class="form-floating form-floating-outline mb-4">
                             <select id="mak" required class="select2 form-select" data-required="Mak" name="mak"
                                 data-placeholder="{{ __('Select Mak') }}">
@@ -30,6 +30,8 @@
                             <label for="mak" class="required">{{ __('Mak') }}</label>
                             </div>
                     </div>
+
+                    @if(!empty($divisions_by_order_header))
                     <div class="col-2">
                              <label class="switch">
                                 <input type="checkbox" id="is_split" name="is_split" class="switch-input" />
@@ -40,6 +42,7 @@
                                 <span class="switch-label">Split</span>
                             </label>
                     </div>
+                    @endif
 
                     <div class="col-4" style="display: none;" id="div_split_to">
                         <div class="form-floating form-floating-outline mb-4">

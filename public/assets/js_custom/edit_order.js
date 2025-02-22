@@ -8,6 +8,14 @@ $(document).ready(function() {
         }
       });
 
+      if (statusOrder !== 'DRAFT') {
+        $('button').prop('disabled', true).on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    }
+    
+    
     $('#date_range').flatpickr({
         monthSelectorType: "static",
         mode: "range",
@@ -15,27 +23,7 @@ $(document).ready(function() {
         dateFormat: "d-M-Y",
     });
 
-    let splitPriceValue = $('#split_price').val();
-    let numericValueSplitPrice = parseInt(splitPriceValue.replace(/\D/g, ''), 10) || 0; 
-    
-    if (numericValueSplitPrice > 0) {
-        $('#div_division').show();
-    } else {
-        $('#div_division').hide();
-        $('#division').val('').trigger('change');
-    }
-
-    $('#split_price').on('change', function () {
-        let rawValue = $(this).val();
-        let numericValue = parseInt(rawValue.replace(/\D/g, ''), 10) || 0; 
-        if (numericValue > 0) {
-            $('#div_division').show();
-        } else {
-            $('#div_division').hide();
-            $('#division').val('').trigger('change');
-        }
-    });
-
+   
     $("#button-edit").on("click", function () {
 
         var isValid = true;
@@ -46,7 +34,7 @@ $(document).ready(function() {
        
         if(isValid){
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Are you sure you want to Save?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Save',
@@ -62,6 +50,65 @@ $(document).ready(function() {
             });
             
         }
+    });
+
+    $("#button-to-review").on("click", function () {
+
+            Swal.fire({
+                title: 'Are you sure you want to Submit?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                customClass: {
+                    confirmButton: 'btn btn-success me-3',
+                    cancelButton: 'btn btn-label-secondary'
+                },
+                buttonsStyling: false
+            }).then((value) => {
+                if (value.isConfirmed) {
+                    
+                    var formData = {
+                        order_id: orderId,
+                        status: 'TO REVIEW',
+                    };
+        
+                    $.ajax({
+                        url: "/order/update_status/submit",
+                        type: "POST",
+                        data: formData,
+                        dataType: "json",
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success',
+                                    text: response.msg,
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.msg, 
+                                    customClass: {
+                                        confirmButton: 'btn btn-success'
+                                    }
+                                });
+                            }
+                        },
+                        error: function (xhr) {
+                            toastr.error('Something went wrong!', 'Error');
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
+            });
+        
+        
     });
     
 
@@ -146,6 +193,7 @@ $(document).ready(function() {
                 type_form: $('#type_form').val(),
                 order_mak_id: $('#order_mak_id').val()??null,
             };
+            $('#button-save-mak').prop('disabled',true);
 
             $.ajax({
                 url: "/order/mak/submit",
@@ -154,6 +202,7 @@ $(document).ready(function() {
                 dataType: "json",
                 success: function (response) {
                     if (response.success) {
+                        $('#button-save-mak').prop('disabled',false);
                         $('#add-mak-modal').modal('hide');
                         Swal.fire({
                             icon: 'success',
@@ -235,6 +284,7 @@ $(document).ready(function() {
                 order_title: $('#order_title').val(),
                 order_title_id: $('#order_title_id').val(),
             };
+            $('#button-save-title').prop('disabled',true);
 
             $.ajax({
                 url: "/order/title/submit",
@@ -243,6 +293,7 @@ $(document).ready(function() {
                 dataType: "json",
                 success: function (response) {
                     if (response.success) {
+                        $('#button-save-title').prop('disabled',false);
                         $('#add-title-modal').modal('hide');
                         Swal.fire({
                             icon: 'success',
@@ -434,7 +485,7 @@ $(document).ready(function() {
                total_price: $('#total_price').val(),
            };
 
-
+           $('#button-save-item').prop('disabled',true);
 
            $.ajax({
                url: "/order/item/submit",
@@ -443,6 +494,7 @@ $(document).ready(function() {
                dataType: "json",
                success: function (response) {
                    if (response.success) {
+                       $('#button-save-item').prop('disabled',false);
                        $('#add-item-modal').modal('hide');
                        Swal.fire({
                            icon: 'success',

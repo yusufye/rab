@@ -25,11 +25,4 @@ class Order extends Model
         return $this->hasMany(OrderMak::class);
     }
 
-    public function orderTitle() : HasMany {
-        return $this->hasMany(OrderTitle::class);
-    }
-
-    public function orderItem() : HasMany {
-        return $this->hasMany(OrderItem::class);
-    }
 }

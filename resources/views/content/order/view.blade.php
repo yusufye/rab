@@ -34,8 +34,23 @@
             <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">{{ __('View Order') }}</h5>
-                   <div class="badge  rounded-pill {{ $badgeClass }}">
-                        {{ $order->status }}
+                    <div class="d-flex align-items-center ms-auto">
+                        <div class="badge rounded-pill {{ $badgeClass }} py-2 px-3 fw-semibold text-center">
+                            {{ $order->status }}                        
+                        </div>
+                    
+                        @if(!auth()->user()->hasAnyRole(['admin','reviewer','checker','Super_admin']))
+                        <button type="button" class="btn btn-danger ms-2" id="button-reject">Reject</button>
+                        
+                            @if(auth()->user()->hasRole('head_reviewer'))
+                                <button type="button" class="btn btn-primary ms-2" id="button-release">Release</button>
+                            @endif
+
+                            @if(!auth()->user()->hasRole('head_reviewer'))
+                                <button type="button" class="btn btn-primary ms-2" id="button-approve">Approve</button>
+
+                            @endif
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">
@@ -62,11 +77,36 @@
                                     <td style="width: 5%;">:</td>
                                     <td>From: {{\Carbon\Carbon::parse($order->date_from)->format('d-M-Y')}} - To: {{\Carbon\Carbon::parse($order->date_to)->format('d-M-Y')}}</td>
                                 </tr>
+                                
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Split Price</td>
+                                    <td style="white-space: nowrap; width: 10%;">Price</td>
                                     <td style="width: 5%;">:</td>
-                                    <td> {{ $order->split_price ? 'Rp ' . number_format((float) $order->split_price, 0, ',', '.') : '-' }}</td>
+                                    <td>
+                                        {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
+                                    </td>
                                 </tr>
+                                
+                                
+                                @forelse($sum_array as $key => $sum)
+                                <tr>
+                                @if($key !== 'split_totals')
+                                    @php
+                                    $key_label = match ($key) {
+                                        'biaya_operasional' => 'Biaya Operasional',
+                                        'profit' => 'Profit',
+                                    };
+                                    @endphp                                  
+                                        
+                                    <td style="white-space: nowrap; width: 10%;"> {{$key_label}}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td> {{ 'Rp ' . number_format((float) $sum??'', 0, ',', '.') }}</td>
+                                  
+                                @endif
+                                </tr>
+                                @empty
+                                @endforelse 
+
+                               
                             </table>
                         </div>
                         <div class="col-lg-6 col-sm-12">
@@ -86,15 +126,7 @@
                                     <td style="width: 5%;">:</td>
                                     <td>{{$order->study_lab??'-'}}</td>
                                 </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Price</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>
-                                        {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
-                                    </td>
-
-                                </tr>
-                                @if($order->split_price != 0 && !empty($divisions_by_order_header))
+                                @if(!empty($divisions_by_order_header))
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">Division</td>
                                     <td style="width: 5%;">:</td>
@@ -104,6 +136,15 @@
 
                                 </tr>
                                 @endif
+
+                                @forelse($sum_array['split_totals'] as $key => $sum)
+                                <tr>
+                                     <td style="white-space: nowrap; width: 10%;"> {{$key}}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td> {{ 'Rp ' . number_format((float) $sum??'', 0, ',', '.') }}</td>
+                                </tr>
+                                @empty
+                                @endforelse 
                             </table>
                         </div>
                     </div>
@@ -208,7 +249,39 @@
 
 @endforelse
 
+<!-- Add Role Modal -->
+<div class="modal fade" id="modal-notes-approval" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">    
+    <div class="modal-content">
+            <div class="modal-header">
+                  <h4 class="modal-title">Message</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        <div class="modal-body">
+                <div class="row">
+                    
+                <div class="col">
+                        <div class="form-floating form-floating-outline mb-4">
+                        <textarea id="reviewed_notes" name="reviewed_notes" class="form-control"></textarea>
+                        <label for="reviewed_notes" class="required">{{ __('Message') }}</label>
+                    </div>
+                </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" id="button-save-title">Save</button>
+                </div>
+        </div>
+    </div>
+  </div>
+</div>
 
 @endsection
 
+@section('page-script')
 
+    <script type="module">
+        window.orderId = @json($order->id);
+    </script>
+    <script type="module" src="{{ asset('assets/js_custom/view_order.js') }}?v={{ time() }}"></script>
+@endsection

@@ -38,17 +38,6 @@ $(document).ready(function() {
         dateFormat: "d-M-Y",
     });
 
-    $('#split_price').on('change', function () {
-        let rawValue = $(this).val();
-        let numericValue = parseInt(rawValue.replace(/\D/g, ''), 10) || 0; 
-        if (numericValue > 0) {
-            $('#div_division').show();
-        } else {
-            $('#div_division').hide();
-            $('#division').val('').trigger('change');
-        }
-    });
-
     $("#button-add").on("click", function () {
 
         var isValid = true;

@@ -10,6 +10,7 @@
                 <table class="table table-bordered datatables-orders">
                         <thead>
                             <tr>
+                                <th style="display: none;"></th>
                                 <th>Job Number</th>
                                 <th>Status</th>
                                 <th>Customer</th>

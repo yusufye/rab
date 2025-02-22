@@ -27,7 +27,7 @@ class OrderController extends Controller
 
             $orders = Order::query();
 
-            if ($user->hasRole('reviewer')) {
+            if (auth()->user()->hasAnyRole(['reviewer','head_reviewer'])) {
                 $orders->where('status','TO REVIEW');                     
             }
 
@@ -43,6 +43,11 @@ class OrderController extends Controller
             if ($user->hasRole('approval_tiga')) {
                 $orders->where('status','APPROVED');                     
                 $orders->where('approval_step',2);                     
+            }     
+
+            if ($user->hasRole('checker')) {
+                $orders->where('status','APPROVED');                     
+                $orders->where('approval_step',3);                     
             }         
 
             $orders->get();
@@ -52,12 +57,40 @@ class OrderController extends Controller
             ->addColumn('price_formatted', function ($row) {
                 return 'Rp ' . number_format($row->price, 0, ',', '.');
             })
-            ->addColumn('split_price_formatted', function ($row) {
-                return 'Rp ' . number_format($row->split_price, 0, ',', '.');
-            })
-            ->addColumn('profit_formatted', function ($row) {
-                return 'Rp ' . number_format($row->profit, 0, ',', '.');
-            })
+            ->addColumn('biaya_operasional_formatted', function ($row) {
+                // Cek apakah orderMak ada, jika tidak return Rp 0
+                if (!$row->orderMak) {
+                    return 'Rp 0';
+                }
+                $biaya_operasional = collect($row->orderMak)
+                ->where('is_split', 0)
+                ->flatMap(fn($orderMak) => optional($orderMak->orderTitle) 
+                    ->flatMap(fn($orderTitle) => optional($orderTitle->orderItem)->all() ?? []) 
+                )
+                ->sum('total_price'); 
+        
+                return 'Rp ' . number_format($biaya_operasional, 0, ',', '.');
+            })           
+                ->addColumn('profit_formatted', function ($row) {
+
+                    if (!$row->orderMak) {
+                        return 'Rp ' . number_format($row->price, 0, ',', '.'); 
+                    }
+                
+                    // Hitung total biaya operasional
+                    $biaya_operasional = collect($row->orderMak)
+                        ->where('is_split', 0)
+                        ->flatMap(fn($orderMak) => optional($orderMak->orderTitle)
+                            ->flatMap(fn($orderTitle) => optional($orderTitle->orderItem)->all() ?? [])
+                        )
+                        ->sum('total_price'); 
+                
+                    // Hitung profit
+                    $profit = $row->price - $biaya_operasional;
+                
+                    return 'Rp ' . number_format($profit, 0, ',', '.');
+                })
+            
             ->addColumn('actions', function ($row) use ($user) {
                 $editUrl = url('order/' . $row->id . '/edit');
                 $viewUrl = url('order/' . $row->id);
@@ -65,9 +98,9 @@ class OrderController extends Controller
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     return '
-                        <a href="'.$editUrl.'" class="btn btn-sm btn-success">Edit</a>
+                        <a href="'.$editUrl.'" class="btn btn-sm btn-warning">Edit</a>
                         <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
-                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-warning">Revise</a>
+                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-success">Revise</a>
                     ';                    
                 }else{
                     return '
@@ -81,7 +114,7 @@ class OrderController extends Controller
 
             
             })
-            ->rawColumns(['price_formatted', 'split_price_formatted', 'profit_formatted','actions'])
+            ->rawColumns(['price_formatted', 'biaya_operasional_formatted', 'profit_formatted','actions'])
             ->toJson();
         }
        
@@ -167,9 +200,49 @@ class OrderController extends Controller
 
         $divisions_by_order_header = $order->split_to ? Division::whereIn('id', $order->split_to)->get():[];
 
-        $order_mak = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
+        $order_mak = OrderMak::with(['mak', 'orderTitle.orderItem'])->where('order_id', $order->id)->get();
 
-        return view('content.order.edit',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak'));
+        $sum_array = [];
+        if ($order_mak->isNotEmpty()) {
+            // Fungsi untuk menghitung total_price dari orderItem dengan aman
+            $calculateTotalPrice = function ($orderMak) {
+                return optional($orderMak->orderTitle) // Bisa koleksi atau single object
+                    ->flatMap(fn($orderTitle) => optional($orderTitle->orderItem)->all() ?? [])
+                    ->sum('total_price');
+            };
+        
+            // Biaya operasional (hanya untuk is_split == 0)
+            $biaya_operasional = $order_mak
+                ->filter(fn($orderMak) => $orderMak->is_split == 0)
+                ->sum($calculateTotalPrice);
+        
+            $sum_array['biaya_operasional'] = intval($biaya_operasional);
+        
+            // Profit
+            $sum_array['profit'] = intval($order->price) - $sum_array['biaya_operasional'];
+        
+            // Ambil daftar divisi
+            $division_pluck = $divisions->pluck('division_name', 'id')->toArray();
+        
+            // Split total berdasarkan split_to
+            $sum_array['split_totals'] = $order_mak->whereNotNull('split_to')
+                ->groupBy('split_to')
+                ->mapWithKeys(function ($group, $splitToId) use ($division_pluck, $calculateTotalPrice) {
+                    $divisionName = $division_pluck[$splitToId] ?? '-';
+                    $total = $group->sum($calculateTotalPrice);
+                    return [$divisionName => intval($total)];
+                })->toArray();
+                
+        } else {
+            $sum_array = [
+                'biaya_operasional' => 0,
+                'profit' => 0,
+                'split_totals' => [],
+            ];
+        }
+        
+
+        return view('content.order.edit',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak','sum_array'));
     }
 
     public function update(Request $request,Order $order)
@@ -442,7 +515,46 @@ class OrderController extends Controller
 
         $order_mak = OrderMak::with(['mak','orderTitle','orderTitle.orderItem'])->where('order_id',$order->id)->get();
 
-        return view('content.order.view',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak'));
+        $sum_array = [];
+        if ($order_mak->isNotEmpty()) {
+            // Fungsi untuk menghitung total_price dari orderItem dengan aman
+            $calculateTotalPrice = function ($orderMak) {
+                return optional($orderMak->orderTitle) // Bisa koleksi atau single object
+                    ->flatMap(fn($orderTitle) => optional($orderTitle->orderItem)->all() ?? [])
+                    ->sum('total_price');
+            };
+        
+            // Biaya operasional (hanya untuk is_split == 0)
+            $biaya_operasional = $order_mak
+                ->filter(fn($orderMak) => $orderMak->is_split == 0)
+                ->sum($calculateTotalPrice);
+        
+            $sum_array['biaya_operasional'] = intval($biaya_operasional);
+        
+            // Profit
+            $sum_array['profit'] = intval($order->price) - $sum_array['biaya_operasional'];
+        
+            // Ambil daftar divisi
+            $division_pluck = $divisions->pluck('division_name', 'id')->toArray();
+        
+            // Split total berdasarkan split_to
+            $sum_array['split_totals'] = $order_mak->whereNotNull('split_to')
+                ->groupBy('split_to')
+                ->mapWithKeys(function ($group, $splitToId) use ($division_pluck, $calculateTotalPrice) {
+                    $divisionName = $division_pluck[$splitToId] ?? '-';
+                    $total = $group->sum($calculateTotalPrice);
+                    return [$divisionName => intval($total)];
+                })->toArray();
+                
+        } else {
+            $sum_array = [
+                'biaya_operasional' => 0,
+                'profit' => 0,
+                'split_totals' => [],
+            ];
+        }
+
+        return view('content.order.view',compact('order','divisions','categorys','divisions_id','maks','divisions_by_order_header','order_mak','sum_array'));
     }
 
     public function revise(Order $order){
@@ -499,6 +611,94 @@ class OrderController extends Controller
             return redirect('/order')->with($message);
         }
         
+    }
+
+    public function updateStatus(Request $request)
+    {       
+        
+        try{
+            DB::beginTransaction();
+
+            $order = Order::find($request->order_id);
+
+            if(!$order){
+                return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ],404);     
+            }
+
+            $message = null;
+            $data_update = null;
+
+            if($request->status == 'TO REVIEW'){     
+                $data_update= [
+                    'status' => $request->status,
+                ];         
+                $message = 'Order berhasil di Submit';
+            }
+
+            if($request->status == 'DRAFT'){
+                $data_update= [
+                    'status' => $request->status,
+                ];                               
+                $message = 'Order berhasil di Reject';
+            }
+
+            if($request->status == 'REVIEWED'){
+
+                    $data_update= [
+                        'status' => $request->status,
+                        'reviewed_notes' => $request->reviewed_notes,
+                        'reviewed_datetime' => now(),
+                        'released_by' => auth()->user()->id,
+                    ];                               
+
+                $message = 'Order berhasil di Release';
+            }
+
+            if($request->status == 'APPROVED'){
+
+               
+
+                $approved_by = match(true) {
+                    auth()->user()->hasRole('approval_satu') => 
+                    [
+                        'approved_1_by' => auth()->user()->id,
+                        'approved_date_1' => now(),
+                        'approval_step' => 1,
+                    ],
+                    auth()->user()->hasRole('approval_dua') => 
+                    [
+                        'approved_2_by' => auth()->user()->id,
+                        'approved_date_2' => now(),
+                        'approval_step' => 2,
+                    ],
+                    auth()->user()->hasRole('approval_tiga') => 
+                    [
+                        'approved_3_by' => auth()->user()->id,
+                        'approved_date_3' => now(),
+                        'approval_step' => 3,
+
+                    ],
+                    default => [],
+                };
+
+                $data_update = array_merge([
+                    'status' => $request->status,
+                ], $approved_by); 
+
+                $message = 'Order berhasil di Approved';
+            }
+
+
+            $order->update($data_update);  
+
+            DB::commit();
+            return response()->json(['success'=>true,'msg'=> $message,'data'=>$order],200);      
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            return response()->json(['success'=>false,'msg'=> 'Order Item gagal di simpan','data'=>[]],500);
+        }
+
     }
 
 }
