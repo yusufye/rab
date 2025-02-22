@@ -202,6 +202,9 @@
     </div>
 </form>
 
+{{-- Livewire Component --}}
+@livewire('order-mak-list', ['orderId' => $order->id])
+
 <div class="row mb-2">
     <div class="col-12 text-end">
         <button type="button" class="btn btn-warning" id="add-mak">Add Mak</button>
