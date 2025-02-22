@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order/item/submit', [OrderController::class, 'storeItem']);
     Route::post('/order/item/delete', [OrderController::class, 'deleteItem']);
     Route::get('/order/{order}/revise', [OrderController::class, 'revise']);
+    Route::post('/order/update_status/submit', [OrderController::class, 'updateStatus']);
 
     //master mak
     Route::get('/mak', [MakController::class, 'index'])->name('mak');

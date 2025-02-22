@@ -14,6 +14,11 @@ $(document).ready(function() {
             },
             columns: [
                 {
+                    data: 'created_at',
+                    visible: false,
+                    orderable: true,
+                },
+                {
                     data: 'job_number',
                     orderable: true,
                 },
@@ -31,7 +36,7 @@ $(document).ready(function() {
                     orderable: true,
                 },
                 {
-                    data: 'split_price_formatted',
+                    data: 'biaya_operasional_formatted',
                     orderable: true,
                 },
                 {
