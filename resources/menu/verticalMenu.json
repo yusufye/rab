@@ -27,6 +27,13 @@
       "name": "Category",
       "slug": "category",
       "permission_name": "category"
+    },
+    {
+      "url": "/report",
+      "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
+      "name": "Report",
+      "slug": "report",
+      "permission_name": "report"
     }
   ]
 }
