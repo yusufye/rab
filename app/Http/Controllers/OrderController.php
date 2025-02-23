@@ -577,6 +577,7 @@ class OrderController extends Controller
                 $new_order         = $order->replicate();
                 $new_order->status = 'DRAFT';
                 $new_order->rev    = $order->rev+1;
+                $new_order->prev_id= $order->id;
                 $new_order->save();
 
                 $order_maks = OrderMak::with(['orderTitle.orderItem']) ->where('order_id', $order->id) ->get();
@@ -601,6 +602,10 @@ class OrderController extends Controller
                         }
                     }
                 }
+
+                $order->update(['status'=>'REVISED']);
+
+
             }
            
             return redirect('/order')->with($message);
