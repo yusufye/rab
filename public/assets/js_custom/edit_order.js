@@ -83,6 +83,7 @@ $(document).ready(function () {
                 // location.reload();
 
                 window.Livewire.dispatch('refreshOrderMak');
+                window.Livewire.dispatch('refreshOrderSummary');
               });
             } else {
               Swal.fire({
@@ -203,6 +204,7 @@ $(document).ready(function () {
               // location.reload();
 
               window.Livewire.dispatch('refreshOrderMak');
+              window.Livewire.dispatch('refreshOrderSummary');
             });
           } else {
             Swal.fire({
@@ -293,6 +295,7 @@ $(document).ready(function () {
               // location.reload();
 
               window.Livewire.dispatch('refreshOrderMak');
+              window.Livewire.dispatch('refreshOrderSummary');
             });
           } else {
             Swal.fire({
@@ -495,6 +498,7 @@ $(document).ready(function () {
               // location.reload();
 
               window.Livewire.dispatch('refreshOrderMak');
+              window.Livewire.dispatch('refreshOrderSummary');
             });
           } else {
             Swal.fire({
@@ -554,6 +558,7 @@ $(document).ready(function () {
                 // location.reload();
 
                 window.Livewire.dispatch('refreshOrderMak');
+                window.Livewire.dispatch('refreshOrderSummary');
               });
             } else {
               Swal.fire({
@@ -613,6 +618,7 @@ $(document).ready(function () {
                 // location.reload();
 
                 window.Livewire.dispatch('refreshOrderMak');
+                window.Livewire.dispatch('refreshOrderSummary');
               });
             } else {
               Swal.fire({
@@ -672,6 +678,7 @@ $(document).ready(function () {
                 // location.reload();
 
                 window.Livewire.dispatch('refreshOrderMak');
+                window.Livewire.dispatch('refreshOrderSummary');
               });
             } else {
               Swal.fire({

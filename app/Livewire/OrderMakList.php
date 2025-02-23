@@ -42,7 +42,7 @@ class OrderMakList extends Component
     public function getTotalPriceForMak($orderMak)
     {
         return $orderMak->orderTitle->sum(function ($title) {
-        return $title->orderItem->sum('total_price');
-    });
-}
+           return $title->orderItem->sum('total_price');
+        });
+    }
 }

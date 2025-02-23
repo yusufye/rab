@@ -53,7 +53,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">{{ __('Edit Order') }}</h5>
                     
                     <div class="d-flex align-items-center ms-auto">
@@ -162,40 +162,43 @@
                                 <label for="price" class="required">{{ __('Price') }}</label>
                             </div>
                         </div>
-                        @forelse($sum_array as $key => $sum)
-                            @if($key !== 'split_totals')
-                                @php
-                                $key_label = match ($key) {
-                                    'biaya_operasional' => 'Biaya Operasional',
-                                    'profit' => 'Profit',
-                                };
-                                @endphp
+                            {{-- @forelse($sum_array as $key => $sum)
+                                @if($key !== 'split_totals')
+                                    @php
+                                    $key_label = match ($key) {
+                                        'biaya_operasional' => 'Biaya Operasional',
+                                        'profit' => 'Profit',
+                                    };
+                                    @endphp
+                                    <div class="col-12">
+                                        <div class="form-floating form-floating-outline mb-4">
+                                            <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key_label) }}" aria-label="{{ __($key_label) }}" value="{{ number_format($sum ?? 0, 0, ',', '') }}">
+                                            <label for="{{ __($key) }}">{{ __($key_label) }}</label>
+                                        </div>
+                                    </div>
+                                @endif
+                            @empty
+                            @endforelse --}}
+                        </div>
+                        </div>
+                        {{-- <div class="col-6">
+                            <div class="row">
+                            @forelse($sum_array['split_totals'] as $key => $sum)
                                 <div class="col-12">
                                     <div class="form-floating form-floating-outline mb-4">
-                                        <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key_label) }}" aria-label="{{ __($key_label) }}" value="{{ number_format($sum ?? 0, 0, ',', '') }}">
-                                        <label for="{{ __($key) }}">{{ __($key_label) }}</label>
+                                        <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key) }}" aria-label="{{ __($key) }}"  value="{{ number_format($sum ?? 0, 0, ',', '') }}">
+                                        <label for="{{$key}}">{{ __($key) }}</label>
                                     </div>
                                 </div>
-                            @endif
-                        @empty
-                        @endforelse
-                        </div>
-                        </div>
-                        <div class="col-6">
-                        <div class="row">
-                        @forelse($sum_array['split_totals'] as $key => $sum)
-                            <div class="col-12">
-                                <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control format-currency readonly" id="{{$key}}" placeholder="{{ __($key) }}" aria-label="{{ __($key) }}"  value="{{ number_format($sum ?? 0, 0, ',', '') }}">
-                                    <label for="{{$key}}">{{ __($key) }}</label>
-                                </div>
+                            @empty
+                            @endforelse
                             </div>
-                        @empty
-                        @endforelse
-                        </div>
-                    
+                        </div> --}}
                     </div>
-                    </div>
+                </div>
+
+                <div class="card-footer">
+                    @livewire('order-summary', ['orderId' => $order->id])
                 </div>
             </div>
         </div>
