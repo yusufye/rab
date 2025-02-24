@@ -234,4 +234,19 @@ class User extends Authenticatable
     
         return $permissions;
     }
+
+    public function approvals1()
+    {
+        return $this->hasMany(Order::class, 'approver_id_1');
+    }
+
+    public function approvals2()
+    {
+        return $this->hasMany(Order::class, 'approver_id_2');
+    }
+
+    public function approvals3()
+    {
+        return $this->hasMany(Order::class, 'approver_id_3');
+    }
 }

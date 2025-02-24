@@ -8,14 +8,15 @@ use App\Models\Order;
 use App\Helpers\Helpers;
 use App\Models\Category;
 use App\Models\Division;
-use App\Models\OrderChecklist;
 use App\Models\OrderMak;
 use App\Models\OrderItem;
 use App\Models\OrderTitle;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\QrCodeHelper;
 
 class OrderController extends Controller
 {
@@ -93,15 +94,17 @@ class OrderController extends Controller
                 })
             
             ->addColumn('actions', function ($row) use ($user) {
-                $editUrl = url('order/' . $row->id . '/edit');
-                $viewUrl = url('order/' . $row->id);
+                $editUrl   = url('order/' . $row->id . '/edit');
+                $viewUrl   = url('order/' . $row->id);
                 $reviseUrl = url('order/' . $row->id . '/revise');
+                $printUrl  = url('order/' . $row->id . '/download');
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     return '
                         <a href="'.$editUrl.'" class="btn btn-sm btn-warning">Edit</a>
                         <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
                         <a href="'.$reviseUrl.'" class="btn btn-sm btn-success">Revise</a>
+                        <a href="'.$printUrl.'" class="btn btn-sm btn-success">Download</a>
                     ';                    
                 }else{
                     return '
@@ -706,82 +709,28 @@ class OrderController extends Controller
         }
 
     }
-    public function getChecklist($order_item_id)
-    {               
-        try{
-            $order_cheklist = OrderChecklist::where('order_item_id',$order_item_id)->get();
-            return response()->json(['success'=>true,'msg'=> 'Order Checklist berhasil diambil','data'=> $order_cheklist],200);      
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e);
-            return response()->json(['success'=>false,'msg'=> 'Order Checklist gagal diambil','data'=>[]],500);
-        }
 
+    public function download(Order $order,$type = 'pdf'){
+
+        $order = Order::with([
+            'orderMak' => function ($query) {
+                $query->orderBy('is_split', 'asc')->orderBy('id', 'asc');
+            },
+            'orderMak.mak',
+            'orderMak.division',
+            'orderMak.orderTitle.orderItem',
+            'approver1', 'approver2', 'approver3' // Relasi ke User untuk approval
+        ])->findOrFail($order->id);
+    
+        $orderMaks = $order->orderMak;
+        // Generate QR Code untuk tiap approver
+        $approver_1 = $order->approver1 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver1->nip},{$order->approver1->name}") : null;
+        $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver2->nip},{$order->approver2->name}") : null;
+        $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver3->nip},{$order->approver3->name}") : null;
+    
+        $pdf = Pdf::loadView('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
+        return $pdf->download("order-{$order->id}.pdf");
+
+        // return view('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
     }
-
-    public function saveChecklist(Request $request, $order_item_id)
-    {
-        DB::beginTransaction(); 
-    
-        try {
-            $orderItem = OrderItem::find($order_item_id);
-
-            if (!$orderItem) {
-                return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan'], 404);
-            }
-    
-            // Ambil semua checklist terkait order item ini
-            $orderChecklist = OrderChecklist::where('order_item_id', $order_item_id)->get();
-    
-            // Hitung total amount yang tersedia untuk checklist
-            $total_available_to_check = intval($orderItem->total_price - $orderChecklist->sum('amount'));    
-    
-            $total_requested_amount = collect($request->checklist)->sum('amount');
-    
-            // Validasi jumlah yang diminta tidak boleh melebihi jumlah tersedia
-            if ($total_requested_amount > intval($orderItem->total_price)) {
-                return response()->json([
-                    'success' => false,
-                    'msg' => 'Total Amount tidak boleh lebih besar dari jumlah Total Price',
-                    'data' => $orderChecklist
-                ], 200);
-            }
-
-            
-            $orderChecklist = OrderChecklist::where('order_item_id', $order_item_id)->delete();
-
-            foreach ($request->checklist as $item) {
-                OrderChecklist::create([
-                    'order_id' => $orderItem->orderTitle->orderMak->order_id,
-                    'order_item_id' => $order_item_id,
-                    'checklist_number' => $item['checklist_number'],
-                    'amount' => $item['amount'],
-                    'created_by' => auth()->user()->id,
-                    'updated_by' => auth()->user()->id,
-                ]);
-            }
-    
-            DB::commit(); 
-    
-            return response()->json([
-                'success' => true,
-                'msg' => 'Order Checklist berhasil disimpan',
-                'data' => $request->checklist
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack(); 
-            Log::error($e->getMessage()); 
-    
-            return response()->json([
-                'success' => false,
-                'msg' => 'Order Checklist gagal disimpan',
-                'data' => []
-            ], 500);
-        }
-    }
-    
-
-
-    
-
 }

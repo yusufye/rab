@@ -29,4 +29,20 @@ class Order extends Model
         return $this->hasMany(OrderChecklist::class);
     }
 
+    
+    public function approver1()
+    {
+        return $this->belongsTo(User::class, 'approved_1_by');
+    }
+
+    public function approver2()
+    {
+        return $this->belongsTo(User::class, 'approved_2_by');
+    }
+
+    public function approver3()
+    {
+        return $this->belongsTo(User::class, 'approved_3_by');
+    }
+
 }

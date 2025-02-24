@@ -56,6 +56,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order/update_status/submit', [OrderController::class, 'updateStatus']);
     Route::get('/order/get_cheklist/{order_item_id}', [OrderController::class, 'getChecklist']);
     Route::post('/order/save_checklist/{order_item_id}', [OrderController::class, 'saveChecklist']);
+    Route::get('/order/{order}/download/{type?}', [OrderController::class, 'download'])->name('orderDownload');
+
 
     //master mak
     Route::get('/mak', [MakController::class, 'index'])->name('mak');
