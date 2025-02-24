@@ -35,7 +35,7 @@
                     <button data-order-mak-id="{{$orderMak->id}}"  class="btn btn-sm btn-danger delete-mak" title="Delete Mak"><span class="mdi mdi-table-column-remove"></span></button>
                 </div>
             </div>
-            <div class="card-body card-body-detail" id="accordion-{{ $orderMak->id }}" style="display: none;">
+            <div class="card-body card-body-detail table-responsive" id="accordion-{{ $orderMak->id }}" style="display: none;">
                 @foreach ($orderMak->orderTitle as $title)
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h6 class="m-0 badge rounded-pill bg-label-dark text-center">{{ strtoupper($title->title ?? 'Tanpa Judul') }}</h6>

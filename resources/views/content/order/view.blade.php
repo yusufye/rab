@@ -1,6 +1,6 @@
 @extends('layouts/layoutMaster')
 
-@section('title', 'Edit Order')
+@section('title', 'View Order')
 
 <style>
     .readonly {
@@ -11,7 +11,6 @@
         cursor: not-allowed; 
     }
 </style>
-
 @section('content')
 
     @php
@@ -86,7 +85,7 @@
                                     </td>
                                 </tr>
                                 
-                                
+                                {{--
                                 @forelse($sum_array as $key => $sum)
                                 <tr>
                                 @if($key !== 'split_totals')
@@ -105,7 +104,7 @@
                                 </tr>
                                 @empty
                                 @endforelse 
-
+                                --}}
                                
                             </table>
                         </div>
@@ -137,6 +136,7 @@
                                 </tr>
                                 @endif
 
+                                {{--
                                 @forelse($sum_array['split_totals'] as $key => $sum)
                                 <tr>
                                      <td style="white-space: nowrap; width: 10%;"> {{$key}}</td>
@@ -145,20 +145,25 @@
                                 </tr>
                                 @empty
                                 @endforelse 
+                                --}}
                             </table>
                         </div>
                     </div>
                  
+                </div>
+                <div class="card-footer">
+                    @livewire('order-summary', ['orderId' => $order->id])
                 </div>
             </div>
         </div>
     </div>
 
 
-
+    {{-- Livewire Component --}}
+    @livewire('order-mak-view-list', ['orderId' => $order->id])
 
 <!-- order mak -->
-
+{{--
 @forelse($order_mak as $om)
     <div class="row mb-2">
         <div class="col-12">
@@ -248,8 +253,10 @@
 @empty
 
 @endforelse
+--}}
 
-<!-- Add Role Modal -->
+
+<!-- Add notes Modal -->
 <div class="modal fade" id="modal-notes-approval" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">    
     <div class="modal-content">
@@ -275,6 +282,39 @@
     </div>
   </div>
 </div>
+
+<!-- Add notes Modal -->
+<div class="modal fade" id="modal-checklist-item" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">    
+    <div class="modal-content">
+            <div class="modal-header">
+                  <h4 class="modal-title">Checklist</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+        <div class="modal-body">
+                <div class="row">
+                    
+                <div class="col">
+                            <input type="hidden" id="order_item_id" readonly>
+                            <div data-repeater-checklist="group-a" id="repeater-checklist">
+
+                            </div>
+                            <button type="button" class="btn btn-outline-primary" id="add-item-checklist">
+                                <i class="mdi mdi-plus me-1"></i>
+                            </button>
+                </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" id="button-save-checklist">Save</button>
+                </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+@livewireScripts
 
 @endsection
 
