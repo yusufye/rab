@@ -25,4 +25,8 @@ class Order extends Model
         return $this->hasMany(OrderMak::class);
     }
 
+    public function orderChecklist() : HasMany {
+        return $this->hasMany(OrderChecklist::class);
+    }
+
 }
