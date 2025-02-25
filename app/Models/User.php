@@ -104,8 +104,8 @@ class User extends Authenticatable
         }
     
         foreach ($roles as $role) {
-            if ($role->name === 'Admin') {
-                $adminPermission = ['Order','home'];
+            if ($role->name === 'admin') {
+                $adminPermission = ['order','home'];
     
                 $adminPermissionsMapped = [];
                 foreach ($adminPermission as $permission) {
@@ -122,18 +122,36 @@ class User extends Authenticatable
                     Permission::whereIn('name', $adminPermissionsMapped)->get()
                 );
             }
+            if ($role->name === 'head_reviewer') {
+                $headReviewerPermission = ['order','home'];
+    
+                $headReviewerPermissionsMapped = [];
+                foreach ($headReviewerPermission as $permission) {
+                   
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
+                        Permission::firstOrCreate([
+                            'name' => $permissionName,
+                        ]);
+                        $headReviewerPermissionsMapped[] = $permissionName;
+                    
+                }
+    
+                $role->syncPermissions(
+                    Permission::whereIn('name', $headReviewerPermissionsMapped)->get()
+                );
+            }
             if ($role->name === 'reviewer') {
-                $reviewerPermission = ['Order'];
+                $reviewerPermission = ['order','home'];
     
                 $reviewerPermissionsMapped = [];
                 foreach ($reviewerPermission as $permission) {
-                    foreach ($prefix as $op) {
-                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
                         Permission::firstOrCreate([
                             'name' => $permissionName,
                         ]);
                         $reviewerPermissionsMapped[] = $permissionName;
-                    }
+                    
                 }
     
                 $role->syncPermissions(
@@ -141,17 +159,17 @@ class User extends Authenticatable
                 );
             }
             if ($role->name === 'approval_satu') {
-                $approvalSatuPermission = ['Order'];
+                $approvalSatuPermission = ['order','home'];
     
                 $approvalSatuPermissionsMapped = [];
                 foreach ($approvalSatuPermission as $permission) {
-                    foreach ($prefix as $op) {
-                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                  
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
                         Permission::firstOrCreate([
                             'name' => $permissionName,
                         ]);
                         $approvalSatuPermissionsMapped[] = $permissionName;
-                    }
+                    
                 }
     
                 $role->syncPermissions(
@@ -159,17 +177,17 @@ class User extends Authenticatable
                 );
             }
             if ($role->name === 'approval_dua') {
-                $approvalDuaPermission = ['Order'];
+                $approvalDuaPermission = ['order','home'];
     
                 $approvalDuaPermissionsMapped = [];
                 foreach ($approvalDuaPermission as $permission) {
-                    foreach ($prefix as $op) {
-                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+             
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
                         Permission::firstOrCreate([
                             'name' => $permissionName,
                         ]);
                         $approvalDuaPermissionsMapped[] = $permissionName;
-                    }
+                    
                 }
     
                 $role->syncPermissions(
@@ -177,17 +195,17 @@ class User extends Authenticatable
                 );
             }
             if ($role->name === 'approval_tiga') {
-                $approvalTigaPermission = ['Order'];
+                $approvalTigaPermission = ['order','home'];
     
                 $approvalTigaPermissionsMapped = [];
                 foreach ($approvalTigaPermission as $permission) {
-                    foreach ($prefix as $op) {
-                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                   
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
                         Permission::firstOrCreate([
                             'name' => $permissionName,
                         ]);
                         $approvalTigaPermissionsMapped[] = $permissionName;
-                    }
+                    
                 }
     
                 $role->syncPermissions(
@@ -195,12 +213,12 @@ class User extends Authenticatable
                 );
             }
             if ($role->name === 'checker') {
-                $checkerPermission = ['Order'];
+                $checkerPermission = ['order','home'];
     
                 $checkerPermissionsMapped = [];
                 foreach ($checkerPermission as $permission) {
                     foreach ($prefix as $op) {
-                        $permissionName = strtolower(str_replace(' ', '_', "{$op}_{$permission}"));
+                        $permissionName = strtolower(str_replace(' ', '_', "read_{$permission}"));
                         Permission::firstOrCreate([
                             'name' => $permissionName,
                         ]);
