@@ -56,6 +56,22 @@ class OrderController extends Controller
 
             return datatables()
             ->of($orders)
+            ->addColumn('job_number', function ($row) {
+                return $row->job_number.'<span class="mx-2 badge pill bg-label-dark py-2 px-3 fw-semibold text-center">R-'.$row->rev.'</span>';
+            })->escapeColumns([])
+            ->addColumn('status', function ($row) {
+                $badgeClass = match ($row->status) {
+                    'DRAFT'     => 'bg-secondary',
+                    'TO REVIEW' => 'bg-warning',
+                    'REVIEWED'  => 'bg-label-warning',
+                    'RELEASED'  => 'bg-info',
+                    'APPROVED'  => 'bg-primary',
+                    'REVISED'   => 'bg-dark',
+                    default     => 'bg-secondary',
+                };
+                
+                return '<span class="badge rounded-pill '.$badgeClass.' py-2 px-3 fw-semibold text-center">'.$row->status.($row->status=='APPROVED'?' '.$row->approval_step:'').'</span>';
+            })->escapeColumns([])
             ->addColumn('price_formatted', function ($row) {
                 return 'Rp ' . number_format($row->price, 0, ',', '.');
             })
@@ -101,10 +117,10 @@ class OrderController extends Controller
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     return '
-                        <a href="'.$editUrl.'" class="btn btn-sm btn-warning">Edit</a>
-                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
-                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-success">Revise</a>
-                        <a href="'.$printUrl.'" class="btn btn-sm btn-success">Download</a>
+                        <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
+                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
+                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-dark" title="Revise"><span class="mdi mdi-autorenew"></span></a>
+                        <a href="'.$printUrl.'" class="btn btn-sm btn-success" title="Download"><span class="mdi mdi-file-download"></span></a>
                     ';                    
                 }else{
                     return '
@@ -252,7 +268,7 @@ class OrderController extends Controller
     public function update(Request $request,Order $order)
     {
         $validated = $request->validate([
-            'job_number' => 'required|max:50|unique:orders,job_number,'.$order->id,
+            // 'job_number' => 'required|max:50|unique:orders,job_number,'.$order->id,
             'title' => 'required|max:100',
             'group' => 'required|max:100',
             'customer' => 'required|max:100',
@@ -260,7 +276,7 @@ class OrderController extends Controller
             'date_range' => 'required',
             'category_id' => 'required',
         ], [
-            'job_number.unique' => 'Job Number sudah tersedia',
+            // 'job_number.unique' => 'Job Number sudah tersedia',
         ]);
         
         try{
@@ -572,8 +588,8 @@ class OrderController extends Controller
         //     $invalid++;
         //    }
 
-           if (in_array($order->status,['DRAFT','CLOSED'])) {
-            $message = ['success' => "Revise Order Failed, {$order->status} Can't Revise" ];
+           if (in_array($order->status,['DRAFT','CLOSED','REVISED'])) {
+            $message = ['success' => "{$order->status} Can't be Revised" ];
             $invalid++;
            }
            if ($invalid==0) {

@@ -26,7 +26,7 @@ class MakController extends Controller
                 $editUrl = url('mak/' . $row->id . '/edit');
             
                 return '
-                    <a href="'.$editUrl.'" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></a>
                 ';
             })
             ->rawColumns(['mak_code', 'mak_name','actions'])
@@ -80,7 +80,7 @@ class MakController extends Controller
     public function update(Request $request,Mak $mak)
     {
         $validated = $request->validate([
-            'mak_code' => 'required|integer|digits_between:5,20|unique:maks,mak_code',
+            'mak_code' => 'required|integer|digits_between:5,20|unique:maks,mak_code,'.$mak->id,
             'mak_name' => 'required|max:100',
         ]);
         

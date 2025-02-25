@@ -30,13 +30,14 @@ $(document).ready(function () {
 
     if (isValid) {
       Swal.fire({
-        title: 'Are you sure you want to Save?',
+        title: '<h4>Apakah anda yakin akan menyimpan dokumen order ini sebagai draft ?</h4>',
+        footer: 'Setelah simpan draft berhasil, anda masih dapat merubah kembali dokumen order ini',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Save',
         customClass: {
-          confirmButton: 'btn btn-primary me-3',
-          cancelButton: 'btn btn-label-secondary'
+          confirmButton: 'btn btn-secondary me-3',
+          cancelButton: 'btn btn-label-danger'
         },
         buttonsStyling: false
       }).then(value => {
@@ -49,13 +50,14 @@ $(document).ready(function () {
 
   $('#button-to-review').on('click', function () {
     Swal.fire({
-      title: 'Are you sure you want to Submit?',
+      title: '<h4>Apakah anda yakin akan mengirim dokumen order ini ?</h4>',
+      footer: 'Setelah terkirim, dokumen order ini akan diteruskan ke reviewer',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Submit',
       customClass: {
-        confirmButton: 'btn btn-success me-3',
-        cancelButton: 'btn btn-label-secondary'
+        confirmButton: 'btn btn-primary me-3',
+        cancelButton: 'btn btn-label-danger'
       },
       buttonsStyling: false
     }).then(value => {
@@ -80,10 +82,10 @@ $(document).ready(function () {
                   confirmButton: 'btn btn-success'
                 }
               }).then(() => {
-                // location.reload();
+                window.location.reload();
 
-                window.Livewire.dispatch('refreshOrderMak');
-                window.Livewire.dispatch('refreshOrderSummary');
+                // window.Livewire.dispatch('refreshOrderMak');
+                // window.Livewire.dispatch('refreshOrderSummary');
               });
             } else {
               Swal.fire({

@@ -48,10 +48,13 @@
                         <li class="breadcrumb-item active">Edit</li>
                     </ol>
                 </nav>
+                <div class="d-flex align-items-center ms-auto">
+                    <button type="button" class="btn btn-primary" id="button-edit" title="Simpan"><span class="mdi mdi-content-save"></span></button>
+                </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col">
+                        <div class="col-sm-6">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Category Name') }}"
                                     name="category_name" aria-label="category_name" required value="{{ old('name',$category->category_name??'') }}" data-required="category_name">
@@ -59,9 +62,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer text-end">
-                    <button type="button" class="btn btn-primary" id="button-edit">Submit</button>
                 </div>
             </div>
         </div>

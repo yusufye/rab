@@ -48,6 +48,9 @@
                         <li class="breadcrumb-item active">Edit</li>
                     </ol>
                 </nav>
+                <div class="d-flex align-items-center ms-auto">
+                    <button type="button" class="btn btn-primary" id="button-edit" title="Simpan"><span class="mdi mdi-content-save"></span></button>
+                </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -66,9 +69,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer text-end">
-                    <button type="button" class="btn btn-primary" id="button-edit">Submit</button>
                 </div>
             </div>
         </div>

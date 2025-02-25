@@ -7,7 +7,7 @@
 <div class="card">
 <div class="card-datatable table-responsive">
     <table class="table datatables-orders dtr-column">
-        <thead>
+        <thead class="table-primary">
             <tr>
                 <th>Name</th>
                 <th>Actions</th>

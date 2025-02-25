@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
@@ -36,7 +36,10 @@
                             <li class="breadcrumb-item active">{{ __('Add') }}</li>
                         </ol>
                     </nav>
+                    <div class="d-flex align-items-center ms-auto">
+                        <button type="button" class="btn btn-primary" id="button-add" title="Simpan"><span class="mdi mdi-content-save"></span></button>
                     </div>
+                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
@@ -55,9 +58,6 @@
                         </div>
                     </div>
                     
-                </div>
-                <div class="card-footer text-end">
-                    <button type="button" class="btn btn-primary" id="button-add">Submit</button>
                 </div>
             </div>
         </div>

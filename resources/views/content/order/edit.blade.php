@@ -1,14 +1,15 @@
+
 @extends('layouts/layoutMaster')
 
 @section('title', 'Edit Order')
 
 <style>
     .readonly {
-        pointer-events: none; 
+        pointer-events: none;
         background-color: #e9ecef !important;
         color: #6c757d !important;
-        opacity: 0.7; 
-        cursor: not-allowed; 
+        opacity: 0.7;
+        cursor: not-allowed;
     }
 </style>
 
@@ -37,12 +38,14 @@
 
     @php
         $badgeClass = match ($order->status) {
-            'DRAFT' => 'bg-label-dark',
-            'TO REVIEW' => 'bg-label-warning',
-            'RELEASED' => 'bg-label-info',
-            'APPROVED' => 'bg-label-success',
-            'CLOSED' => 'bg-label-danger',
-            default => 'bg-label-secondary',
+            'DRAFT'     => 'bg-secondary',
+            'TO REVIEW' => 'bg-warning',
+            'REVIEWED'  => 'bg-label-warning',
+            'RELEASED'  => 'bg-info',
+            'APPROVED'  => 'bg-primary',
+            'REVISED'   => 'bg-dark',
+            'CLOSED'    => 'bg-dark',
+            default     => 'bg-secondary',
         };
 
         $selected_divisions = old('division', $divisions_id);
@@ -52,20 +55,37 @@
 
     <div class="row mb-4">
         <div class="col-12">
+            <div class="row">
+                <div class="col-sm-3">
+                    <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
+                        {{ $order->status }}
+                    </span>
+                </div>
+                
+            </div>
+
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">{{ __('Edit Order') }}</h5>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{url('/order')}}">{{ __('Order') }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{{ __('Edit Order') }}
+                                
+                            </li>
+                        </ol>
+                    </nav>
+                    
                     
                     <div class="d-flex align-items-center ms-auto">
-                        <div class="badge rounded-pill {{ $badgeClass }} py-2 px-3 fw-semibold text-center">
-                            {{ $order->status }}                        
-                        </div>                       
+                        
                        
-                        <button type="button" class="btn btn-primary ms-2" id="button-edit" 
-                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}>Save</button>
+                        <button type="button" class="btn btn-secondary ms-2" id="button-edit" title="Simpan Draft"
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-content-save"></span></button>
 
-                        <button type="button" class="btn btn-success ms-2" id="button-to-review" 
-                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}>Submit</button>
+                        <button type="button" class="btn btn-primary ms-2" id="button-to-review" title="Kirim"
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-send"></span></button>
                       
                     </div>
                 </div>
@@ -76,14 +96,14 @@
                             <div class="form-floating form-floating-outline mb-4">
                                     <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('Job Number') }}"
                                         name="job_number" aria-label="Name" required value="{{ old('job_number', $order->job_number ?? '') }}" data-required="Job Number">
-                                <label for="job_number" class="required">{{ __('Job Number') }}</label>
+                                <label for="job_number" class="required">{{ __('No. Number') }}</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
                                     name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
-                                <label for="title" class="required">{{ __('Title') }}</label>
+                                <label for="title" class="required">{{ __('Judul') }}</label>
                             </div>
                         </div>
                     </div>
@@ -98,14 +118,14 @@
                                 @empty
                                 @endforelse
                             </select>
-                            <label for="category_id" class="required">{{ __('Category') }}</label>
+                            <label for="category_id" class="required">{{ __('Kategori') }}</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Group') }}"
+                                <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Grup') }}"
                                     name="group" aria-label="Group" required value="{{ old('group',$order->group??'') }}" data-required="Group">
-                                <label for="group" class="required">{{ __('Group') }}</label>
+                                <label for="group" class="required">{{ __('Kelompok') }}</label>
                             </div>
                         </div>
                     </div>
@@ -114,7 +134,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
                                     name="customer" aria-label="Customer" required value="{{ old('customer',$order->customer??'') }}" data-required="Customer">
-                                <label for="customer" class="required">{{ __('Customer') }}</label>
+                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
                             </div>
                         </div>
                         <div class="col">
@@ -129,7 +149,7 @@
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" data-required="Date" placeholder="YYYY-MM-DD to YYYY-MM-DD" id="date_range" name="date_range"/>
-                                <label for="customer" class="required">{{ __('Date') }}</label>
+                                <label for="customer" class="required">{{ __('Tanggal') }}</label>
                             </div>
                         </div>
                         <div class="col">
@@ -146,7 +166,7 @@
                                 @endforelse
                             </select>
 
-                            <label for="division" class="required">{{ __('Division') }}</label>
+                            <label for="division" class="required">{{ __('Split ke-') }}</label>
                         </div>
                         </div>                        
                     </div>
@@ -159,7 +179,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
                                     name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
-                                <label for="price" class="required">{{ __('Price') }}</label>
+                                <label for="price" class="required">{{ __('Nilai Anggaran') }}</label>
                             </div>
                         </div>
                             {{-- @forelse($sum_array as $key => $sum)

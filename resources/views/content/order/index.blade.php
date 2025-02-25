@@ -7,17 +7,17 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12">
-                <table class="table table-bordered datatables-orders">
-                        <thead>
+                <table class="table datatables-orders">
+                        <thead class="table-primary">
                             <tr>
-                                <th style="display: none;"></th>
-                                <th>Job Number</th>
-                                <th>Status</th>
-                                <th>Customer</th>
-                                <th>Nilai Kontrak</th>
-                                <th>Biaya Operasional</th>
-                                <th>Profit</th>
-                                <th>Actions</th>
+                                <th class="text-center" style="display: none;"></th>
+                                <th class="text-start">Job Number</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-start">Customer</th>
+                                <th class="text-end">Nilai Anggaran</th>
+                                <th class="text-end">Biaya Operasional</th>
+                                <th class="text-end">Profit</th>
+                                <th class="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>

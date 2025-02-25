@@ -24,7 +24,7 @@ class CategoryController extends Controller
                 $editUrl = url('category/' . $row->id . '/edit');
             
                 return '
-                    <a href="'.$editUrl.'" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></a>
                 ';
             })
             ->rawColumns(['category_code', 'category_name','actions'])

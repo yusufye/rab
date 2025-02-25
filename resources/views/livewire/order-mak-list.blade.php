@@ -1,7 +1,8 @@
 <div>
     <div class="d-flex justify-content-between mb-3">
         <button id="toggleAllBtn" class="btn btn-secondary" onclick="toggleAll()">
-            <span id="toggleAllIcon" class="mdi mdi-unfold-more-horizontal"></span> Expand All
+            {{-- <span id="toggleAllIcon" class="mdi mdi-unfold-more-horizontal" title="Expand All"></span> --}}
+            <span id="toggleAllIcon" class="mdi mdi-unfold-less-horizontal" title="Collapse All"></span>
         </button>
         <button type="button" class="btn btn-primary" id="add-mak" title="Add Mak"><span class="mdi mdi-view-grid-plus"></span></button>
     </div>
@@ -35,7 +36,7 @@
                     <button data-order-mak-id="{{$orderMak->id}}"  class="btn btn-sm btn-danger delete-mak" title="Delete Mak"><span class="mdi mdi-table-column-remove"></span></button>
                 </div>
             </div>
-            <div class="card-body card-body-detail table-responsive" id="accordion-{{ $orderMak->id }}" style="display: none;">
+            <div class="card-body card-body-detail table-responsive" id="accordion-{{ $orderMak->id }}" >
                 @foreach ($orderMak->orderTitle as $title)
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <h6 class="m-0 badge rounded-pill bg-label-dark text-center">{{ strtoupper($title->title ?? 'Tanpa Judul') }}</h6>
@@ -129,7 +130,7 @@
 </div>
 
 <script>
-    let isAllExpanded = false;
+    let isAllExpanded = true;
 
     function toggleAccordion(id) {
         let accordion = document.getElementById('accordion-' + id);
@@ -158,14 +159,14 @@
                 el.classList.remove('mdi-chevron-up');
                 el.classList.add('mdi-chevron-down');
             });
-            button.innerHTML = '<span id="toggleAllIcon" class="mdi mdi-unfold-more-horizontal"></span> Expand All';
+            button.innerHTML = '<span id="toggleAllIcon" class="mdi mdi-unfold-more-horizontal" title="Expand All"></span>';
         } else {
             allAccordions.forEach(el => el.style.display = 'block');
             allIcons.forEach(el => {
                 el.classList.remove('mdi-chevron-down');
                 el.classList.add('mdi-chevron-up');
             });
-            button.innerHTML = '<span id="toggleAllIcon" class="mdi mdi-unfold-less-horizontal"></span> Collapse All';
+            button.innerHTML = '<span id="toggleAllIcon" class="mdi mdi-unfold-less-horizontal" title="Collapse All"></span>';
         }
 
         isAllExpanded = !isAllExpanded;

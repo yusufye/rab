@@ -27,8 +27,20 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-tile mb-0">{{ __('Add Order') }}</h5>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{url('/order')}}">{{ __('Order') }}</a>
+                            </li>
+                            <li class="breadcrumb-item active">{{ __('Add Order') }}
+                                
+                            </li>
+                        </ol>
+                    </nav>
+                    <div class="d-flex align-items-center ms-auto">
+                        <button type="button" class="btn btn-primary" id="button-add" title="Simpan Draft"><span class="mdi mdi-content-save"></span></button>
+                    </div>
                     </div>
                 <div class="card-body">
                     <div class="row">
@@ -36,7 +48,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('Job Number') }}"
                                     name="job_number" aria-label="Name" required value="{{ old('job_number') }}" data-required="Job Number">
-                                <label for="job_number" class="required">{{ __('Nomor Job') }}</label>
+                                <label for="job_number" class="required">{{ __('No. Job') }}</label>
                             </div>
                         </div>
                         <div class="col">
@@ -91,14 +103,14 @@
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" data-required="Date" placeholder="YYYY-MM-DD to YYYY-MM-DD" id="date_range" name="date_range" />
-                                <label for="customer" class="required">{{ __('Date') }}</label>
+                                <label for="customer" class="required">{{ __('Tanggal') }}</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
                                     name="price" aria-label="Price" required value="{{ old('price') }}">
-                                <label for="price" class="required">{{ __('Nilai Kontrak') }}</label>
+                                <label for="price" class="required">{{ __('Nilai Anggaran') }}</label>
                             </div>
                         </div>
                     </div>
@@ -113,14 +125,12 @@
                                 @empty
                                 @endforelse
                             </select>
-                            <label for="division" class="required">{{ __('Split to') }}</label>
+                            <label for="division" class="required">{{ __('Split Ke-') }}</label>
                         </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer text-end">
-                    <button type="button" class="btn btn-primary" id="button-add">Submit</button>
-                </div>
+                
             </div>
         </div>
     </div>
