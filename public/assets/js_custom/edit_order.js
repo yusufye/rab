@@ -5,6 +5,23 @@ $(document).ready(function () {
     }
   });
 
+  disableRemoveButton(); 
+  loadDivisions();
+
+  // Cegah penghapusan opsi yang disabled dengan Backspace
+  $('#division').on('select2:unselecting', function(e) {
+      var selectedOption = $(e.params.args.data.element);
+      
+      if (selectedOption.is('[data-disabled-custom]')) {
+          e.preventDefault(); 
+      }
+  });
+
+  // Jalankan ulang fungsi setiap kali ada perubahan
+  $('#division').on('select2:select select2:unselect', function() {
+      setTimeout(disableRemoveButton, 1);
+  });
+
   if (statusOrder !== 'DRAFT') {
     $('button')
       .prop('disabled', true)
@@ -207,6 +224,7 @@ $(document).ready(function () {
 
               window.Livewire.dispatch('refreshOrderMak');
               window.Livewire.dispatch('refreshOrderSummary');
+              loadDivisions();
             });
           } else {
             Swal.fire({
@@ -561,6 +579,7 @@ $(document).ready(function () {
 
                 window.Livewire.dispatch('refreshOrderMak');
                 window.Livewire.dispatch('refreshOrderSummary');
+                loadDivisions();
               });
             } else {
               Swal.fire({
@@ -786,3 +805,54 @@ function updateTotalPrice() {
 function isValidNumber(input) {
   return /^[0-9]+$/.test(input);
 }
+
+function disableRemoveButton() {
+  $('.select2-selection__choice').each(function() {
+      var $choice = $(this);
+      var choiceTitle = $choice.attr('title').trim();
+
+      $('#division option[data-disabled-custom]').each(function() {
+          var disabledOptionText = $(this).text().trim();
+
+          if (choiceTitle === disabledOptionText) {
+              $choice.attr('data-disabled-custom', 'true');
+              $choice.find('.select2-selection__choice__remove').remove();
+          }
+      });
+  });
+}
+
+function loadDivisions() {
+  $.ajax({
+      url: "/order/"+orderId+"/get_divisions",
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+          let divisions = response.divisions;
+          let split_to_mak = response.split_to_mak;
+          let selected_divisions = response.selected_divisions.map(String); // Pastikan jadi string
+
+          let selectHTML = `<option value="">Select Division</option>`;
+
+          divisions.forEach(div => {
+              let isDisabled = split_to_mak.includes(div.id) ? 'data-disabled-custom="true"' : '';
+              let isSelected = selected_divisions.includes(div.id.toString()) ? 'selected' : '';
+
+              selectHTML += `<option value="${div.id}" ${isSelected} ${isDisabled}>${div.division_name}</option>`;
+          });
+
+          // Update select dengan opsi terbaru
+          $('#division').html(selectHTML);
+
+          // Set kembali nilai yang sudah terpilih
+          $('#division').val(selected_divisions).trigger('change');
+
+          // Inisialisasi ulang Select2
+          $('#division').select2();
+
+          // Pastikan opsi yang dikunci tidak bisa dihapus
+          disableRemoveButton();
+      }
+  });
+}
+

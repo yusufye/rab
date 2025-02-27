@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\DivisionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/order/get_cheklist/{order_item_id}', [OrderController::class, 'getChecklist']);
     Route::post('/order/save_checklist/{order_item_id}', [OrderController::class, 'saveChecklist']);
     Route::get('/order/{order}/download/{type?}', [OrderController::class, 'download'])->name('orderDownload');
+    Route::get('/order/{order}/get_divisions', [OrderController::class, 'getDivisions']);
+
 
 
     //master mak

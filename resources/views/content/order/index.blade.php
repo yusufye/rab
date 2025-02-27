@@ -2,6 +2,15 @@
 
 @section('title', 'Order')
 
+<style>
+    .btn-disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: default;
+}
+
+</style>
+
 @section('content')
 <div class="card">
     <div class="card-body">

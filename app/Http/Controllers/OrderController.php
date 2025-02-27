@@ -116,10 +116,16 @@ class OrderController extends Controller
                 $printUrl  = url('order/' . $row->id . '/download');
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
+                    $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
+                    $disabled_button_revise = in_array($row->status, $list_disabled_btn_revise) 
+                    ? 'btn-disabled' 
+                    : '';
+
+
                     return '
                         <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
                         <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
-                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-dark" title="Revise"><span class="mdi mdi-autorenew"></span></a>
+                        <a href="'.$reviseUrl.'"class="btn btn-sm btn-dark ' . $disabled_button_revise . '" title="Revise"><span class="mdi mdi-autorenew"></span></a>
                         <a href="'.$printUrl.'" class="btn btn-sm btn-success" title="Download"><span class="mdi mdi-file-download"></span></a>
                     ';                    
                 }else{
@@ -748,5 +754,21 @@ class OrderController extends Controller
         return $pdf->download("order-{$order->id}.pdf");
 
         // return view('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
+    }
+
+    public function getDivisions(Order $order){
+        $divisions = Division::all();
+
+        $split_to_mak = OrderMak::where('order_id',$order->id)->pluck('split_to')->toArray(); 
+        $selected_divisions  = isset($order->split_to) && is_array($order->split_to)
+        ? Division::whereIn('id', $order->split_to)->pluck('id')->toArray()
+        : [];
+    
+        return response()->json([
+            'divisions' => $divisions,
+            'split_to_mak' => $split_to_mak,
+            'selected_divisions' => $selected_divisions
+        ]);
+    
     }
 }
