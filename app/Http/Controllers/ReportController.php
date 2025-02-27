@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Division;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -18,9 +21,8 @@ class ReportController extends Controller
     }
 
     public function show(Request $request){
-        // $orders=Order::with(['orderMak.orderTitle.orderItem'])->whereIn('job_number',$request->order)->get();
         $orders = Order::with([
-            'orderMak.mak', 
+            'orderMak.mak',
             'orderMak.division', // Ambil data divisi
             'orderMak.orderTitle.orderItem'
         ])
@@ -29,11 +31,22 @@ class ReportController extends Controller
         ->orderBy('rev')
         ->get()
         ->groupBy('job_number');
-    
-    $revisions = $orders->flatten()->pluck('rev')->unique()->sort()->values();
+        //    dd($orders);  
+        $revisions = $orders->flatten()->pluck('rev')->unique()->sort()->values();
 
-        // dd($order_header);
-        return view('content.report.order_show',compact('orders','revisions'));
-
+        if($request->action == 'view'){
+            return view('content.report.order_show',compact('orders','revisions'));
+        }
+       
+       if($request->action == 'download'){
+            $safeJobNumber=[];
+            foreach ($request->order as $job_number) {
+                $safeJobNumber[]=str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $job_number);
+            }
+            $send_file_name=join('-',$safeJobNumber);
+            $fileName       = $send_file_name;
+            
+            return Excel::download(new OrdersExport($orders, $revisions), "orders-{$fileName}.xlsx");
+       }
     }
 }
