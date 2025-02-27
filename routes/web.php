@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\language\LanguageController;
 use App\Http\Controllers\authentications\RegisterBasic;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,15 +37,15 @@ Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Main Page Route
-    Route::get('/', [HomePage::class, 'index'])->name('pages-home');
+    Route::get('/', [HomePage::class, 'index'])->name('pages-home')->middleware('menu.permission:read_home');
     Route::get('/page-2', [Page2::class, 'index'])->name('pages-page-2');
 
     // order
-    Route::get('/order', [OrderController::class, 'index'])->name('order');
-    Route::get('/order/create', [OrderController::class, 'create'])->name('order');
+    Route::get('/order', [OrderController::class, 'index'])->name('order')->middleware('menu.permission:read_order');
+    Route::get('/order/create', [OrderController::class, 'create'])->name('order')->middleware('menu.permission:create_order');
     Route::post('/order/submit', [OrderController::class, 'store']);
-    Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order');
-    Route::get('/order/{order}', [OrderController::class, 'view'])->name('order');
+    Route::get('/order/{order}/edit', [OrderController::class, 'edit'])->name('order')->middleware('menu.permission:update_order');
+    Route::get('/order/{order}', [OrderController::class, 'view'])->name('order')->middleware('menu.permission:read_order');
     Route::post('/order/{order}/update', [OrderController::class, 'update']);
     Route::post('/order/mak/submit', [OrderController::class, 'storeMak']);
     Route::post('/order/mak/delete', [OrderController::class, 'deleteMak']);
@@ -60,22 +61,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     //master mak
-    Route::get('/mak', [MakController::class, 'index'])->name('mak');
-    Route::get('/mak/create', [MakController::class, 'create'])->name('mak');
-    Route::post('/mak/submit', [MakController::class, 'store']);
-    Route::get('/mak/{mak}/edit', [MakController::class, 'edit'])->name('mak');
+    Route::get('/mak', [MakController::class, 'index'])->name('mak')->middleware('menu.permission:read_mak');
+    Route::get('/mak/create', [MakController::class, 'create'])->name('mak')->middleware('menu.permission:create_mak');
+    Route::post('/mak/submit', [MakController::class, 'store'])->name('mak')->middleware('menu.permission:create_mak');
+    Route::get('/mak/{mak}/edit', [MakController::class, 'edit'])->name('mak')->middleware('menu.permission:update_mak');
     Route::post('/mak/{mak}/update', [MakController::class, 'update']);
 
     //master category
-    Route::get('/category', [CategoryController::class, 'index'])->name('category');
-    Route::get('/category/create', [CategoryController::class, 'create'])->name('category');
+    Route::get('/category', [CategoryController::class, 'index'])->name('category')->middleware('menu.permission:read_category');
+    Route::get('/category/create', [CategoryController::class, 'create'])->name('category')->middleware('menu.permission:create_category');
     Route::post('/category/submit', [CategoryController::class, 'store']);
-    Route::get('/category/{category}/edit', [CategoryController::class, 'edit'])->name('category');
+    Route::get('/category/{category}/edit', [CategoryController::class, 'edit'])->name('category')->middleware('menu.permission:update_category');
     Route::post('/category/{category}/update', [CategoryController::class, 'update']);
 
     //report
-    Route::get('/report', [ReportController::class, 'index'])->name('report');
+    Route::get('/report', [ReportController::class, 'index'])->name('report')->name('category')->middleware('menu.permission:read_report');
     Route::post('/report/show', [ReportController::class, 'show']);
+
+    // permission
+    Route::get('/roles-and-permission', [UserController::class, 'indexRole'])->name('role-and-permission')->middleware('menu.permission:read_role_&_permission');
+    Route::get('/ajax_list_users', [UserController::class, 'ajax_list_users'])->name('ajax_list_users');
+    Route::post('/add/role', [UserController::class, 'add_roles'])->middleware('menu.permission:create_role_&_permission');
+    Route::post('/edit/role', [UserController::class, 'edit_roles'])->middleware('menu.permission:update_role_&_permission');
 
 });
 
