@@ -22,7 +22,9 @@ class ReportController extends Controller
 
     public function show(Request $request){
         $orders = Order::with([
-            'orderMak.mak',
+            'orderMak' => function ($query) {
+                $query->orderBy('is_split', 'asc')->orderBy('id', 'asc');
+            },
             'orderMak.division', // Ambil data divisi
             'orderMak.orderTitle.orderItem'
         ])
