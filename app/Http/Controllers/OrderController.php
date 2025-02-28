@@ -156,7 +156,15 @@ class OrderController extends Controller
        
         $isAdmin = $user->hasRole('admin');
         $isSuperAdmin = $user->hasRole('Super_admin');
-        return view('content.order.index',compact('isAdmin','isSuperAdmin'));
+
+        $status_selected_by_role = match (true) {
+            $user->hasRole('head_reviewer')  => 'TO REVIEW',
+            $user->hasRole('approval_satu')  => 'REVIEWED',
+            $user->hasRole('approval_dua') || $user->hasRole('approval_tiga') || $user->hasRole('checker') => 'APPROVED',
+            default => '',
+        };         
+
+        return view('content.order.index',compact('isAdmin','isSuperAdmin','status_selected_by_role'));
         
     }
 
@@ -659,14 +667,13 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request)
     {       
-        
         try{
             DB::beginTransaction();
 
             $order = Order::find($request->order_id);
 
             if(!$order){
-                return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ],404);     
+                return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ]);     
             }
 
             $message = null;
@@ -688,6 +695,10 @@ class OrderController extends Controller
 
             if($request->status == 'REVIEWED'){
 
+                    if ($order->status != 'TO REVIEW') {
+                        return response()->json(['success' => false, 'msg' => 'Status Order harus TO REVIEW']);
+                    }
+
                     $data_update= [
                         'status' => $request->status,
                         'reviewed_notes' => $request->reviewed_notes,
@@ -700,24 +711,37 @@ class OrderController extends Controller
 
             if($request->status == 'APPROVED'){
 
-               
+                $user = auth()->user();
+
+                if ($user->hasRole('approval_satu') && $order->status != 'REVIEWED') {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus REVIEWED']);
+                }
+
+                if ($user->hasRole('approval_dua') && ($order->status != 'APPROVED' || $order->approval_step != 1)) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 1']);
+                }
+
+                if ($user->hasRole('approval_tiga') && ($order->status != 'APPROVED' || $order->approval_step != 2)) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 2']);
+                }               
 
                 $approved_by = match(true) {
-                    auth()->user()->hasRole('approval_satu') => 
+
+                    $user->hasRole('approval_satu') => 
                     [
-                        'approved_1_by' => auth()->user()->id,
+                        'approved_1_by' => $user->id,
                         'approved_date_1' => now(),
                         'approval_step' => 1,
                     ],
-                    auth()->user()->hasRole('approval_dua') => 
+                    $user->hasRole('approval_dua') => 
                     [
-                        'approved_2_by' => auth()->user()->id,
+                        'approved_2_by' => $user->id,
                         'approved_date_2' => now(),
                         'approval_step' => 2,
                     ],
-                    auth()->user()->hasRole('approval_tiga') => 
+                    $user->hasRole('approval_tiga') => 
                     [
-                        'approved_3_by' => auth()->user()->id,
+                        'approved_3_by' => $user->id,
                         'approved_date_3' => now(),
                         'approval_step' => 3,
 

@@ -214,11 +214,13 @@ $(document).ready(function() {
                     $('#modal-checklist-item').modal('show');
                     $('#order_item_id').val(oderItemId);
                     $('#repeater-checklist').html('');
-                    response.data.forEach(item => {
-                        addRowChecklist(item.amount, item.checklist_number);
-                    });
-
-                   
+                    if (response.data.length > 0) {
+                        response.data.forEach(item => {
+                            addRowChecklist(item.amount, item.checklist_number);
+                        });
+                    } else {
+                        addRowChecklist(); 
+                    }               
                 }
             },
             error: function (xhr) {
@@ -233,7 +235,6 @@ $(document).ready(function() {
         var isValid = true;
         var checklistData = [];
         var orderItemId = $('#order_item_id').val();
-    
         // Loop semua input checklist yang ada
         $('#repeater-checklist .row').each(function () {
             var checklist_number = $(this).find('[name="checklist_number[]"]').val().trim();
@@ -302,7 +303,6 @@ $(document).ready(function() {
                             confirmButton: 'btn btn-success'
                             }
                         }).then(() => {        
-                            console.log('ini keupdate')
                             window.Livewire.dispatch('refreshOrderViewMak');
                             window.Livewire.dispatch('refreshOrderSummary');
                             window.addEventListener('forceRerender', () => {

@@ -18,16 +18,16 @@
                 <div class="col-4">
                     <div class="form-floating form-floating-outline">
                     <select id="status" class="select2 form-select" multiple name="status[]"
-                        data-placeholder="{{ __('Select Status') }}" required>
-                        <option value="">{{ __('Select Status') }}</option>
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="TO REVIEW">TO REVIEW</option>
-                        <option value="REVIEWED">REVIEWED</option>
-                        <option value="APPROVED">APPROVED</option>
-                        <option value="CLOSED">CLOSED</option>
-                        <option value="REVISED">REVISED</option>
+    data-placeholder="{{ __('Select Status') }}" required>
+    <option value="">{{ __('Select Status') }}</option>
+    <option value="DRAFT" @if($status_selected_by_role === 'DRAFT') selected @endif>DRAFT</option>
+    <option value="TO REVIEW" @if($status_selected_by_role === 'TO REVIEW') selected @endif>TO REVIEW</option>
+    <option value="REVIEWED" @if($status_selected_by_role === 'REVIEWED') selected @endif>REVIEWED</option>
+    <option value="APPROVED" @if($status_selected_by_role === 'APPROVED') selected @endif>APPROVED</option>
+    <option value="CLOSED" @if($status_selected_by_role === 'CLOSED') selected @endif>CLOSED</option>
+    <option value="REVISED" @if($status_selected_by_role === 'REVISED') selected @endif>REVISED</option>
+</select>
 
-                    </select>
                     <label for="status">{{ __('Status') }}</label>
                     </div>
                 </div>
