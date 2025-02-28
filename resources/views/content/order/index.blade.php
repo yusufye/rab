@@ -12,6 +12,28 @@
 </style>
 
 @section('content')
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+                <div class="col-4">
+                    <div class="form-floating form-floating-outline">
+                    <select id="status" class="select2 form-select" multiple name="status[]"
+                        data-placeholder="{{ __('Select Status') }}" required>
+                        <option value="">{{ __('Select Status') }}</option>
+                        <option value="DRAFT">DRAFT</option>
+                        <option value="TO REVIEW">TO REVIEW</option>
+                        <option value="REVIEWED">REVIEWED</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="CLOSED">CLOSED</option>
+                        <option value="REVISED">REVISED</option>
+
+                    </select>
+                    <label for="status">{{ __('Status') }}</label>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <div class="row">

@@ -291,6 +291,7 @@ $(document).ready(function() {
                 },
                 success: function (response) {
                     if (response.success) {
+
                         $('#modal-checklist-item').modal('hide');                        
 
                         Swal.fire({

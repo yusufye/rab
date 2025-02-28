@@ -26,12 +26,12 @@ class OrderController extends Controller
         
         $user = auth()->user();
 
-        if($request->ajax()){            
-
+        if($request->ajax()){                  
+            
             $orders = Order::query();
 
             if (auth()->user()->hasAnyRole(['reviewer','head_reviewer'])) {
-                $orders->where('status','TO REVIEW');                     
+                $orders->where('status','TO REVIEW');                       
             }
 
             if ($user->hasRole('approval_satu')) {
@@ -51,7 +51,16 @@ class OrderController extends Controller
             if ($user->hasRole('checker')) {
                 $orders->where('status','APPROVED');                     
                 $orders->where('approval_step',3);                     
+            }     
+
+            if ($user->hasRole('admin')) {                                 
+                $orders->where('created_by',$user->id);             
             }         
+            
+            if ($request->status) {                                 
+                $orders->whereIn('status',$request->status);             
+            }         
+               
 
             $orders->get();
 
@@ -201,6 +210,8 @@ class OrderController extends Controller
                 'split_price' =>  $splitPrice,
                 'split_to' =>  $request->division,
                 'profit' =>   $price - $splitPrice,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
              ]);
         
             DB::commit();
@@ -311,6 +322,7 @@ class OrderController extends Controller
                 'split_price' =>  $splitPrice,
                 'split_to' =>  $request->division,
                 'profit' =>   $price - $splitPrice,
+                'updated_by' => Auth::id(),
              ]);
         
             DB::commit();
@@ -794,7 +806,7 @@ class OrderController extends Controller
             $orderItem = OrderItem::find($order_item_id);
 
             if (!$orderItem) {
-                return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan'], 404);
+                return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan']);
             }
 
             // Ambil semua checklist terkait order item ini
