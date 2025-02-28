@@ -231,6 +231,9 @@
     </div>
 </form>
 
+@livewire('order-percentage-calc', ['orderId' => $order->id])
+
+<br>
 {{-- Livewire Component --}}
 @livewire('order-mak-list', ['orderId' => $order->id])
 

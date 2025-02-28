@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                            <div class="col">
+                            {{-- <div class="col">
                                 <div class="form-floating form-floating-outline mb-4">
                                     <select id="category_id" class="select2 form-select" name="division"
                                         data-placeholder="{{ __('Select Division') }}">
@@ -25,7 +25,7 @@
                                     </select>
                                     <label for="category_id" class="required">{{ __('Division') }}</label>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col">
                                 <div class="form-floating form-floating-outline mb-4">
@@ -44,7 +44,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">View</button>
+                    <button type="submit" name="action" value="view" class="btn btn-primary">View</button>
+                    <button type="submit" name="action" value="download" class="btn btn-primary">Doenload</button>
                 </div>
             </div>
         </div>

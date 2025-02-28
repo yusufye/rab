@@ -34,6 +34,13 @@
       "name": "Report",
       "slug": "report",
       "permission_name": "report"
+    },
+    {
+      "url": "/roles-and-permission",
+      "name": "Role & Permission",
+      "icon": "menu-icon tf-icons mdi mdi-security",
+      "slug": "role-and-permission",
+      "permission_name":"Role & Permission"
     }
   ]
 }

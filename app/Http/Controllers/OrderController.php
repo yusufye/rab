@@ -809,6 +809,15 @@ class OrderController extends Controller
                 return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan']);
             }
 
+            if (!($orderItem->orderTitle->orderMak->order?->status == 'APPROVED' && 
+            $orderItem->orderTitle->orderMak->order?->approval_step == 3)) {
+                
+                return response()->json([
+                    'success' => false, 
+                    'msg' => 'Order belum disetujui atau belum memenuhi syarat untuk checklist'
+                ]);
+            }
+
             // Ambil semua checklist terkait order item ini
             $orderChecklist = OrderChecklist::where('order_item_id', $order_item_id)->get();
 

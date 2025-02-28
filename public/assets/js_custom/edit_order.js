@@ -101,6 +101,7 @@ $(document).ready(function () {
               }).then(() => {
                 window.location.reload();
 
+                // window.Livewire.dispatch('refreshPercentage');
                 // window.Livewire.dispatch('refreshOrderMak');
                 // window.Livewire.dispatch('refreshOrderSummary');
               });
@@ -222,6 +223,7 @@ $(document).ready(function () {
             }).then(() => {
               // location.reload();
 
+              window.Livewire.dispatch('refreshPercentage');
               window.Livewire.dispatch('refreshOrderMak');
               window.Livewire.dispatch('refreshOrderSummary');
               loadDivisions();
@@ -314,6 +316,7 @@ $(document).ready(function () {
             }).then(() => {
               // location.reload();
 
+              window.Livewire.dispatch('refreshPercentage');
               window.Livewire.dispatch('refreshOrderMak');
               window.Livewire.dispatch('refreshOrderSummary');
             });
@@ -517,6 +520,7 @@ $(document).ready(function () {
             }).then(() => {
               // location.reload();
 
+              window.Livewire.dispatch('refreshPercentage');
               window.Livewire.dispatch('refreshOrderMak');
               window.Livewire.dispatch('refreshOrderSummary');
             });
@@ -577,6 +581,7 @@ $(document).ready(function () {
               }).then(() => {
                 // location.reload();
 
+                window.Livewire.dispatch('refreshPercentage');
                 window.Livewire.dispatch('refreshOrderMak');
                 window.Livewire.dispatch('refreshOrderSummary');
                 loadDivisions();
@@ -638,6 +643,7 @@ $(document).ready(function () {
               }).then(() => {
                 // location.reload();
 
+                window.Livewire.dispatch('refreshPercentage');
                 window.Livewire.dispatch('refreshOrderMak');
                 window.Livewire.dispatch('refreshOrderSummary');
               });
@@ -698,6 +704,7 @@ $(document).ready(function () {
               }).then(() => {
                 // location.reload();
 
+                window.Livewire.dispatch('refreshPercentage');
                 window.Livewire.dispatch('refreshOrderMak');
                 window.Livewire.dispatch('refreshOrderSummary');
               });
