@@ -26,12 +26,12 @@ class OrderController extends Controller
         
         $user = auth()->user();
 
-        if($request->ajax()){            
-
+        if($request->ajax()){                  
+            
             $orders = Order::query();
 
             if (auth()->user()->hasAnyRole(['reviewer','head_reviewer'])) {
-                $orders->where('status','TO REVIEW');                     
+                $orders->where('status','TO REVIEW');                       
             }
 
             if ($user->hasRole('approval_satu')) {
@@ -51,7 +51,16 @@ class OrderController extends Controller
             if ($user->hasRole('checker')) {
                 $orders->where('status','APPROVED');                     
                 $orders->where('approval_step',3);                     
+            }     
+
+            if ($user->hasRole('admin')) {                                 
+                $orders->where('created_by',$user->id);             
             }         
+            
+            if ($request->status) {                                 
+                $orders->whereIn('status',$request->status);             
+            }         
+               
 
             $orders->get();
 
@@ -117,10 +126,16 @@ class OrderController extends Controller
                 $printUrl  = url('order/' . $row->id . '/download');
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
+                    $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
+                    $disabled_button_revise = in_array($row->status, $list_disabled_btn_revise) 
+                    ? 'btn-disabled' 
+                    : '';
+
+
                     return '
                         <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
                         <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
-                        <a href="'.$reviseUrl.'" class="btn btn-sm btn-dark" title="Revise"><span class="mdi mdi-autorenew"></span></a>
+                        <a href="'.$reviseUrl.'"class="btn btn-sm btn-dark ' . $disabled_button_revise . '" title="Revise"><span class="mdi mdi-autorenew"></span></a>
                         <a href="'.$printUrl.'" class="btn btn-sm btn-success" title="Download"><span class="mdi mdi-file-download"></span></a>
                     ';                    
                 }else{
@@ -141,7 +156,15 @@ class OrderController extends Controller
        
         $isAdmin = $user->hasRole('admin');
         $isSuperAdmin = $user->hasRole('Super_admin');
-        return view('content.order.index',compact('isAdmin','isSuperAdmin'));
+
+        $status_selected_by_role = match (true) {
+            $user->hasRole('head_reviewer')  => 'TO REVIEW',
+            $user->hasRole('approval_satu')  => 'REVIEWED',
+            $user->hasRole('approval_dua') || $user->hasRole('approval_tiga') || $user->hasRole('checker') => 'APPROVED',
+            default => '',
+        };         
+
+        return view('content.order.index',compact('isAdmin','isSuperAdmin','status_selected_by_role'));
         
     }
 
@@ -195,6 +218,8 @@ class OrderController extends Controller
                 'split_price' =>  $splitPrice,
                 'split_to' =>  $request->division,
                 'profit' =>   $price - $splitPrice,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
              ]);
         
             DB::commit();
@@ -305,6 +330,7 @@ class OrderController extends Controller
                 'split_price' =>  $splitPrice,
                 'split_to' =>  $request->division,
                 'profit' =>   $price - $splitPrice,
+                'updated_by' => Auth::id(),
              ]);
         
             DB::commit();
@@ -641,14 +667,13 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request)
     {       
-        
         try{
             DB::beginTransaction();
 
             $order = Order::find($request->order_id);
 
             if(!$order){
-                return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ],404);     
+                return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ]);     
             }
 
             $message = null;
@@ -670,6 +695,10 @@ class OrderController extends Controller
 
             if($request->status == 'REVIEWED'){
 
+                    if ($order->status != 'TO REVIEW') {
+                        return response()->json(['success' => false, 'msg' => 'Status Order harus TO REVIEW']);
+                    }
+
                     $data_update= [
                         'status' => $request->status,
                         'reviewed_notes' => $request->reviewed_notes,
@@ -682,24 +711,37 @@ class OrderController extends Controller
 
             if($request->status == 'APPROVED'){
 
-               
+                $user = auth()->user();
+
+                if ($user->hasRole('approval_satu') && $order->status != 'REVIEWED') {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus REVIEWED']);
+                }
+
+                if ($user->hasRole('approval_dua') && ($order->status != 'APPROVED' || $order->approval_step != 1)) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 1']);
+                }
+
+                if ($user->hasRole('approval_tiga') && ($order->status != 'APPROVED' || $order->approval_step != 2)) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 2']);
+                }               
 
                 $approved_by = match(true) {
-                    auth()->user()->hasRole('approval_satu') => 
+
+                    $user->hasRole('approval_satu') => 
                     [
-                        'approved_1_by' => auth()->user()->id,
+                        'approved_1_by' => $user->id,
                         'approved_date_1' => now(),
                         'approval_step' => 1,
                     ],
-                    auth()->user()->hasRole('approval_dua') => 
+                    $user->hasRole('approval_dua') => 
                     [
-                        'approved_2_by' => auth()->user()->id,
+                        'approved_2_by' => $user->id,
                         'approved_date_2' => now(),
                         'approval_step' => 2,
                     ],
-                    auth()->user()->hasRole('approval_tiga') => 
+                    $user->hasRole('approval_tiga') => 
                     [
-                        'approved_3_by' => auth()->user()->id,
+                        'approved_3_by' => $user->id,
                         'approved_date_3' => now(),
                         'approval_step' => 3,
 
@@ -751,6 +793,22 @@ class OrderController extends Controller
         // return view('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
     }
 
+    public function getDivisions(Order $order){
+        $divisions = Division::all();
+
+        $split_to_mak = OrderMak::where('order_id',$order->id)->pluck('split_to')->toArray(); 
+        $selected_divisions  = isset($order->split_to) && is_array($order->split_to)
+        ? Division::whereIn('id', $order->split_to)->pluck('id')->toArray()
+        : [];
+    
+        return response()->json([
+            'divisions' => $divisions,
+            'split_to_mak' => $split_to_mak,
+            'selected_divisions' => $selected_divisions
+        ]);
+
+    }
+    
     public function getChecklist($order_item_id)
     {               
         try{
@@ -772,7 +830,7 @@ class OrderController extends Controller
             $orderItem = OrderItem::find($order_item_id);
 
             if (!$orderItem) {
-                return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan'], 404);
+                return response()->json(['success' => false, 'msg' => 'Order item tidak ditemukan']);
             }
 
             if (!($orderItem->orderTitle->orderMak->order?->status == 'APPROVED' && 

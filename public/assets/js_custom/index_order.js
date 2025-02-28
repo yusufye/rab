@@ -1,12 +1,24 @@
 $(document).ready(function () {
+
+  // filter
+
+  $('#status').on('change',function(){
+      dt_order.ajax.reload();
+  });
+
+
+
   var addOrder = 'order/create';
 
-  $('.datatables-orders').DataTable({
+  var dt_order = $('.datatables-orders').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
       url: 'order',
-      type: 'GET'
+      type: 'GET',
+      data: function(d) { 
+        d.status = $('#status').val();  // Ambil nilai status terbaru
+    }
     },
     columns: [
       {
@@ -50,7 +62,7 @@ $(document).ready(function () {
         searchable: false,
         orderable: false,
         className: 'text-center'
-      }
+      },
     ],
     language: {
       sLengthMenu: '_MENU_',

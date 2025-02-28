@@ -152,21 +152,27 @@
                                 <label for="customer" class="required">{{ __('Tanggal') }}</label>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="form-floating form-floating-outline">
-                                                        <select id="division" class="select2 form-select" multiple name="division[]"
+                        @php
+                            $split_to_mak = $order->orderMak->pluck('split_to')->toArray();
+                        @endphp
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline">                            
+                            <select id="division" class="select2 form-select" multiple name="division[]"
                                 data-placeholder="{{ __('Select Division') }}" required>
                                 <option value="">{{ __('Select Division') }}</option>
+                                {{--
                                 @forelse($divisions as $div)
                                 <option value="{{ $div->id }}" 
-                                    {{ in_array($div->id, is_array($selected_divisions) ? $selected_divisions : []) ? 'selected' : '' }}>
+                                    {{ in_array($div->id, is_array($selected_divisions) ? $selected_divisions : []) ? 'selected' : '' }}
+                                    {{ in_array($div->id, $split_to_mak) ? 'data-disabled-custom="true"' : '' }}>
                                     {{ $div->division_name }}
                                 </option>
                                 @empty
                                 @endforelse
+                                --}}
                             </select>
-
                             <label for="division" class="required">{{ __('Split ke-') }}</label>
+                            
                         </div>
                         </div>                        
                     </div>

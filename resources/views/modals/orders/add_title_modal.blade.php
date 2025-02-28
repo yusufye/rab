@@ -25,7 +25,7 @@
                     
                 <div class="col">
                         <div class="form-floating form-floating-outline mb-4">
-                            <input type="text" id="order_title" name="order_title" maxlength="50" class="form-control">
+                            <textarea type="text" id="order_title" name="order_title" class="form-control"></textarea>
                         <label for="order_title" class="required">{{ __('Title') }}</label>
                     </div>
                 </div>
