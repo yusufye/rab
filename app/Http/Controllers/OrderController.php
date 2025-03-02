@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\QrCodeHelper;
+use App\Models\ApprovalLog;
 use App\Models\OrderChecklist;
 
 class OrderController extends Controller
@@ -678,6 +679,8 @@ class OrderController extends Controller
 
             $message = null;
             $data_update = null;
+            $type = null;
+            $notes = null;
 
             if($request->status == 'TO REVIEW'){     
                 $data_update= [
@@ -689,8 +692,21 @@ class OrderController extends Controller
             if($request->status == 'DRAFT'){
                 $data_update= [
                     'status' => $request->status,
+                    'approval_rejected_notes' => $request->approvalRejectedNotes,
+                    'approval_rejected_by' => auth()->user()->id,
+                    'approval_rejected_datetime' => now(),
+                    'approval_step' => 0,
+                    'approved_1_by' => null,
+                    'approved_date_1' => null,
+                    'approved_2_by' => null,
+                    'approved_date_2' => null,
+                    'approved_3_by' => null,
+                    'approved_date_3' => null,
+                    
                 ];                               
                 $message = 'Order berhasil di Reject';
+                $type = 'REJECTED';
+                $notes = $request->approvalRejectedNotes;
             }
 
             if($request->status == 'REVIEWED'){
@@ -704,9 +720,14 @@ class OrderController extends Controller
                         'reviewed_notes' => $request->reviewed_notes,
                         'reviewed_datetime' => now(),
                         'released_by' => auth()->user()->id,
+                        'approval_rejected_notes' => null,
+                        'approval_rejected_by' => null,
+                        'approval_rejected_datetime' => null,
                     ];                               
 
                 $message = 'Order berhasil di Release';
+                $type = 'APPROVED';
+                $notes = $request->reviewed_notes;
             }
 
             if($request->status == 'APPROVED'){
@@ -754,17 +775,30 @@ class OrderController extends Controller
                 ], $approved_by); 
 
                 $message = 'Order berhasil di Approved';
+
+                $type = 'APPROVED';
             }
 
 
             $order->update($data_update);  
+
+            if($type){
+                // insert to approval logs
+                ApprovalLog::create([
+                    'order_id' => $order->id,
+                    'type' => $type,
+                    'notes' => $notes,
+                    'log_by' => auth()->user()->id,
+                    'log_datetime' => now(),
+                ]);
+            }
 
             DB::commit();
             return response()->json(['success'=>true,'msg'=> $message,'data'=>$order],200);      
         } catch (Exception $e) {
             DB::rollBack();
             Log::info($e);
-            return response()->json(['success'=>false,'msg'=> 'Order Item gagal di simpan','data'=>[]],500);
+            return response()->json(['success'=>false,'msg'=> 'Order gagal di simpan','data'=>[]],500);
         }
 
     }
