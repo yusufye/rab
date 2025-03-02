@@ -30,24 +30,6 @@ class OrderController extends Controller
             
             $orders = Order::query();
 
-            if (auth()->user()->hasAnyRole(['reviewer','head_reviewer'])) {
-                $orders->where('status','TO REVIEW');                       
-            }
-
-            if ($user->hasRole('approval_satu')) {
-                $orders->where('status','REVIEWED');                    
-            }
-
-            if ($user->hasRole('approval_dua')) {
-                $orders->where('status','APPROVED');                     
-                $orders->where('approval_step',1);                     
-            }
-
-            if ($user->hasRole('approval_tiga')) {
-                $orders->where('status','APPROVED');                     
-                $orders->where('approval_step',2);                     
-            }     
-
             if ($user->hasRole('checker')) {
                 $orders->where('status','APPROVED');                     
                 $orders->where('approval_step',3);                     
@@ -670,7 +652,8 @@ class OrderController extends Controller
         try{
             DB::beginTransaction();
 
-            $order = Order::find($request->order_id);
+            $order = Order::find($request->order_id);           
+
 
             if(!$order){
                 return response()->json(['success'=>false,'msg'=> 'Order tidak tersedia' ]);     
@@ -679,6 +662,9 @@ class OrderController extends Controller
             $message = null;
             $data_update = null;
 
+            $user = auth()->user();
+
+            // admin submit
             if($request->status == 'TO REVIEW'){     
                 $data_update= [
                     'status' => $request->status,
@@ -686,13 +672,33 @@ class OrderController extends Controller
                 $message = 'Order berhasil di Submit';
             }
 
+            // reject head_reviewer and approver 1,2,3
             if($request->status == 'DRAFT'){
+
+                if ($user->hasRole('head_reviewer') && $order->status == 'DRAFT') {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus TO REVIEW']);
+                }
+
+                if ($user->hasRole('approval_satu') && $order->status != 'REVIEWED') {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus REVIEWED']);
+                }
+
+                if ($user->hasRole('approval_dua') && $order->status != 'APPROVED' || $order->approval_step != 1) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 1']);
+                }
+
+                if ($user->hasRole('approval_tiga') && ($order->status != 'APPROVED' || $order->approval_step != 2)) {
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus APPROVED 2']);
+                }        
+
                 $data_update= [
                     'status' => $request->status,
-                ];                               
+                ];      
+
                 $message = 'Order berhasil di Reject';
             }
 
+            // head_checker release
             if($request->status == 'REVIEWED'){
 
                     if ($order->status != 'TO REVIEW') {
@@ -703,15 +709,14 @@ class OrderController extends Controller
                         'status' => $request->status,
                         'reviewed_notes' => $request->reviewed_notes,
                         'reviewed_datetime' => now(),
-                        'released_by' => auth()->user()->id,
+                        'released_by' => $user->id,
                     ];                               
 
                 $message = 'Order berhasil di Release';
             }
 
+             // approve by approver
             if($request->status == 'APPROVED'){
-
-                $user = auth()->user();
 
                 if ($user->hasRole('approval_satu') && $order->status != 'REVIEWED') {
                     return response()->json(['success' => false, 'msg' => 'Status Order harus REVIEWED']);
