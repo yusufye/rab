@@ -11,62 +11,65 @@ $(document).ready(function() {
 
     //   button reject
     $("#button-reject").on("click", function () {
+        $('#modal-notes-rejected').modal('show');           
+    });
 
-            Swal.fire({
-                title: 'Are you sure you want to Reject?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Reject',
-                customClass: {
-                    confirmButton: 'btn btn-danger me-3',
-                    cancelButton: 'btn btn-label-secondary'
-                },
-                buttonsStyling: false
-            }).then((value) => {
-                if (value.isConfirmed) {
-                    
-                    var formData = {
-                        order_id: orderId,
-                        status: 'DRAFT',
-                    };
-        
-                    $.ajax({
-                        url: "/order/update_status/submit",
-                        type: "POST",
-                        data: formData,
-                        dataType: "json",
-                        success: function (response) {
-                            if (response.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response.msg,
-                                    customClass: {
-                                        confirmButton: 'btn btn-success'
-                                    }
-                                }).then(() => {
-                                    window.location.href = '/order'
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response.msg, 
-                                    customClass: {
-                                        confirmButton: 'btn btn-success'
-                                    }
-                                });
-                            }
-                        },
-                        error: function (xhr) {
-                            toastr.error('Something went wrong!', 'Error');
-                            console.error(xhr.responseText);
+    $('#btn-rejected-notes').on("click", function () {
+        Swal.fire({
+            title: 'Are you sure you want to Reject?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Reject',
+            customClass: {
+                confirmButton: 'btn btn-danger me-3',
+                cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+        }).then((value) => {
+            if (value.isConfirmed) {
+                
+                var formData = {
+                    order_id: orderId,
+                    status: 'DRAFT',
+                    approvalRejectedNotes: $('#approval_rejected_notes').val(),
+                };
+    
+                $.ajax({
+                    url: "/order/update_status/submit",
+                    type: "POST",
+                    data: formData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.msg,
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                }
+                            }).then(() => {
+                                window.location.href = '/order'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.msg, 
+                                customClass: {
+                                    confirmButton: 'btn btn-success'
+                                }
+                            });
                         }
-                    });
-                }
-            });
-        
-        
+                    },
+                    error: function (xhr) {
+                        toastr.error('Something went wrong!', 'Error');
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+        });
+    
     });
 
     //   button relase

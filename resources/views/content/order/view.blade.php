@@ -272,13 +272,20 @@
 @endforelse
 --}}
 
+<!-- reject notes jika ada -->
+ @if($order->approval_rejected_notes)
+   <div class="alert alert-danger">
+    {{$order->rejectedBy?->name}}, {{\Carbon\Carbon::parse($order->approval_rejected_datetime)->format('d M Y H:i:s')}}: {{$order->approval_rejected_notes}}
+   </div>
+ @endif
+
 
 <!-- Add notes Modal -->
 <div class="modal fade" id="modal-notes-approval" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">    
     <div class="modal-content">
             <div class="modal-header">
-                  <h4 class="modal-title">Message</h4>
+                  <h4 class="modal-title">Release Notes</h4>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         <div class="modal-body">
@@ -286,8 +293,8 @@
                     
                 <div class="col">
                         <div class="form-floating form-floating-outline mb-4">
-                        <textarea id="reviewed_notes" name="reviewed_notes" class="form-control"></textarea>
-                        <label for="reviewed_notes" class="required">{{ __('Message') }}</label>
+                        <textarea id="reviewed_notes" name="reviewed_notes" class="form-control">{{ old('reviewed_notes', $order->reviewed_notes ?? '') }}</textarea>
+                        <label for="reviewed_notes" class="required">{{ __('Release Notes') }}</label>
                     </div>
                 </div>
                 </div>
@@ -330,6 +337,39 @@
   </div>
 </div>
 
+<!-- Add rejected notes Modal -->
+<div class="modal fade" id="modal-notes-rejected" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">    
+    <div class="modal-content">
+            <div class="modal-header">
+                  <h4 class="modal-title">Rejected Notes</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+        <div class="modal-body">
+                <div class="row">
+                    
+                <div class="col">
+                        <div class="form-floating form-floating-outline mb-4">
+                        <textarea id="approval_rejected_notes" name="approval_rejected_notes" class="form-control"></textarea>
+                        <label for="approval_rejected_notes" class="required">{{ __('Rejected Notes') }}</label>
+                    </div>
+                </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" id="btn-rejected-notes">Save</button>
+                </div>
+
+        </div>
+
+    </div>
+
+  </div>
+
+</div>
 
 @livewireScripts
 

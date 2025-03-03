@@ -237,6 +237,13 @@
 {{-- Livewire Component --}}
 @livewire('order-mak-list', ['orderId' => $order->id])
 
+<!-- reject notes jika ada -->
+@if($order->approval_rejected_notes)
+   <div class="alert alert-danger">
+    {{$order->rejectedBy?->name}}, {{\Carbon\Carbon::parse($order->approval_rejected_datetime)->format('d M Y H:i:s')}}: {{$order->approval_rejected_notes}}
+   </div>
+ @endif
+
 {{-- <div class="row mb-2">
     <div class="col-12 text-end">
         <button type="button" class="btn btn-warning" id="add-mak">Add Mak</button>
