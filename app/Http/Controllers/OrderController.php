@@ -12,12 +12,14 @@ use App\Models\OrderMak;
 use App\Models\OrderItem;
 use App\Models\OrderTitle;
 use Illuminate\Http\Request;
+use App\Helpers\QrCodeHelper;
+use App\Models\OrderChecklist;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\OrdersPrintExcel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\QrCodeHelper;
-use App\Models\OrderChecklist;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -120,10 +122,11 @@ class OrderController extends Controller
                 })
             
             ->addColumn('actions', function ($row) use ($user) {
-                $editUrl   = url('order/' . $row->id . '/edit');
-                $viewUrl   = url('order/' . $row->id);
-                $reviseUrl = url('order/' . $row->id . '/revise');
-                $printUrl  = url('order/' . $row->id . '/download');
+                $editUrl    = url('order/' . $row->id . '/edit');
+                $viewUrl    = url('order/' . $row->id);
+                $reviseUrl  = url('order/' . $row->id . '/revise');
+                $pdf        = url('order/' . $row->id . '/download/pdf');
+                $excel      = url('order/' . $row->id . '/download/excel');
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
@@ -136,7 +139,13 @@ class OrderController extends Controller
                         <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
                         <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
                         <a href="'.$reviseUrl.'"class="btn btn-sm btn-dark ' . $disabled_button_revise . '" title="Revise"><span class="mdi mdi-autorenew"></span></a>
-                        <a href="'.$printUrl.'" class="btn btn-sm btn-success" title="Download"><span class="mdi mdi-file-download"></span></a>
+                        <div class="btn-group" id="hover-dropdown-demo">
+                            <button type="button" class="btn btn-success dropdown-toggle waves-effect waves-light" data-bs-toggle="dropdown" data-trigger="hover" aria-expanded="false"><span class="mdi mdi-file"></span></button>
+                            <ul class="dropdown-menu" style="">
+                                <li><a href="'.$pdf.'" class="dropdown-item waves-effect" title="Pdf">Pdf</a></li>
+                                <li><a href="'.$excel.'" class="dropdown-item waves-effect" title="Excel">Excel</a></li>
+                            </ul>
+                        </div>
                     ';                    
                 }else{
                     return '
@@ -786,11 +795,16 @@ class OrderController extends Controller
         $approver_1 = $order->approver1 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver1->nip},{$order->approver1->name}") : null;
         $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver2->nip},{$order->approver2->name}") : null;
         $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver3->nip},{$order->approver3->name}") : null;
-    
-        $pdf = Pdf::loadView('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
-        return $pdf->download("order-{$order->id}.pdf");
-
-        // return view('content.order.order_printout', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
+        
+        if ($type=='pdf') {
+            $pdf = Pdf::loadView('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
+            return $pdf->download("order-{$order->id}.pdf");
+        }elseif ($type='excel') {
+            return Excel::download(new OrdersPrintExcel($order,$orderMaks), "orders.xlsx");
+            
+        }
+        
+        // return view('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
     }
 
     public function getDivisions(Order $order){

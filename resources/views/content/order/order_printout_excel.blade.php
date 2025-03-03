@@ -199,35 +199,4 @@
         </table>
         
     </div>
-
-    <!-- QR Code Section (Paling Bawah) -->
-    <div class="qrcode-section">
-        <table>
-            <!-- Baris Nama Approver -->
-            
-            <!-- Baris QR Code -->
-            <tr>
-                <td>
-                    @if($approver_1)
-                        <img src="{{ $approver_1 }}" width="100">
-                    @endif
-                </td>
-                <td>
-                    @if($approver_2)
-                        <img src="{{ $approver_2 }}" width="100">
-                    @endif
-                </td>
-                <td>
-                    @if($approver_3)
-                        <img src="{{ $approver_3 }}" width="100">
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td><strong>Approver 1</strong></td>
-                <td><strong>Approver 2</strong></td>
-                <td><strong>Approver 3</strong></td>
-            </tr>
-        </table>
-    </div>
 </div>
