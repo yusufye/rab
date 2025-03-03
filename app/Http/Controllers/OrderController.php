@@ -11,16 +11,17 @@ use App\Models\Division;
 use App\Models\OrderMak;
 use App\Models\OrderItem;
 use App\Models\OrderTitle;
+use App\Models\ApprovalLog;
 use Illuminate\Http\Request;
 use App\Helpers\QrCodeHelper;
 use App\Models\OrderChecklist;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\OrdersPrintExcel;
+use App\Models\PercentageSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\ApprovalLog;
 
 class OrderController extends Controller
 {
@@ -828,6 +829,33 @@ class OrderController extends Controller
             'orderMak.orderTitle.orderItem',
             'approver1', 'approver2', 'approver3' // Relasi ke User untuk approval
         ])->findOrFail($order->id);
+
+        $sumItem = OrderItem::whereHas('orderTitle.orderMak', function ($query) use ($order)  {
+            $query->where('order_id', $order->id)
+                  ->where('is_split', 0);
+        })->sum('total_price');
+
+        $splitItems = OrderItem::whereHas('orderTitle.orderMak', function ($query) use ($order)  {
+            $query->where('order_id', $order->id)
+                  ->where('is_split', 1);
+        })->join('order_titles', 'order_titles.id', '=', 'order_items.order_title_id')
+        ->join('order_maks', 'order_maks.id', '=', 'order_titles.order_mak_id')
+        ->selectRaw('order_maks.split_to, SUM(order_items.total_price) as total')
+        ->groupBy('order_maks.split_to')
+        ->get();
+
+        
+        $sumPerDiv=$splitItems->mapWithKeys(function ($item) {
+            $division = Division::find($item->split_to);
+            return [$division->division_name ?? 'Unknown' => $item->total];
+        })->toArray();
+
+
+        // Profit calculation
+        $profit = $order ? ($order->price - $sumItem) : 0;
+
+        $latestEffectiveDate = PercentageSetting::where('effective_date', '<=', $order->date_to)->max('effective_date');
+        $getPercentage = PercentageSetting::where('effective_date', $latestEffectiveDate)->get();
     
         $orderMaks = $order->orderMak;
         // Generate QR Code untuk tiap approver
@@ -835,15 +863,15 @@ class OrderController extends Controller
         $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver2->nip},{$order->approver2->name}") : null;
         $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver3->nip},{$order->approver3->name}") : null;
         
-        if ($type=='pdf') {
-            $pdf = Pdf::loadView('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
-            return $pdf->download("order-{$order->id}.pdf");
-        }elseif ($type='excel') {
-            return Excel::download(new OrdersPrintExcel($order,$orderMaks), "orders.xlsx");
+        // if ($type=='pdf') {
+        //     $pdf = Pdf::loadView('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
+        //     return $pdf->download("order-{$order->id}.pdf");
+        // }elseif ($type='excel') {
+        //     return Excel::download(new OrdersPrintExcel($order,$orderMaks), "orders.xlsx");
             
-        }
+        // }
         
-        // return view('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order'));
+        return view('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order','sumItem','profit','getPercentage','sumPerDiv'));
     }
 
     public function getDivisions(Order $order){

@@ -33,6 +33,16 @@
         text-align: left;
     }
 
+    .table_header{
+        background-color: #cfd4d1;
+        text-align: center;
+        font-weight: bold;
+    }
+    .grand_total{
+        background-color: #e3e6e4;
+        font-weight: bold;
+    }
+
     .detail-section th, .detail-section td {
         border: 1px solid black;
         padding: 5px;
@@ -41,6 +51,7 @@
     .detail-price {
         text-align: right;
     }
+    
 
     .qrcode-section table {
         border-collapse: collapse;
@@ -113,22 +124,73 @@
                 <td><strong>Split</strong></td>
                 <td>:</td>
                 <td>
-                    @php
-                    $divisions=[];
-                    if (is_array($order->split_to)) {
-                        $divisions = \App\Models\Division::whereIn('id', $order->split_to)->pluck('division_name')->toArray();
-                    }
-                    @endphp
-                    {{ implode(', ', $divisions) }}
+                    
+                @foreach ($sumPerDiv as $division => $amount)
+                    <strong>{{ $division }}:</strong> Rp {{ number_format($amount, 0, ',', '.') }}<br>
+                @endforeach
+                    
                 </td>
+                <td><strong>Biaya Operasional</strong></td>
+                <td>:</td>
+                <td>Rp {{ number_format($sumItem, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>Profit</strong></td>
+                <td>:</td>
+                <td>Rp {{ number_format($order->price-$sumItem, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>
 
     <div class="detail-section">
+        <table class="">
+            <thead class="table_header">
+                <tr>
+                    <th>No</th>
+                    <th>Uraian</th>
+                    <th>Jumlah (%)</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $total_pct=0;
+                    $total_calc=0;
+                @endphp
+                @foreach($getPercentage as $index => $percentage)
+                @php
+                    $calc=$profit * ($percentage->percentage / 100);
+                @endphp
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td class="detail-item">{!! nl2br($percentage->title) !!}}</td>
+                        <td>{{ $percentage->percentage }}%</td>
+                        <td class="detail-price">
+                            {{ number_format($calc, 2) }}
+                        </td>
+                    </tr>
+                    @php
+                        $total_pct+=$percentage->percentage;
+                        $total_calc+=$calc;
+                    @endphp
+                @endforeach
+                <tfoot class="grand_total">
+                    <tr>
+                        <td colspan="2">Total</td>
+                        <td>{{$total_pct}}%</td>
+                        <td class="detail-price">{{ number_format($total_calc, 2) }}</td>
+                    </tr>
+                </tfoot>
+                
+            </tbody>
+        </table>
+
         <table>
             <thead>
-                <tr class="detail-mak">
+                <tr class="table_header">
                     <th>MAK</th>
                     <th>Title</th>
                     <th>Total(Rp)</th>
@@ -137,34 +199,31 @@
             <tbody>
                 
                 @foreach ($orderMaks as $orderMak)
-               
-                @php
-                $sum_title=0;
-            @endphp
-                        @foreach ($orderMak->orderTitle as $title)
-                        
-                        <tr >
-                            @if ( $loop->index==0)    
-                                <td rowspan="{{$orderMak->orderTitle->count()}}">
-                                    <strong>{!! $orderMak->is_split ? $orderMak->division->division_name.'<br>' : '' !!}</strong>
-                                    <strong>{{ strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}</strong>
-                                </td>
-                            @endif
-                            <td>
-                                {{ strtoupper($title->title ?? 'Tanpa Judul') }}
+
+                @foreach ($orderMak->orderTitle as $title)
+                    @php $sum_title=0; @endphp
+                    @foreach ($title->orderItem as $item)
+                        @php
+                            $sum_title+=$item->total_price;
+                        @endphp
+                    @endforeach
+                    <tr >
+                        @if ( $loop->index==0)
+                            <td class="detail-item" rowspan="{{$orderMak->orderTitle->count()}}">
+                                <strong>{!! $orderMak->is_split ? $orderMak->division->division_name.'<br>' : '' !!}</strong>
+                                <strong>{{ strtoupper($orderMak->mak->mak_code ?? '-').'-'.strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}</strong>
                             </td>
-                            <td class="detail-price">
-                                {{$sum_title}}
-                            </td>
-                        </tr>
-                            @foreach ($title->orderItem as $item)
-                                @php
-                                    $sum_title+=$item->total_price;
-                                @endphp
-                            @endforeach
-                        @endforeach
+                        @endif
+                        <td>
+                            {{ strtoupper($title->title ?? 'Tanpa Judul') }}
+                        </td>
+                        <td class="detail-price">
+                            {{number_format($sum_title, 2)}}
+                        </td>
+                    </tr>
+                       
+                    @endforeach
                     
-                
                 @endforeach
             </tbody>
         </table>
