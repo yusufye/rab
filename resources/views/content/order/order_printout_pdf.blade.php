@@ -4,12 +4,17 @@
         width: 100%;
         font-size: 12px;
         margin: 10px 0;
-        padding: 5px;
     }
 
     .header-section td {
-        padding: 5px;
+        padding-bottom: 5px;
+        vertical-align: text-top;
+        font-weight: bold;
     }
+
+    .header-section tr.gap-tr td {
+    padding-top: 10px;
+}
 
     .detail-section table {
         border-collapse: collapse;
@@ -53,20 +58,24 @@
     }
     
 
-    .qrcode-section table {
-        border-collapse: collapse;
-        width: 100%;
-        font-size: 12px;
-        margin: 10px 0;
-        padding: 5px;
-        text-align: center;
-        page-break-before: auto;
-    }
+    .qrcode-section {
+    text-align: center; /* Pusatkan konten dalam div */
+}
 
-    .qrcode-section td {
-        border: 1px solid black;
-        padding: 5px;
-    }
+.qrcode-section table {
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 10px auto; /* Auto untuk horizontal centering */
+    padding: 5px;
+    page-break-before: auto;
+}
+
+.qrcode-section td {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center; /* Pusatkan konten dalam div */
+
+}
 
     .draft-status::before {
         content: "[DRAFT]";
@@ -81,55 +90,105 @@
         white-space: nowrap;
         pointer-events: none;
     }
+
+    /* Header utama */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Rata kiri */
+    padding: 15px 20px;
+    
+}
+
+/* Icon di kiri */
+.header-left .header-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+/* Teks di kanan */
+.header-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.header-subtitle {
+    font-size: 14px;
+    margin: 3px 0 0 0;
+}
 </style>
 
 <div class="container {{($order->status=='DRAFT'?'draft-status':'')}}">
 
+    <div class="page-header">
+        <div class="header-left">
+            <img src="icon-left.png" alt="Icon Kiri" class="header-icon">
+        </div>
+        <div class="header-right">
+            <h1 class="header-title">Judul Header</h1>
+            <p class="header-subtitle">Deskripsi atau informasi tambahan</p>
+        </div>
+    </div>
+    <hr>
+    
 <!-- Header Section -->
     <div class="header-section">
         <table>
             <tr>
-                <td><strong>Job Number</strong></td>
-                <td>:</td>
-                <td>{{ $order->job_number }}</td>
-                <td><strong>Title</strong></td>
-                <td>:</td>
+                <td rowspan="3">Kontrak</td>
+                <td>{{ $order->contract_number }}</td>
+            </tr>
+            <tr>
                 <td>{{ $order->title }}</td>
             </tr>
             <tr>
-                <td><strong>Category</strong></td>
-                <td>:</td>
-                <td>{{ $order->category->category_name ?? 'Unknown' }}</td>
-                <td><strong>Group</strong></td>
-                <td>:</td>
+                <td>{{ number_format($order->contract_price, 0, ',', '.') }} RUPIAH</td>
+            </tr>
+
+            <tr class="gap-tr">
+                <td>Pelanggan</td>
+                <td>{{ $order->customer }}</td>
+            </tr>
+
+            <tr class="gap-tr">
+                <td rowspan="3">Job</td>
+                <td>{{ $order->job_number }}</td>
+            </tr>
+            <tr>
+                <td>
+                    SPLIT
+                    @foreach ($sumPerDiv as $division => $amount)
+                        {{ $division }}
+                        {{-- : Rp {{ number_format($amount, 0, ',', '.') }}, --}}
+                    @endforeach
+                </td>
+            </tr>
+            <tr>
+                <td>{{ number_format($order->price, 0, ',', '.') }} RUPIAH</td>
+            </tr>
+
+            <tr class="gap-tr">
+                <td>DURASI</td>
+                <td>{{ \Carbon\Carbon::parse($order->start_date)->format('M Y')}} s.d. {{ \Carbon\Carbon::parse($order->end_date)->format('M Y') }}</td>
+            </tr>
+
+            
+            <tr class="gap-tr">
+                <td>Kelompok</td>
                 <td>{{ $order->group }}</td>
             </tr>
-            <tr>
-                <td><strong>Customer</strong></td>
-                <td>:</td>
-                <td>{{ $order->customer }}</td>
-                <td><strong>Study/Lab</strong></td>
-                <td>:</td>
-                <td>{{ $order->study_lab }}</td>
-            </tr>
-            <tr>
-                <td><strong>Date</strong></td>
-                <td>:</td>
-                <td>{{ \Carbon\Carbon::parse($order->start_date)->format('d-M-Y')}} - {{ \Carbon\Carbon::parse($order->end_date)->format('d-M-Y') }}</td>
-                <td><strong>Price</strong></td>
-                <td>:</td>
-                <td>Rp {{ number_format($order->price, 0, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td><strong>Split</strong></td>
-                <td>:</td>
-                <td>
-                    
-                @foreach ($sumPerDiv as $division => $amount)
-                    <strong>{{ $division }}:</strong> Rp {{ number_format($amount, 0, ',', '.') }}<br>
-                @endforeach
-                    
-                </td>
+            
+            
+            {{-- <tr>
+                
                 <td><strong>Biaya Operasional</strong></td>
                 <td>:</td>
                 <td>Rp {{ number_format($sumItem, 0, ',', '.') }}</td>
@@ -141,12 +200,12 @@
                 <td><strong>Profit</strong></td>
                 <td>:</td>
                 <td>Rp {{ number_format($order->price-$sumItem, 0, ',', '.') }}</td>
-            </tr>
+            </tr> --}}
         </table>
     </div>
 
     <div class="detail-section">
-        <table class="">
+        {{-- <table class="">
             <thead class="table_header">
                 <tr>
                     <th>No</th>
@@ -185,18 +244,19 @@
                     <td class="detail-price">{{ number_format($total_calc, 2) }}</td>
                 </tr>
             </tfoot>
-        </table>
+        </table> --}}
 
         <table>
             <thead>
                 <tr class="table_header">
                     <th>MAK</th>
-                    <th>Title</th>
-                    <th>Total(Rp)</th>
+                    <th>Uraian</th>
+                    <th>Jumlah</th>
                 </tr>
             </thead>
             <tbody>
                 
+                @php $sum_all=0; @endphp
                 @foreach ($orderMaks as $orderMak)
 
                 @foreach ($orderMak->orderTitle as $title)
@@ -204,13 +264,14 @@
                     @foreach ($title->orderItem as $item)
                         @php
                             $sum_title+=$item->total_price;
+                            $sum_all+=$item->total_price;
                         @endphp
                     @endforeach
                     <tr >
                         @if ( $loop->index==0)
                             <td class="detail-item" rowspan="{{$orderMak->orderTitle->count()}}">
-                                <strong>{!! $orderMak->is_split ? $orderMak->division->division_name.'<br>' : '' !!}</strong>
-                                <strong>{{ strtoupper($orderMak->mak->mak_code ?? '-').'-'.strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}</strong>
+                                {!! $orderMak->is_split ? $orderMak->division->division_name.'<br>' : '' !!}
+                                {{ strtoupper($orderMak->mak->mak_code ?? '-').': '.strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}
                             </td>
                         @endif
                         <td>
@@ -225,6 +286,19 @@
                     
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        Profit:
+                    </td>
+                    <td style="border-right: none;font-weight: bold;">
+                        Total (Rp):
+                    </td>
+                    <td style="border-left: none; text-align: right; bold;">
+                        {{number_format($sum_all, 2)}}
+                    </td>
+                </tr>
+            </tfoot>
         </table>
         
     </div>
@@ -232,9 +306,14 @@
     <!-- QR Code Section (Paling Bawah) -->
     <div class="qrcode-section">
         <table>
-            <!-- Baris Nama Approver -->
-            
-            <!-- Baris QR Code -->
+            <tr>
+                <td colspan="2" style="border-right:none;border-top:none;border-left:none;font-weight: bold;">Dievaluasi</td>
+            </tr>
+            <tr>
+                <td style="width: 300px;"><strong>KEPALA BAGIAN UMUM</strong></td>
+                <td style="width: 300px;"><strong>KOORDINATOR PENYIAPAN DAN SARANA PENGUJIAN </strong></td>
+            </tr>
+
             <tr>
                 <td>
                     @if($approver_1)
@@ -246,17 +325,32 @@
                         <img src="{{ $approver_2 }}" width="100">
                     @endif
                 </td>
+               
+            </tr>
+           
+        </table>
+
+        <br>
+
+        <table>
+            <tr>
+                <td style="border-right:none;border-top:none;border-left:none;font-weight: bold;">Disetujui</td>
+            </tr>
+            <tr>
+                <td style="width: 300px;"><strong>PIMPINAN BLU</strong></td>
+            </tr>
+
+            <tr>
                 <td>
-                    @if($approver_3)
+                    @if($approver_1)
                         <img src="{{ $approver_3 }}" width="100">
                     @endif
                 </td>
+               
             </tr>
-            <tr>
-                <td><strong>Approver 1</strong></td>
-                <td><strong>Approver 2</strong></td>
-                <td><strong>Approver 3</strong></td>
-            </tr>
+           
         </table>
     </div>
+
+    
 </div>
