@@ -2,14 +2,137 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Division;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+
+    public function index(){
+        return view('content.user.index');
+    }
+
+    public function create(){
+
+        $divisions = Division::all();
+        $user = auth()->user();
+
+        $role = Role::query();
+
+        if(!$user->hasRole('Super_admin')){
+            $role->where('name','<>','Super_admin');
+        }
+
+        $roles = $role->get();
+
+        return view('content.user.add',compact('divisions','roles'));
+    }
+
+    public function store(Request $request){
+
+        $validated = $request->validate([
+            'division_id' => 'required',
+            'nip' => 'required|max:255',
+            'name' => 'required|max:255',
+            'email' => 'required|max:255|email',
+            'password' => 'required|min:8',
+            'role_id' => 'required',
+        ]);
+        
+        try{
+            DB::beginTransaction();
+
+            $user = User::create([
+                'division_id' => $request->division_id,
+                'nip' => $request->nip,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'active' => 1,
+                'email_verified_at' => now(),
+            ]);
+
+            $roleName = Role::where('id', $request->role_id)->value('name');
+            $user->assignRole($roleName);
+
+        
+            DB::commit();
+            $message = ['success' => 'User berhasil di simpan'];
+            return redirect('/user')->with($message);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            $message = ['failed' => 'User gagal di simpan'];
+            return redirect('/user')->with($message);
+        }
+    }
+
+    public function edit(User $user)  {
+
+        $divisions = Division::all();
+        $authUser = auth()->user();
+
+        $role = Role::query();
+
+        if(!$authUser->hasRole('Super_admin')){
+            $role->where('name','<>','Super_admin');
+        }
+
+        $roles = $role->get();
+        
+
+        return view('content.user.edit',compact('user','divisions','roles'));
+        
+    }
+
+    public function update(Request $request,User $user){
+
+     
+        $validated = $request->validate([
+            'division_id' => 'required',
+            'nip' => 'required|max:255',
+            'name' => 'required|max:255',
+            'email' => 'required|max:255|email',
+            'role_id' => 'required',
+        ]);
+        
+        try{
+            DB::beginTransaction();
+
+            $user->update([
+                'division_id' => $request->division_id,
+                'nip' => $request->nip,
+                'name' => $request->name,
+                'email' => $request->email,
+                'active' => 1,
+                'email_verified_at' => now(),
+            ]);
+
+            $roleName = Role::where('id', $request->role_id)->value('name');
+            
+            $user->syncRoles([$roleName]); 
+
+        
+            DB::commit();
+            $message = ['success' => 'User berhasil di simpan'];
+            return redirect('/user')->with($message);
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            $message = ['failed' => 'User gagal di simpan'];
+            return redirect('/user')->with($message);
+        }
+    }
+
+
     public function indexRole(Request $request) {
         $data = [];
 
@@ -62,7 +185,16 @@ class UserController extends Controller
     public function ajax_list_users()
     {
 
-        $list_users = User::orderByDesc('created_at')->get();        
+        $role = auth()->user()->getRoleNames()->first();
+
+        if ($role === 'Super_admin') {
+            $list_users = User::all();
+        } else {
+            $list_users = User::whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'Super_admin');
+            })->orderByDesc('created_at')->get();
+        }       
+      
     
         return DataTables::of($list_users)
             ->addColumn('roles', function ($user) {
@@ -72,7 +204,14 @@ class UserController extends Controller
     
                 return implode(', ', $roles);
             })
-            ->rawColumns(['roles'])
+            ->addColumn('actions', function ($row) {
+                $editUrl = url('user/' . $row->id . '/edit');
+            
+                return '
+                    <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></a>
+                ';
+            })
+            ->rawColumns(['roles','actions'])
             ->make(true);
     }
 

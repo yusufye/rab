@@ -86,6 +86,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ajax_list_users', [UserController::class, 'ajax_list_users'])->name('ajax_list_users');
     Route::post('/add/role', [UserController::class, 'add_roles'])->middleware('menu.permission:create_role_&_permission');
     Route::post('/edit/role', [UserController::class, 'edit_roles'])->middleware('menu.permission:update_role_&_permission');
+    Route::get('/user', [UserController::class, 'index'])->name('user')->middleware('menu.permission:read_user');
+    Route::get('/user/create', [UserController::class, 'create'])->name('user')->middleware('menu.permission:create_user');
+    Route::post('/user/submit', [UserController::class, 'store'])->middleware('menu.permission:create_user');
+    Route::get('/user/{user}/edit', [UserController::class, 'edit'])->name('user')->middleware('menu.permission:update_user');
+    Route::post('/user/{user}/update', [UserController::class, 'update'])->name('user')->middleware('menu.permission:update_user');
 
 });
 
