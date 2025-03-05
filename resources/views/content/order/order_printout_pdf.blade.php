@@ -177,15 +177,14 @@
                         $total_calc+=$calc;
                     @endphp
                 @endforeach
-                <tfoot class="grand_total">
-                    <tr>
-                        <td colspan="2">Total</td>
-                        <td>{{$total_pct}}%</td>
-                        <td class="detail-price">{{ number_format($total_calc, 2) }}</td>
-                    </tr>
-                </tfoot>
-                
             </tbody>
+            <tfoot class="grand_total">
+                <tr>
+                    <td colspan="2">Total</td>
+                    <td>{{$total_pct}}%</td>
+                    <td class="detail-price">{{ number_format($total_calc, 2) }}</td>
+                </tr>
+            </tfoot>
         </table>
 
         <table>

@@ -863,13 +863,15 @@ class OrderController extends Controller
         $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver2->nip},{$order->approver2->name}") : null;
         $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver3->nip},{$order->approver3->name}") : null;
         
-        // if ($type=='pdf') {
-        //     $pdf = Pdf::loadView('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3','order'));
-        //     return $pdf->download("order-{$order->id}.pdf");
-        // }elseif ($type='excel') {
-        //     return Excel::download(new OrdersPrintExcel($order,$orderMaks), "orders.xlsx");
+        $fileName       = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $order->job_number);
+        
+        if ($type=='pdf') {
+            $pdf = Pdf::loadView('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order','sumItem','profit','getPercentage','sumPerDiv'));
+            return $pdf->download("job-{$fileName}.pdf");
+        }elseif ($type='excel') {
+            return Excel::download(new OrdersPrintExcel($order,$orderMaks,$sumItem,$profit,$getPercentage,$sumPerDiv), "orders{$fileName}.xlsx");
             
-        // }
+        }
         
         return view('content.order.order_printout_pdf', compact('orderMaks', 'approver_1', 'approver_2', 'approver_3', 'order','sumItem','profit','getPercentage','sumPerDiv'));
     }
