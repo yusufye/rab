@@ -116,7 +116,7 @@
                     </div>
                     <div class="row">       
                         <div class="col-6">
-                            <div class="form-floating form-floating-outline">
+                            <div class="form-floating form-floating-outline mb-4">
                             <select id="division" class="select2 form-select" multiple name="division[]"
                                 data-placeholder="{{ __('Select Division') }}" required>
                                 <option value="">{{ __('Select Division') }}</option>
@@ -127,6 +127,33 @@
                             </select>
                             <label for="division" class="required">{{ __('Split Ke-') }}</label>
                         </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline">
+                            <select id="job_type" class="select2 form-select" name="job_type"
+                                data-placeholder="{{ __('Select Job Type') }}">
+                                    <option value="">{{ __('Select Job Type') }}</option>
+                                    <option value="Tunggal">Tunggal</option>
+                                    <option value="Retail">Retail</option>
+                                    <option value="Gabungan">Gabungan</option>
+                            </select>
+                            <label for="job_type">{{ __('Job Type') }}</label>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" maxlength="25" class="form-control" placeholder="Contract Number" id="contract_number" name="contract_number" />
+                                    <label for="contract_number">{{ __('Contract Number') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control format-currency" placeholder="Contract Price" id="contract_price" name="contract_price" />
+                                    <label for="contract_price">{{ __('Contract Price') }}</label>
+                            </div>
                         </div>
                     </div>
                 </div>

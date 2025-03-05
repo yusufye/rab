@@ -101,6 +101,14 @@
                                         {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">Contract Number</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>
+                                        {{$order->contract_number??'' }}
+                                    </td>
+                                </tr>
+                           
                                 
                                 {{--
                                 @forelse($sum_array as $key => $sum)
@@ -153,6 +161,22 @@
                                 </tr>
                                 @endif
 
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">Job Type</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>
+                                        {{$order->job_type??'' }}
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">Contract Price</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>
+                                        {{ $order->contract_price ? 'Rp ' . number_format((float) $order->contract_price, 0, ',', '.') : '-' }}
+                                    </td>
+                                </tr>
+
                                 {{--
                                 @forelse($sum_array['split_totals'] as $key => $sum)
                                 <tr>
@@ -174,8 +198,9 @@
             </div>
         </div>
     </div>
-
-
+    @livewire('order-percentage-calc', ['orderId' => $order->id])
+    
+    <br>
     {{-- Livewire Component --}}
     @livewire('order-mak-view-list', ['orderId' => $order->id])
 
