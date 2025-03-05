@@ -24,7 +24,7 @@
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $percentage->title }}</td>
-                    <td>{{ $percentage->percentage }}%</td>
+                    <td class="text-center">{{ $percentage->percentage }}%</td>
                     <td class="text-end">
                         {{ number_format($calc, 2) }}
                     </td>
@@ -34,15 +34,14 @@
                     $total_calc+=$calc;
                 @endphp
             @endforeach
-            <tfoot class="table-secondary">
-                <tr>
-                    <td colspan="2">Total</td>
-                    <td>{{$total_pct}}</td>
-                    <td class="text-end">{{ number_format($total_calc, 2) }}</td>
-                </tr>
-            </tfoot>
-            
         </tbody>
+        <tfoot class="table-secondary">
+            <tr>
+                <td colspan="2">Total</td>
+                <td class="text-center">{{$total_pct}}%</td>
+                <td class="text-end">{{ number_format($total_calc, 2) }}</td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 </div>

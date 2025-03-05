@@ -13,7 +13,7 @@ class DivisionSeeder extends Seeder
      */
     public function run(): void
     {
-        $division = ['DPMS','DPMU'];
+        $division = ['DPMA','DPME','DPMG','DPMP','DPMR','DPMS','DPMT','DPMU'];
 
         foreach($division as $div){
             Division::create([

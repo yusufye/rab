@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('maks', function (Blueprint $table) {
             $table->id();
             $table->string('mak_code',25);
-            $table->string('mak_name',50);
+            $table->string('mak_name',100);
             $table->timestamps();
         });
     }

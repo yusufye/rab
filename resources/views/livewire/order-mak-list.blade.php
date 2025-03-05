@@ -21,7 +21,7 @@
                         }
                     @endphp
                     {!!$split_to!!}
-                    <h5 class="m-1 badge rounded-pill bg-label-dark text-center">{{ strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}</h5>
+                    <h5 class="m-1 badge rounded-pill bg-label-dark text-center">{{ strtoupper($orderMak->mak->mak_code ?? '') }} - {{ strtoupper($orderMak->mak->mak_name ?? 'Tanpa MAK') }}</h5>
                     <div class="m-0 badge rounded-pill bg-label-primary text-center">Rp {{ number_format($this->getTotalPriceForMak($orderMak), 2) }}</div>
                 </div>
                 <div>
