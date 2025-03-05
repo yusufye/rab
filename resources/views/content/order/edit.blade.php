@@ -178,16 +178,28 @@
                     </div>
                     <div class="row">  
                         <div class="col-6">
-                        <div class="row">
-
-                       
-                        <div class="col-12">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
                                     name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
                                 <label for="price" class="required">{{ __('Nilai Anggaran') }}</label>
                             </div>
                         </div>
+
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline">
+                                <select id="job_type" class="select2 form-select" name="job_type"
+                                    data-placeholder="{{ __('Select Job Type') }}">
+                                    <option value="">{{ __('Select Job Type') }}</option>
+                                    <option value="Tunggal" {{ old('job_type', $order->job_type) == 'Tunggal' ? 'selected' : '' }}>Tunggal</option>
+                                    <option value="Retail" {{ old('job_type', $order->job_type) == 'Retail' ? 'selected' : '' }}>Retail</option>
+                                    <option value="Gabungan" {{ old('job_type', $order->job_type) == 'Gabungan' ? 'selected' : '' }}>Gabungan</option>
+                                </select>
+                                <label for="job_type">{{ __('Job Type') }}</label>
+                            </div>
+                        </div>
+
+
+
                             {{-- @forelse($sum_array as $key => $sum)
                                 @if($key !== 'split_totals')
                                     @php
@@ -205,8 +217,7 @@
                                 @endif
                             @empty
                             @endforelse --}}
-                        </div>
-                        </div>
+
                         {{-- <div class="col-6">
                             <div class="row">
                             @forelse($sum_array['split_totals'] as $key => $sum)
@@ -220,6 +231,20 @@
                             @endforelse
                             </div>
                         </div> --}}
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" maxlength="25" class="form-control" placeholder="Contract Number" id="contract_number" value="{{old('contract_number',$order->contract_number??'')}}" name="contract_number" />
+                                    <label for="contract_number">{{ __('Contract Number') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control format-currency" placeholder="Contract Price" id="contract_price" name="contract_price" value="{{ old('contract_price', isset($order) ? number_format($order->contract_price, 0, ',', '') : '') }}"/>
+                                    <label for="contract_price">{{ __('Contract Price') }}</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

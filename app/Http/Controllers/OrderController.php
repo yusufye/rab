@@ -195,7 +195,9 @@ class OrderController extends Controller
 
             $price = Helpers::parseCurrency($request->price);
             $splitPrice = Helpers::parseCurrency($request->split_price);
-
+            
+            $contract_price = Helpers::parseCurrency($request->contract_price);
+        
 
              Order::create([
                 'job_number' => $request->job_number,
@@ -213,6 +215,9 @@ class OrderController extends Controller
                 'profit' =>   $price - $splitPrice,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
+                'job_type' => $request->job_type,
+                'contract_number' => $request->contract_number,
+                'contract_price' => $contract_price,
              ]);
         
             DB::commit();
@@ -309,6 +314,8 @@ class OrderController extends Controller
             $price = Helpers::parseCurrency($request->price);
             $splitPrice = Helpers::parseCurrency($request->split_price);
 
+            $contract_price = Helpers::parseCurrency($request->contract_price);
+
 
             $order->update([
                 'job_number' => $request->job_number,
@@ -324,6 +331,9 @@ class OrderController extends Controller
                 'split_to' =>  $request->division,
                 'profit' =>   $price - $splitPrice,
                 'updated_by' => Auth::id(),
+                'job_type' => $request->job_type,
+                'contract_number' => $request->contract_number,
+                'contract_price' => $contract_price,
              ]);
         
             DB::commit();
