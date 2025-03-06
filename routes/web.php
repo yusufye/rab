@@ -78,8 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/category/{category}/update', [CategoryController::class, 'update']);
 
     //report
-    Route::get('/report', [ReportController::class, 'index'])->name('report')->name('category')->middleware('menu.permission:read_report');
-    Route::post('/report/show', [ReportController::class, 'show']);
+    Route::get('/report/filter/{type?}', [ReportController::class, 'filter'])->name('report_filter')->middleware('menu.permission:read_report');
+    Route::post('/report/show/{type?}', [ReportController::class, 'show']);
+
 
     // permission
     Route::get('/roles-and-permission', [UserController::class, 'indexRole'])->name('role-and-permission')->middleware('menu.permission:read_role_&_permission');
