@@ -60,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order/save_checklist/{order_item_id}', [OrderController::class, 'saveChecklist']);
     Route::get('/order/{order}/download/{type?}', [OrderController::class, 'download'])->name('orderDownload');
     Route::get('/order/{order}/get_divisions', [OrderController::class, 'getDivisions']);
+    Route::get('/get_order_mak/{order_mak}', [OrderController::class, 'getOrderMak']);
+    Route::get('/get_order_title/{id}', [OrderController::class, 'getOrderTitle']);
+    Route::get('/get_order_item/{id}', [OrderController::class, 'getOrderItem']);
 
 
 
