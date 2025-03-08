@@ -109,7 +109,7 @@ class User extends Authenticatable
     
         foreach ($roles as $role) {
             if ($role->name === 'admin') {
-                $adminPermission = ['order','home','user'];
+                $adminPermission = ['order','home'];
     
                 $adminPermissionsMapped = [];
                 foreach ($adminPermission as $permission) {

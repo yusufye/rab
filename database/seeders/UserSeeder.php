@@ -31,23 +31,8 @@ class UserSeeder extends Seeder
             'active' => 1,
         ]);
 
-        $superAdmin->assignRole(['name' => 'Super_admin']);
-        
-        // admin
-        $admin = User::create([
-                'division_id' => $divisionId,
-                'nip' => fake()->unique()->numerify(str_repeat('#', 16)),
-                'name' => 'admin',
-                'email' => 'admin@example.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('test1234'),
-                'remember_token' => Str::random(10),
-                'active' => 1,
-            ]);
+        $superAdmin->assignRole(['name' => 'Super_admin']);       
 
-        $admin->assignRole(['name' => 'admin']);
-            
-            
         // head reviewer
          $reviewer =  User::create([
                 'division_id' => $divisionId,
@@ -132,5 +117,24 @@ class UserSeeder extends Seeder
 
             $checker->assignRole(['name' => 'checker']);
         }
+        
+        $division_all = Division::all();
+    
+        foreach($division_all as $da){
+                    // admin
+            $admin = User::create([
+                'division_id' => $da->id,
+                'nip' => fake()->unique()->numerify(str_repeat('#', 16)),
+                'name' => 'admin_'.strtolower($da->division_name),
+                'email' => 'admin_'.strtolower($da->division_name).'@example.com',
+                'email_verified_at' => now(),
+                'password' => bcrypt('test1234'),
+                'remember_token' => Str::random(10),
+                'active' => 1,
+            ]);
+
+        $admin->assignRole(['name' => 'admin']);
+        }
     }
+
 }

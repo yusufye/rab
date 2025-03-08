@@ -111,6 +111,8 @@ class OrderController extends Controller
                 $reviseUrl  = url('order/' . $row->id . '/revise');
                 $pdf        = url('order/' . $row->id . '/download/pdf');
                 $excel      = url('order/' . $row->id . '/download/excel');
+                $list_auth = auth()->user()->hasAnyRole(['reviewer','head_reviewer','approval_satu','approval_dua','approval_tiga']);
+                $disabled_button_pdf = $list_auth ? '' : 'btn-disabled';
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
@@ -118,23 +120,45 @@ class OrderController extends Controller
                     ? 'btn-disabled' 
                     : '';
 
-
                     return '
-                        <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
-                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
-                        <a href="'.$reviseUrl.'"class="btn btn-sm btn-dark ' . $disabled_button_revise . '" title="Revise"><span class="mdi mdi-autorenew"></span></a>
-                        <div class="btn-group" id="hover-dropdown-demo">
-                            <button type="button" class="btn btn-success dropdown-toggle waves-effect waves-light" data-bs-toggle="dropdown" data-trigger="hover" aria-expanded="false"><span class="mdi mdi-file"></span></button>
-                            <ul class="dropdown-menu" style="">
-                                <li><a href="'.$pdf.'" class="dropdown-item waves-effect" title="Pdf">Pdf</a></li>
-                                <li><a href="'.$excel.'" class="dropdown-item waves-effect" title="Excel">Excel</a></li>
-                            </ul>
+                    <div class="dropdown dropstart">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                            <i class="mdi mdi-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="'.$editUrl.'" class="dropdown-item" title="Edit">
+                                <i class="mdi mdi-square-edit-outline"></i> Edit
+                            </a>
+                            <a href="'.$viewUrl.'" class="dropdown-item" title="View">
+                                <i class="mdi mdi-file-outline"></i> View
+                            </a>
+                            <a href="'.$reviseUrl.'" class="dropdown-item '.$disabled_button_revise.'" title="Revise">
+                                <i class="mdi mdi-autorenew"></i> Revise
+                            </a>
+                            <a href="'.$excel.'" class="dropdown-item" title="Excel">
+                                <i class="mdi mdi-file-excel-box"></i> Excel
+                            </a>
+
                         </div>
-                    ';                    
+                    </div>';                
                 }else{
                     return '
-                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
-                    ';                    
+                      <div class="dropdown dropstart">
+                       <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                            <i class="mdi mdi-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="'.$viewUrl.'" class="dropdown-item" title="View">
+                                <i class="mdi mdi-file-outline"></i> View
+                            </a>
+                            <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
+                                <i class="mdi mdi-file-pdf-box"></i> Pdf
+                            </a>
+                            <a href="'.$excel.'" class="dropdown-item" title="Excel">
+                                <i class="mdi mdi-file-excel-box"></i> Excel
+                            </a>
+                         </div>  
+                     </div>';              
 
                 }              
 

@@ -48,7 +48,7 @@
                                 <th class="text-end">Nilai Anggaran</th>
                                 <th class="text-end">Biaya Operasional</th>
                                 <th class="text-end">Profit</th>
-                                <th class="text-center">Actions</th>
+                                <th class="text-center"></th>
                             </tr>
                         </thead>
                         <tbody>

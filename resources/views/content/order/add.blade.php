@@ -43,6 +43,20 @@
                     </div>
                     </div>
                 <div class="card-body">
+                <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" maxlength="25" class="form-control" placeholder="No. Kontrak" id="contract_number" name="contract_number" />
+                                    <label for="contract_number">{{ __('No. Kontrak') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control format-currency" placeholder="Nilai Kontrak" id="contract_price" name="contract_price" />
+                                    <label for="contract_price">{{ __('Nilai Kontrak') }}</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
@@ -142,20 +156,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" maxlength="25" class="form-control" placeholder="Contract Number" id="contract_number" name="contract_number" />
-                                    <label for="contract_number">{{ __('Contract Number') }}</label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control format-currency" placeholder="Contract Price" id="contract_price" name="contract_price" />
-                                    <label for="contract_price">{{ __('Contract Price') }}</label>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
                 
             </div>
