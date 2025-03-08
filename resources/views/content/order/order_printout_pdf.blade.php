@@ -143,11 +143,15 @@
     <div class="header-section">
         <table>
             <tr>
+                <td>Divisi</td>
+                <td>{{ $order->createdBy->division->division_name }}</td>
+            </tr>
+            <tr>
                 <td rowspan="3">Kontrak</td>
                 <td>{{ $order->contract_number }}</td>
             </tr>
             <tr>
-                <td>{{ $order->title }}</td>
+                <td>{{ $order->study_lab }}</td>
             </tr>
             <tr>
                 <td>{{ number_format($order->contract_price, 0, ',', '.') }} RUPIAH</td>
@@ -163,13 +167,7 @@
                 <td>{{ $order->job_number }}</td>
             </tr>
             <tr>
-                <td>
-                    SPLIT
-                    @foreach ($sumPerDiv as $division => $amount)
-                        {{ $division }}
-                        {{-- : Rp {{ number_format($amount, 0, ',', '.') }}, --}}
-                    @endforeach
-                </td>
+                <td>{{ $order->title }}</td>
             </tr>
             <tr>
                 <td>{{ number_format($order->price, 0, ',', '.') }} RUPIAH</td>
@@ -289,10 +287,10 @@
             <tfoot>
                 <tr>
                     <td>
-                        Profit:
+                        <strong>Profit: {{number_format(($order->price-$sum_all)/$order->price*100,2)}} %</strong>
                     </td>
                     <td style="border-right: none;font-weight: bold;">
-                        Total (Rp):
+                        Total Operasional (Rp):
                     </td>
                     <td style="border-left: none; text-align: right; bold;">
                         {{number_format($sum_all, 2)}}
@@ -310,8 +308,8 @@
                 <td colspan="2" style="border-right:none;border-top:none;border-left:none;font-weight: bold;">Dievaluasi</td>
             </tr>
             <tr>
-                <td style="width: 300px;"><strong>KEPALA BAGIAN UMUM</strong></td>
                 <td style="width: 300px;"><strong>KOORDINATOR PENYIAPAN DAN SARANA PENGUJIAN </strong></td>
+                <td style="width: 300px;"><strong>KEPALA BAGIAN UMUM</strong></td>
             </tr>
 
             <tr>

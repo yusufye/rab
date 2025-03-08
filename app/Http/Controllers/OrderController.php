@@ -112,11 +112,11 @@ class OrderController extends Controller
                 $reviseUrl  = url('order/' . $row->id . '/revise');
                 $pdf        = url('order/' . $row->id . '/download/pdf');
                 $excel      = url('order/' . $row->id . '/download/excel');
-                $list_auth = auth()->user()->hasAnyRole(['reviewer','head_reviewer','approval_satu','approval_dua','approval_tiga']);
+                $list_auth = auth()->user()->hasAnyRole(['admin','reviewer','head_reviewer','approval_satu','approval_dua','approval_tiga']);
                 $disabled_button_pdf = $list_auth ? '' : 'btn-disabled';
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
-                    $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
+                    $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED','TO REVIEW'];
                     $disabled_button_revise = in_array($row->status, $list_disabled_btn_revise) 
                     ? 'btn-disabled' 
                     : '';
@@ -133,11 +133,11 @@ class OrderController extends Controller
                             <a href="'.$viewUrl.'" class="dropdown-item" title="View">
                                 <span class="mdi mdi-file-outline"></span> View
                             </a>
-                            <a href="'.$reviseUrl.'" class="dropdown-item '.$disabled_button_revise.'" title="Revise">
+                            <a data-url="'.$reviseUrl.'" class="dropdown-item '.$disabled_button_revise.' btn-revise" title="Revise" style="cursor:pointer;">
                                 <span class="mdi mdi-autorenew"></span> Revise
                             </a>
                             <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
-                                <span class="mdi mdi-file-pdf-box"></span> Pdf
+                                <span class="mdi mdi-file-pdf-box"></span> Pengesahan
                             </a>
                             <a href="'.$excel.'" class="dropdown-item" title="Excel">
                                 <span class="mdi mdi-file-excel-box"></span> Excel
@@ -156,7 +156,7 @@ class OrderController extends Controller
                                 <span class="mdi mdi-file-outline"></span> View
                             </a>
                             <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
-                                <span class="mdi mdi-file-pdf-box"></span> Pdf
+                                <span class="mdi mdi-file-pdf-box"></span> Pengesahan
                             </a>
                             <a href="'.$excel.'" class="dropdown-item" title="Excel">
                                 <span class="mdi mdi-file-excel-box"></span> Excel
@@ -648,7 +648,7 @@ class OrderController extends Controller
             $invalid = 0;
             $message = ['success' => 'Revisi Berhasil'];
         
-            if (in_array($order->status, ['DRAFT', 'CLOSED', 'REVISED'])) {
+            if (in_array($order->status, ['DRAFT', 'CLOSED', 'REVISED','TO REVIEW'])) {
                 $message = ['success' => "{$order->status} Tidak dapat direvisi"];
                 $invalid++;
             }
@@ -677,7 +677,7 @@ class OrderController extends Controller
                 $new_order->approval_step              = 0;
                 $new_order->save();
         
-                $order_maks = OrderMak::with(['orderTitle.orderItem'])
+                $order_maks = OrderMak::with(['orderTitle.orderItem.orderChecklist'])
                     ->where('order_id', $order->id)
                     ->get();
         
@@ -695,17 +695,24 @@ class OrderController extends Controller
                             $new_order_item = $order_item->replicate();
                             $new_order_item->order_title_id = $new_order_title->id;
                             $new_order_item->save();
+
+                            foreach ($order_item->orderChecklist as $order_checklist) {
+                                $new_order_checklist = $order_checklist->replicate();
+                                $new_order_checklist->order_item_id = $new_order_item->id;
+                                $new_order_checklist->order_id = $new_order->id;
+                                $new_order_checklist->save();
+                            }
                         }
                     }
                 }
         
                 // Perbaikan bagian OrderChecklist
-                $order_checklists = OrderChecklist::where('order_id', $order->id)->get();
-                foreach ($order_checklists as $order_checklist) {
-                    $new_order_checklist = $order_checklist->replicate();
-                    $new_order_checklist->order_id = $new_order->id;
-                    $new_order_checklist->save();
-                }
+                // $order_checklists = OrderChecklist::where('order_id', $order->id)->get();
+                // foreach ($order_checklists as $order_checklist) {
+                //     $new_order_checklist = $order_checklist->replicate();
+                //     $new_order_checklist->order_id = $new_order->id;
+                //     $new_order_checklist->save();
+                // }
         
                 $order->update(['status' => 'REVISED']);
         
@@ -905,7 +912,7 @@ class OrderController extends Controller
 
         $order = Order::with([
             'orderMak' => function ($query) {
-                $query->orderBy('is_split', 'asc')->orderBy('id', 'asc');
+                $query->where('is_split',0)->orderBy('is_split', 'asc')->orderBy('id', 'asc');
             },
             'orderMak.mak',
             'orderMak.division',
@@ -942,9 +949,9 @@ class OrderController extends Controller
     
         $orderMaks = $order->orderMak;
         // Generate QR Code untuk tiap approver
-        $approver_1 = $order->approver1 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver1->nip},{$order->approver1->name}") : null;
-        $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver2->nip},{$order->approver2->name}") : null;
-        $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number},{$order->approver3->nip},{$order->approver3->name}") : null;
+        $approver_1 = $order->approver1 ? QrCodeHelper::generateQrCode("{$order->job_number}\r\n{$order->approver1->name}\r\n{$order->approver1->nip}") : null;
+        $approver_2 = $order->approver2 ? QrCodeHelper::generateQrCode("{$order->job_number}\r\n{$order->approver2->name}\r\n{$order->approver2->nip}") : null;
+        $approver_3 = $order->approver3 ? QrCodeHelper::generateQrCode("{$order->job_number}\r\n{$order->approver3->name}\r\n{$order->approver3->nip}") : null;
         
         $fileName       = str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $order->job_number);
         

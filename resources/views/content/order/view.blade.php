@@ -42,6 +42,17 @@
 
     <div class="row mb-4">
         <div class="col-12">
+            @if ($order->reviewed_notes!='')
+                <div class="alert alert-success">
+                    {!! nl2br($order->reviewed_notes) !!}
+                </div>
+                @endif
+                <!-- reject notes jika ada -->
+                @if($order->approval_rejected_notes)
+                <div class="alert alert-danger">
+                {{$order->rejectedBy?->name}}, {{\Carbon\Carbon::parse($order->approval_rejected_datetime)->format('d M Y H:i:s')}}: {{$order->approval_rejected_notes}}
+                </div>
+                @endif
             <div class="row">
                 <div class="col-sm-3">
                 <a href="#" class="btn-status-order" data-order-id="{{$order->id}}">
@@ -52,6 +63,9 @@
                 </div>
                 
             </div>
+            <div class="col-md-12 col-xl-12">
+                
+                
             <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                     <nav aria-label="breadcrumb">
@@ -309,12 +323,7 @@
 @endforelse
 --}}
 
-<!-- reject notes jika ada -->
- @if($order->approval_rejected_notes)
-   <div class="alert alert-danger">
-    {{$order->rejectedBy?->name}}, {{\Carbon\Carbon::parse($order->approval_rejected_datetime)->format('d M Y H:i:s')}}: {{$order->approval_rejected_notes}}
-   </div>
- @endif
+
 
 
 <!-- Add notes Modal -->
@@ -349,7 +358,7 @@
   <div class="modal-dialog modal-lg modal-dialog-centered">    
     <div class="modal-content">
             <div class="modal-header">
-                  <h4 class="modal-title">Checklist</h4>
+                  <h4 class="modal-title">No. PPB/PPJ</h4>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
         <div class="modal-body">

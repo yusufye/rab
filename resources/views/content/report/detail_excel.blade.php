@@ -82,10 +82,10 @@
                     <td>{{ $makTotals[$mak->id] ?? 0 }}</td>
                 @endforeach
                 <td>
-                    {{ $profit/$order->price }}
+                    {{ $profit/$order->price*100 }}
                 </td>
                 <td>
-                    {{ $order->totalOperational()/$order->price }}
+                    {{ $order->totalOperational()/$order->price*100 }}
                 </td>
                 <td>
 
@@ -104,13 +104,13 @@
                     {{ $rev0['operational'] }}
                 </td>
                 <td class="text-right">
-                    {{ $rev0['operational']/$rev0['job_price'] }}
+                    {{ $rev0['operational']/$rev0['job_price']*100 }}
                 </td>
                 <td>
                     {{ $order->totalOperational() }}
                 </td>
                 <td>
-                    {{ $order->totalOperational()/$order->price }}
+                    {{ $order->totalOperational()/$order->price*100 }}
                 </td>
             </tr>
         @endforeach
