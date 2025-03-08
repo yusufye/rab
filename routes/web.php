@@ -60,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/order/save_checklist/{order_item_id}', [OrderController::class, 'saveChecklist']);
     Route::get('/order/{order}/download/{type?}', [OrderController::class, 'download'])->name('orderDownload');
     Route::get('/order/{order}/get_divisions', [OrderController::class, 'getDivisions']);
+    Route::get('/get_order_mak/{order_mak}', [OrderController::class, 'getOrderMak']);
+    Route::get('/get_order_title/{id}', [OrderController::class, 'getOrderTitle']);
+    Route::get('/get_order_item/{id}', [OrderController::class, 'getOrderItem']);
 
 
 
@@ -78,8 +81,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/category/{category}/update', [CategoryController::class, 'update']);
 
     //report
-    Route::get('/report', [ReportController::class, 'index'])->name('report')->name('category')->middleware('menu.permission:read_report');
-    Route::post('/report/show', [ReportController::class, 'show']);
+    Route::get('/report/filter/{type?}', [ReportController::class, 'filter'])->name('report_filter')->middleware('menu.permission:read_report');
+    Route::post('/report/show/{type?}', [ReportController::class, 'show'])->name('report_show');
+
 
     // permission
     Route::get('/roles-and-permission', [UserController::class, 'indexRole'])->name('role-and-permission')->middleware('menu.permission:read_role_&_permission');

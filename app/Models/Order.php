@@ -50,4 +50,79 @@ class Order extends Model
         return $this->belongsTo(User::class, 'approval_rejected_by','id');
     }
 
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function splitToDivisions()
+    {
+        return Division::whereIn('id', $this->split_to)->get();
+    }
+
+    public function totalSplitPerDivision()
+    {
+        $split=$this->orderMak()
+            ->where('is_split', 1) // Hanya order yang di-split
+            ->with('orderTitle.orderItem')
+            ->get()
+            ->flatMap(fn ($orderMak) => $orderMak->orderTitle)
+            ->flatMap(fn ($orderTitle) => $orderTitle->orderItem)
+            ->groupBy(fn ($orderItem) => $orderItem->orderTitle->orderMak->split_to) // Group by division_id
+            ->map(fn ($items) => $items->sum('total_price')); // Sum total_price per division
+            
+        
+        return ['total_split'=>$split->sum(),'split_per_division'=>$split->toArray()];
+    }
+
+    public function totalOperational()
+    {
+        return $this->orderMak()
+            ->where('is_split', 0) // Hanya yang tidak di-split
+            ->with('orderTitle.orderItem')
+            ->get()
+            ->flatMap(fn ($orderMak) => $orderMak->orderTitle)
+            ->flatMap(fn ($orderTitle) => $orderTitle->orderItem)
+            ->sum('total_price'); // Hitung total harga operasional
+    }
+
+    public function totalPerMak()
+    {
+        return $this->orderMak()
+        ->where('is_split', 0) // Hanya yang tidak di-split
+        ->with('orderTitle.orderItem')
+        ->get()
+        ->groupBy(fn ($orderMak) => $orderMak->mak_id) // Kelompokkan berdasarkan mak_id dari order_maks
+        ->map(fn ($orderMaks) => $orderMaks->flatMap(fn ($orderMak) => $orderMak->orderTitle)
+            ->flatMap(fn ($orderTitle) => $orderTitle->orderItem)
+            ->sum('total_price') // Total harga dari order_items
+        )
+        ->toArray(); // Konversi ke array
+    }
+
+    public function rev0()
+    {
+        $rev0= Order::where('rev', 0) // Ambil semua order dengan rev = 0
+            ->where('job_number', $this->job_number) // Kelompokkan berdasarkan job_number
+            ->with([
+                'orderMak' => function ($query) {
+                    $query->where('is_split', 0); // Pastikan hanya mengambil orderMak dengan is_split=0
+                },
+                'orderMak.orderTitle.orderItem'
+            ])
+            ->get();
+        
+            $operational=$rev0->pluck('orderMak') // Ambil semua orderMak terkait
+            ->flatten() // Rata-kan hasil collection
+            ->pluck('orderTitle') // Ambil semua orderTitle terkait
+            ->flatten()
+            ->pluck('orderItem') // Ambil semua orderItem terkait
+            ->flatten()
+            ->sum('total_price'); // Hitung total harga operasional
+
+            $job_price = optional($rev0->first())->price ?? 0;
+            
+            return ['operational'=>$operational,'job_price'=>$job_price];
+    }
+
 }

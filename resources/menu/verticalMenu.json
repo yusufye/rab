@@ -29,25 +29,38 @@
       "permission_name": "category"
     },
     {
-      "url": "/report",
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
       "name": "Report",
       "slug": "report",
-      "permission_name": "report"
+      "permission_name": "report",
+      "submenu": [
+        {
+          "url": "report/filter/detail",
+          "name": "Detail",
+          "slug": "report-detail",
+          "permission_name": "report"
+        },
+        {
+          "url": "report/filter/compare",
+          "name": "Compare",
+          "slug": "report-compare",
+          "permission_name": "report"
+        }
+      ]
     },
     {
       "url": "/user",
       "name": "User",
       "icon": "menu-icon tf-icons mdi mdi-account-group",
       "slug": "user",
-      "permission_name":"user"
+      "permission_name": "user"
     },
     {
       "url": "/roles-and-permission",
       "name": "Role & Permission",
       "icon": "menu-icon tf-icons mdi mdi-security",
       "slug": "role-and-permission",
-      "permission_name":"Role & Permission"
+      "permission_name": "Role & Permission"
     }
   ]
 }

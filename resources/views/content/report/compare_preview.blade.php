@@ -34,6 +34,7 @@
     </thead>
     <tbody>
         @foreach ($orders as $jobNumber => $orderGroup)
+
     <tr>
         <td colspan="{{ count($revisions) * 11 + 1 }}"><strong>{{ $jobNumber }}</strong></td>
     </tr>
@@ -61,24 +62,30 @@
         </tr>
 
         @php $no = 0; @endphp
+        
         @foreach ($ordersByMak->pluck('orderTitle')->flatten()->groupBy('title') as $title => $orderTitles)
+            @php
+                $title_ids=$orderTitles->pluck('id')->toArray();
+            @endphp
             @php $no++; @endphp
             <tr class="title_header">
                 <td>{{ $no }}</td>
                 <td colspan="{{ count($revisions) * 10 + 1 }}">&nbsp;&nbsp;&nbsp;{{ $title ?? 'Tanpa Judul' }}</td>
             </tr>
-
+           
             @foreach ($orderTitles->pluck('orderItem')->flatten()->groupBy('item') as $itemName => $orderItems)
                 <tr>
                     <td></td>
                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $itemName ?? 'Tanpa Item' }}</td>
 
                     @foreach ($revisions as $rev)
+                        
                         @php
                             $revData = $orderGroup->where('rev', $rev)->pluck('orderMak')
                                 ->flatten()->pluck('orderTitle')
                                 ->flatten()->pluck('orderItem')
                                 ->flatten()->where('item', $itemName)
+                                ->where('order_title_id', $title_ids[$rev])
                                 ->first();
 
                             $total_price = optional($revData)->total_price ?? 0;
@@ -102,7 +109,7 @@
 
         {{-- Total Per MAK Per Revisi --}}
         <tr>
-            <td colspan="2"><strong>Total {{ $makName }}</strong></td>
+            <td colspan="2"><strong>Total</strong></td>
             @foreach ($revisions as $rev)
                 <td colspan="9"></td>
                 <td><strong>{{ number_format($sum_mak_per_rev[$rev], 2) }}</strong></td>

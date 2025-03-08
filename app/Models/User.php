@@ -271,4 +271,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class, 'approver_id_3');
     }
+
+    public function creteOrder()
+    {
+        return $this->hasMany(Order::class, 'created_by');
+    }
+
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'division_id');
+    }
 }

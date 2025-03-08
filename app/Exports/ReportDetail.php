@@ -2,28 +2,33 @@
 
 namespace App\Exports;
 
-use App\Models\Order;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-class OrdersExport implements FromView
+class ReportDetail implements FromView,WithEvents
 {
     protected $orders;
-    protected $revisions;
+    protected $divisions;
+    protected $maks;
 
-    public function __construct($orders, $revisions)
+    public function __construct($orders, $maks, $divisions)
     {
-        $this->orders = $orders;
-        $this->revisions = $revisions;
+        $this->orders    = $orders;
+        $this->divisions = $divisions;
+        $this->maks      = $maks;
     }
 
     public function view(): View
     {
-        return view('content.report.order_show', [
-            'orders' => $this->orders,
-            'revisions' => $this->revisions,
-        ]);
+        $orders    = $this->orders ;
+        $divisions = $this->divisions ;
+        $maks      = $this->maks ;
+        return view('content.report.detail_excel', compact('orders','maks','divisions'));
     }
 
     public function registerEvents(): array
@@ -33,7 +38,7 @@ class OrdersExport implements FromView
                 $sheet = $event->sheet->getDelegate();
                 $lastRow = $sheet->getHighestRow(); // Ambil baris terakhir yang terisi
                 $lastColumn = $sheet->getHighestColumn(); // Ambil kolom terakhir yang terisi
-
+                
                 // Terapkan border ke semua sel yang digunakan
                 $styleArray = [
                     'borders' => [
@@ -48,8 +53,13 @@ class OrdersExport implements FromView
                     ],
                 ];
 
+                foreach (range('A', 'AZ') as $col) {
+                    $sheet->getColumnDimension($col)->setAutoSize(true);
+                }
+
                 $sheet->getStyle("A1:{$lastColumn}{$lastRow}")->applyFromArray($styleArray);
             },
         ];
     }
+
 }
