@@ -79,7 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     //report
     Route::get('/report/filter/{type?}', [ReportController::class, 'filter'])->name('report_filter')->middleware('menu.permission:read_report');
-    Route::post('/report/show/{type?}', [ReportController::class, 'show']);
+    Route::post('/report/show/{type?}', [ReportController::class, 'show'])->name('report_show');
 
 
     // permission

@@ -2,7 +2,7 @@
 
 @section('title', 'Order Report')
 @section('content')
-<form action="{{url('report/show/'.$type)}}" method="POST" id="form-report">
+<form action="{{url('report/show/'.$type)}}" method="POST" id="form-report" target="_blank">
     @csrf
 
     <div class="row mb-4">
@@ -22,7 +22,7 @@
 
                             <div class="col">
                                 <div class="form-floating form-floating-outline mb-4">
-                                    <input class="form-control" type="date" id="html5-date-input" name="start_date">
+                                    <input class="form-control" type="date" id="html5-date-input" name="end_date">
                                     <label for="html5-date-input">End Date</label>
                                 </div>
                             </div>

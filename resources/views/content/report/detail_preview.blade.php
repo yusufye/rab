@@ -78,12 +78,18 @@
                 <th>Profit Asumsi Juknis (%)</th>
                 <th>Profit Asumsi Juknis (Rp)</th>
                 <th>Profit Gab (Rp)</th>
-                <th>OP rev-0</th>
+                <th>Direct Cost Sblm (Rp)</th>
+                <th>Direct Cost Sblm (%)</th>
+                <th>Direct Cost Stlh (Rp)</th>
+                <th>Direct Cost Stlh (%)</th>
 
             </tr>
         </thead>
         <tbody>
             @foreach ($orders as $order)
+            @php
+                $splitTotals = $order->totalSplitPerDivision();
+            @endphp
                 <tr>
                     <td>
                         {{$order->createdBy->division->division_name}}
@@ -98,13 +104,11 @@
                         {{ $order->splitToDivisions()->pluck('division_name')->implode(', ') }}
                     </td>
                     <td>
-                        {{ number_format($order->orderMak->where('is_split', 1)->sum('total_split'), 2) }}
+                        {{ number_format($splitTotals['total_split'], 2) }}
                     </td>
-                    @php
-                        $splitTotals = $order->totalSplitPerDivision();
-                    @endphp
+                    
                     @foreach ($divisions as $division)
-                        <td>{{ number_format($splitTotals[$division->id] ?? 0, 0, ',', '.') }}</td>
+                        <td>{{ number_format($splitTotals['split_per_division'][$division->id] ?? 0, 0, ',', '.') }}</td>
                     @endforeach
                     <td>
                         {{\Carbon\Carbon::parse($order->date_from)->format('d-M-Y')}}
@@ -144,8 +148,21 @@
                     <td>
 
                     </td>
+
+                    @php
+                        $rev0=$order->rev0();
+                    @endphp
                     <td class="text-right">
-                        {{ number_format($order->totalOperationalCost(), 0, ',', '.') }}
+                        {{ number_format($rev0['operational'], 0, ',', '.') }}
+                    </td>
+                    <td class="text-right">
+                        {{ $rev0['operational']/$rev0['job_price'] }}
+                    </td>
+                    <td>
+                        {{ number_format($order->totalOperational(), 0, ',', '.') }}
+                    </td>
+                    <td>
+                        {{ number_format($order->totalOperational()/$order->price, 2) }}
                     </td>
                 </tr>
             @endforeach

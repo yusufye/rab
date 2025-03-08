@@ -23,8 +23,6 @@ class ReportController extends Controller
         }elseif ($type=='detail') {
             return view('content.report.detail_filter',compact('type'));
         }
-        
-
     }
 
     public function show($type=null,Request $request){
@@ -48,7 +46,7 @@ class ReportController extends Controller
                 return view('content.report.order_show',compact('orders','revisions'));
             }
            
-           if($request->action == 'download'){
+            if($request->action == 'download'){
                 $safeJobNumber=[];
                 foreach ($request->order as $job_number) {
                     $safeJobNumber[]=str_replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $job_number);
@@ -57,7 +55,7 @@ class ReportController extends Controller
                 $fileName       = $send_file_name;
                 
                 return Excel::download(new OrdersExport($orders, $revisions), "orders-{$fileName}.xlsx");
-           }
+            }
         }elseif ($type=='detail') {
             $orders = Order::with([
                 'orderMak' => function ($query) {
@@ -67,6 +65,13 @@ class ReportController extends Controller
                 'createdBy.division', // Ambil user yang membuat order dan relasi divisinya
                 'orderMak.orderTitle.orderItem'
             ])
+            ->whereNotIn('status',['REVISED','CANCELLED'])
+            ->when($request->start_date, function ($query) use ($request) {
+                $query->whereDate('date_from', '>=', $request->start_date);
+            })
+            ->when($request->end_date, function ($query) use ($request) {
+                $query->whereDate('date_to', '<=', $request->end_date);
+            })
             ->orderBy('job_number')
             ->orderBy('rev')
             ->get();
@@ -75,15 +80,14 @@ class ReportController extends Controller
             $maks= Mak::get();
             $divisions= Division::get();
             
-    
             if($request->action == 'view'){
-                return view('content.report.detail_show',compact('orders','maks','divisions'));
+                return view('content.report.detail_preview',compact('orders','maks','divisions'));
             }
            
-           if($request->action == 'download'){
-                
-                return Excel::download(new ReportDetail($orders, $revisions), "orders-detail.xlsx");
-           }
+            if($request->action == 'download'){
+                    
+                    return Excel::download(new ReportDetail($orders,$maks,$divisions), "orders-detail.xlsx");
+            }
         }
         
     }
