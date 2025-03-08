@@ -643,62 +643,83 @@ class OrderController extends Controller
 
     public function revise(Order $order){
         try {
-            $invalid=0;
-            $message = ['success' => 'Order berhasil di simpan'];
-           //validate
+            DB::beginTransaction(); // Mulai transaksi
+        
+            $invalid = 0;
+            $message = ['success' => 'Revisi Berhasil'];
+        
+            if (in_array($order->status, ['DRAFT', 'CLOSED', 'REVISED'])) {
+                $message = ['success' => "{$order->status} Tidak dapat direvisi"];
+                $invalid++;
+            }
+
            //valid user
-        //    if (Auth::id()<>$order->user_id) {
-        //     $message = ['error' => 'Revise Order Failed, Invalid Users'];
-        //     $invalid++;
-        //    }
-
-           if (in_array($order->status,['DRAFT','CLOSED','REVISED'])) {
-            $message = ['success' => "{$order->status} Can't be Revised" ];
-            $invalid++;
+           if (auth()->user()->id<>$order->created_by) {
+                $message = ['success' => 'Revise Failed, Invalid Users'];
+                $invalid++;
            }
-           if ($invalid==0) {
-                
-                $new_order         = $order->replicate();
-                $new_order->status = 'DRAFT';
-                $new_order->rev    = $order->rev+1;
-                $new_order->prev_id= $order->id;
+        
+            if ($invalid == 0) {
+                $new_order                             = $order->replicate();
+                $new_order->status                     = 'DRAFT';
+                $new_order->rev                        = $order->rev + 1;
+                $new_order->prev_id                    = $order->id;
+                $new_order->approved_date_1            = null;
+                $new_order->approved_1_by              = null;
+                $new_order->approved_date_2            = null;
+                $new_order->approved_2_by              = null;
+                $new_order->approved_date_3            = null;
+                $new_order->approved_3_by              = null;
+                $new_order->approval_rejected_notes    = null;
+                $new_order->approval_rejected_by       = null;
+                $new_order->approval_rejected_datetime = null;
+                $new_order->reviewed_notes             = null;
+                $new_order->approval_step              = 0;
                 $new_order->save();
-
-                $order_maks = OrderMak::with(['orderTitle.orderItem']) ->where('order_id', $order->id) ->get();
-
+        
+                $order_maks = OrderMak::with(['orderTitle.orderItem'])
+                    ->where('order_id', $order->id)
+                    ->get();
+        
                 foreach ($order_maks as $order_mak) {
-                    // 3. Replicate OrderMak
                     $new_order_mak = $order_mak->replicate();
                     $new_order_mak->order_id = $new_order->id;
                     $new_order_mak->save();
-
+        
                     foreach ($order_mak->orderTitle as $order_title) {
-                        // 4. Replicate OrderTitle
                         $new_order_title = $order_title->replicate();
                         $new_order_title->order_mak_id = $new_order_mak->id;
                         $new_order_title->save();
-
+        
                         foreach ($order_title->orderItem as $order_item) {
-                            // 5. Replicate OrderItem
                             $new_order_item = $order_item->replicate();
                             $new_order_item->order_title_id = $new_order_title->id;
                             $new_order_item->save();
                         }
                     }
                 }
-
-                $order->update(['status'=>'REVISED']);
-
-
+        
+                // Perbaikan bagian OrderChecklist
+                $order_checklists = OrderChecklist::where('order_id', $order->id)->get();
+                foreach ($order_checklists as $order_checklist) {
+                    $new_order_checklist = $order_checklist->replicate();
+                    $new_order_checklist->order_id = $new_order->id;
+                    $new_order_checklist->save();
+                }
+        
+                $order->update(['status' => 'REVISED']);
+        
+                DB::commit(); // Simpan semua perubahan
             }
-           
+        
             return redirect('/order')->with($message);
         } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e);
-            $message = ['failed' => 'Order gagal di simpan'];
+            DB::rollBack(); // Batalkan semua perubahan jika ada error
+            Log::error($e);
+            $message = ['failed' => 'Revisi Gagal'];
             return redirect('/order')->with($message);
         }
+        
         
     }
 
