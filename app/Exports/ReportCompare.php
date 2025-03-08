@@ -2,12 +2,15 @@
 
 namespace App\Exports;
 
-use App\Models\Order;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-class OrdersExport implements FromView
+class ReportCompare implements FromView,WithEvents
 {
     protected $orders;
     protected $revisions;
@@ -20,7 +23,7 @@ class OrdersExport implements FromView
 
     public function view(): View
     {
-        return view('content.report.order_show', [
+        return view('content.report.compare_excel', [
             'orders' => $this->orders,
             'revisions' => $this->revisions,
         ]);

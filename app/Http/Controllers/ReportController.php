@@ -6,8 +6,8 @@ use App\Models\Mak;
 use App\Models\Order;
 use App\Models\Division;
 use Illuminate\Http\Request;
-use App\Exports\OrdersExport;
 use App\Exports\ReportDetail;
+use App\Exports\ReportCompare;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,7 +19,7 @@ class ReportController extends Controller
             $divisions = Division::all();
             $order = Order::groupBy('job_number')->pluck('job_number');
 
-            return view('content.report.order',compact('type','divisions','order'));
+            return view('content.report.compare_filter',compact('type','divisions','order'));
         }elseif ($type=='detail') {
             return view('content.report.detail_filter',compact('type'));
         }
@@ -43,7 +43,7 @@ class ReportController extends Controller
             $revisions = $orders->flatten()->pluck('rev')->unique()->sort()->values();
     
             if($request->action == 'view'){
-                return view('content.report.order_show',compact('orders','revisions'));
+                return view('content.report.compare_preview',compact('orders','revisions'));
             }
            
             if($request->action == 'download'){
@@ -54,7 +54,7 @@ class ReportController extends Controller
                 $send_file_name=join('-',$safeJobNumber);
                 $fileName       = $send_file_name;
                 
-                return Excel::download(new OrdersExport($orders, $revisions), "orders-{$fileName}.xlsx");
+                return Excel::download(new ReportCompare($orders, $revisions), "orders-{$fileName}.xlsx");
             }
         }elseif ($type=='detail') {
             $orders = Order::with([

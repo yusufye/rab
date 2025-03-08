@@ -2,7 +2,7 @@
 
 @section('title', 'Order Report')
 @section('content')
-<form action="{{url('report/show')}}" method="POST" id="form-report">
+<form action="{{url('report/show/'.$type)}}" method="POST" id="form-report" target="_blank">
     @csrf
 
     <div class="row mb-4">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" name="action" value="view" class="btn btn-primary">View</button>
-                    <button type="submit" name="action" value="download" class="btn btn-primary">Doenload</button>
+                    <button type="submit" name="action" value="download" class="btn btn-primary">Download</button>
                 </div>
             </div>
         </div>
