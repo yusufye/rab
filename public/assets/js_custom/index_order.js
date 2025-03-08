@@ -1,12 +1,9 @@
 $(document).ready(function () {
-
   // filter
 
-  $('#status').on('change',function(){
-      dt_order.ajax.reload();
+  $('#status').on('change', function () {
+    dt_order.ajax.reload();
   });
-
-
 
   var addOrder = 'order/create';
 
@@ -16,9 +13,9 @@ $(document).ready(function () {
     ajax: {
       url: 'order',
       type: 'GET',
-      data: function(d) { 
-        d.status = $('#status').val();  // Ambil nilai status terbaru
-    }
+      data: function (d) {
+        d.status = $('#status').val(); // Ambil nilai status terbaru
+      }
     },
     columns: [
       {
@@ -62,7 +59,7 @@ $(document).ready(function () {
         searchable: false,
         orderable: false,
         className: 'text-center'
-      },
+      }
     ],
     language: {
       sLengthMenu: '_MENU_',
@@ -93,5 +90,25 @@ $(document).ready(function () {
           ]
         : [],
     initComplete: function () {}
+  });
+
+  $(document).on('click', '.btn-revise', function () {
+    let reviseUrl = $(this).data('url');
+    Swal.fire({
+      title: '<h4>Apakah anda yakin akan merevisi dokomen ini ?</h4>',
+      footer:
+        'Setelah revisi berhasil, akan membentuk dokumen baru dengan status DRAFT dan dokumen ini tidak bisa dirubah kembali',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      customClass: {
+        confirmButton: 'btn btn-primary me-3',
+        cancelButton: 'btn btn-label-secondary'
+      }
+    }).then(result => {
+      if (result.isConfirmed) {
+        window.location.href = reviseUrl;
+      }
+    });
   });
 });
