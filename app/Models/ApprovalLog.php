@@ -14,7 +14,10 @@ class ApprovalLog extends Model
 
     protected $table = 'approval_logs';
 
-    public function logBy():BelongsTo{
+    public function order():BelongsTo{
         return $this->belongsTo(Order::class);
+    }
+    public function user():BelongsTo{
+        return $this->belongsTo(User::class,'log_by','id');
     }
 }

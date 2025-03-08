@@ -23,11 +23,17 @@ $(document).ready(function() {
         const rawValue = $(this).val(); 
         $(this).val(formatRupiah(rawValue, 'Rp '));
     });
+    
+    $(document).on('click', '.btn-status-order', function (e) {
+        e.preventDefault();        
+        let orderId = $(this).data('order-id');        
+        logStatusOrder(orderId);
+    });
+
+    
+
 });
 
- 
- 
- 
  // format rupiah
  function formatRupiah(value, prefix) {
     const numberString = value.replace(/\D/g, ''); // Hanya ambil angka
@@ -49,5 +55,43 @@ $(document).ready(function() {
     }
 
     return prefix ? prefix + rupiah : rupiah;
+}
+
+ function logStatusOrder(orderId) {
+        
+        $.ajax({
+            url: '/get-status-order/' + orderId,
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+                if (response.success) {
+                    $('#modal_status_order').modal('show');
+        
+                    let tableBody = $('#tbl-status-order tbody');
+                    tableBody.empty(); 
+        
+                    if (response.data.length > 0) {
+                        response.data.forEach(function (item) {
+                            let formattedDate = moment(item.log_datetime).format('DD MMM YYYY HH:mm:ss');
+
+                            let row = `<tr>
+                                <td>${item.type??''}</td>
+                                <td>${item.notes??''}</td>
+                                <td>${item.user?.name??''}</td>
+                                <td>${formattedDate}</td>
+                            </tr>`;
+                            tableBody.append(row);
+                        });
+                    } else {
+                        tableBody.append('<tr><td colspan="4" class="text-center">No data available</td></tr>');
+                    }
+                }
+            },
+            error: function (xhr) {
+                toastr.error('Something went wrong!', 'Error');
+                console.error(xhr.responseText);
+            }
+        });
 }
 

@@ -44,9 +44,11 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-sm-3">
-                    <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
-                        {{ $order->status }}
-                    </span>
+                <a href="#" class="btn-status-order" data-order-id="{{$order->id}}">
+                        <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
+                            {{ $order->status }}
+                        </span>                        
+                    </a>
                 </div>
                 
             </div>

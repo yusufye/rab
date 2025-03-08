@@ -63,6 +63,7 @@ class OrderController extends Controller
                     'RELEASED'  => 'bg-info',
                     'APPROVED'  => 'bg-primary',
                     'REVISED'   => 'bg-dark',
+                    'CANCELLED'   => 'bg-danger',
                     default     => 'bg-secondary',
                 };
                 
@@ -123,20 +124,23 @@ class OrderController extends Controller
                     return '
                     <div class="dropdown dropstart">
                         <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                            <i class="mdi mdi-dots-vertical"></i>
+                            <span class="mdi mdi-dots-vertical"></span>
                         </button>
                         <div class="dropdown-menu">
                             <a href="'.$editUrl.'" class="dropdown-item" title="Edit">
-                                <i class="mdi mdi-square-edit-outline"></i> Edit
+                                <span class="mdi mdi-square-edit-outline"></span> Edit
                             </a>
                             <a href="'.$viewUrl.'" class="dropdown-item" title="View">
-                                <i class="mdi mdi-file-outline"></i> View
+                                <span class="mdi mdi-file-outline"></span> View
                             </a>
                             <a href="'.$reviseUrl.'" class="dropdown-item '.$disabled_button_revise.'" title="Revise">
-                                <i class="mdi mdi-autorenew"></i> Revise
+                                <span class="mdi mdi-autorenew"></span> Revise
+                            </a>
+                            <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
+                                <span class="mdi mdi-file-pdf-box"></span> Pdf
                             </a>
                             <a href="'.$excel.'" class="dropdown-item" title="Excel">
-                                <i class="mdi mdi-file-excel-box"></i> Excel
+                                <span class="mdi mdi-file-excel-box"></span> Excel
                             </a>
 
                         </div>
@@ -145,17 +149,17 @@ class OrderController extends Controller
                     return '
                       <div class="dropdown dropstart">
                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                            <i class="mdi mdi-dots-vertical"></i>
+                            <span class="mdi mdi-dots-vertical"></span>
                         </button>
                         <div class="dropdown-menu">
                             <a href="'.$viewUrl.'" class="dropdown-item" title="View">
-                                <i class="mdi mdi-file-outline"></i> View
+                                <span class="mdi mdi-file-outline"></span> View
                             </a>
                             <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
-                                <i class="mdi mdi-file-pdf-box"></i> Pdf
+                                <span class="mdi mdi-file-pdf-box"></span> Pdf
                             </a>
                             <a href="'.$excel.'" class="dropdown-item" title="Excel">
-                                <i class="mdi mdi-file-excel-box"></i> Excel
+                                <span class="mdi mdi-file-excel-box"></span> Excel
                             </a>
                          </div>  
                      </div>';              
@@ -730,6 +734,19 @@ class OrderController extends Controller
                 $message = 'Order berhasil di Submit';
             }
 
+            // admin batal
+            if($request->status == 'CANCELLED'){    
+
+                if($order->status != 'DRAFT'){
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus DRAFT']);
+                }
+                
+                $data_update= [
+                    'status' => $request->status,
+                ];         
+                $message = 'Order berhasil di Batalkan';
+            }
+
             // reject head_reviewer and approver 1,2,3
             if($request->status == 'DRAFT'){
 
@@ -1051,6 +1068,19 @@ class OrderController extends Controller
         }
     
         return response()->json(['orderItem' => $orderItem],200);
+
+    }
+
+    public function getStatusOrderHistory($id)
+    {               
+        try{
+            $status_logs = ApprovalLog::with('user')->where('order_id',$id)->orderByDesc('updated_at')->get();
+            return response()->json(['success'=>true,'msg'=> 'Status Order berhasil diambil','data'=> $status_logs],200);      
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            return response()->json(['success'=>false,'msg'=> 'Status Order gagal diambil','data'=>[]],500);
+        }
 
     }
 }

@@ -57,9 +57,11 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-sm-3">
-                    <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
-                        {{ $order->status }}
-                    </span>
+                    <a href="#" class="btn-status-order" data-order-id="{{$order->id}}">
+                        <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
+                            {{ $order->status }}
+                        </span>                        
+                    </a>
                 </div>
                 
             </div>
@@ -80,9 +82,11 @@
                     
                     <div class="d-flex align-items-center ms-auto">
                         
-                       
+                        <button type="button" class="btn btn-danger ms-2" id="button-batal" title="Batal"
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-cancel"></span></button>
+                        
                         <button type="button" class="btn btn-secondary ms-2" id="button-edit" title="Simpan Draft"
-                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-content-save"></span></button>
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-content-save"></span></button>                       
 
                         <button type="button" class="btn btn-primary ms-2" id="button-to-review" title="Kirim"
                         {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-send"></span></button>

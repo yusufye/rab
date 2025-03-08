@@ -2,6 +2,8 @@
 $containerFooter = ($configData['contentLayout'] === 'compact') ? 'container-xxl' : 'container-fluid';
 @endphp
 
+@include('/modals/orders/modal_status_order')
+
 <!-- Footer-->
 <footer class="content-footer footer bg-footer-theme">
   <div class="{{ $containerFooter }}">
