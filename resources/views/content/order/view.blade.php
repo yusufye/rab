@@ -27,6 +27,16 @@
 
         $selected_divisions = old('division', $divisions_id);
 
+        $user = auth()->user();
+
+        $isDisabled = match (true) {
+            ($user->hasRole('head_reviewer') && $order?->status != 'TO REVIEW') => true,
+            ($user->hasRole('approval_satu') && $order?->status != 'REVIEWED') => true,
+            ($user->hasRole('approval_dua') && !($order?->status == 'APPROVED' && $order?->approval_step == 1)) => true,
+            ($user->hasRole('approval_tiga') && !($order?->status == 'APPROVED' && $order?->approval_step == 2)) => true,
+            default => false,
+        };
+   
     @endphp
 
 
@@ -56,14 +66,14 @@
                     <div class="d-flex align-items-center ms-auto">
                     
                         @if(!auth()->user()->hasAnyRole(['admin','reviewer','checker','Super_admin']))
-                        <button type="button" class="btn btn-danger ms-2" id="button-reject">Reject</button>
+                        <button type="button" class="btn btn-danger ms-2" id="button-reject" {{$isDisabled ? 'disabled' : ''}}>Reject</button>
                         
                             @if(auth()->user()->hasRole('head_reviewer'))
-                                <button type="button" class="btn btn-primary ms-2" id="button-release">Release</button>
+                                <button type="button" class="btn btn-primary ms-2" id="button-release" @disabled($isDisabled)>Release</button>
                             @endif
 
                             @if(!auth()->user()->hasRole('head_reviewer'))
-                                <button type="button" class="btn btn-primary ms-2" id="button-approve">Approve</button>
+                                <button type="button" class="btn btn-primary ms-2" id="button-approve" @disabled($isDisabled)>Approve</button>
 
                             @endif
                         @endif

@@ -304,6 +304,12 @@ class OrderController extends Controller
         ]);
         
         try{
+
+            if($order->status == 'APPROVED'){
+                $message = ['failed' => 'Order telah APPROVED. Tidak dapat mengubah data Order'];
+                return redirect('/order')->with($message);
+            }
+
              DB::beginTransaction();
              $dates = explode(' to ', $request->date_range);
             //  dd($request->date_range);
@@ -688,7 +694,12 @@ class OrderController extends Controller
             $user = auth()->user();
 
             // admin submit
-            if($request->status == 'TO REVIEW'){     
+            if($request->status == 'TO REVIEW'){    
+
+                if($order->status == 'APPROVED'){
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus DRAFT']);
+                }
+                
                 $data_update= [
                     'status' => $request->status,
                 ];         
@@ -983,5 +994,39 @@ class OrderController extends Controller
                 'data' => []
             ], 500);
         }
+    }
+
+    public function getOrderMak(OrderMak $orderMak){
+
+        if(!$orderMak){
+            return response()->json(['orderMak' => []]);
+        }
+    
+        return response()->json(['orderMak' => $orderMak],200);
+
+    }
+
+    public function getOrderTitle($id){
+
+        $orderTitle = OrderTitle::with('orderMak.mak')->find($id);
+
+        if(!$orderTitle){
+            return response()->json(['orderTitle' => []]);
+        }
+    
+        return response()->json(['orderTitle' => $orderTitle],200);
+
+    }
+
+    public function getOrderItem($id){
+
+        $orderItem = OrderItem::with('orderTitle.orderMak.mak')->find($id);
+
+        if(!$orderItem){
+            return response()->json(['orderItem' => []]);
+        }
+    
+        return response()->json(['orderItem' => $orderItem],200);
+
     }
 }

@@ -311,12 +311,7 @@
                             data-order-mak-id="{{$title->id}}" 
                             data-title="{{$title->title}}"
                             data-mak="{{$om->mak->mak_code}}-{{$om->mak->mak_name}}">Add Item</button>
-                            <button id="edit-title" 
-                            data-order-mak-id="{{$title->order_mak_id}}" 
-                            data-order-title-id="{{$title->id}}"
-                            data-mak="{{$om->mak->mak_code}}-{{$om->mak->mak_name}}"
-                            data-title="{{$title->title}}"
-                            class="btn btn-sm btn-success edit-title">Edit Title</button>
+                            <button id="edit-title" data-order-title-id="{{$title->id}}" class="btn btn-sm btn-success edit-title">Edit Title</button>
                             <button data-order-title-id="{{$title->id}}" class="btn btn-sm btn-danger delete-title">Delete Title</button>
                         </div>
                           

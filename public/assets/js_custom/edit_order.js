@@ -148,34 +148,45 @@ $(document).ready(function () {
   });
 
   $(document).on('click', '.edit-mak', function () {
-    var makId = $(this).data('mak-id');
     var orderMakId = $(this).data('order-mak-id');
-    var is_split = $(this).data('order-is-split');
-    var split_to = $(this).data('order-split-to');
 
-    $('#add-mak-modal').modal('show');
-    $('#order_id').val(orderId);
-    $('#mak').val(makId).trigger('change');
-    $('#type_form').val(0);
-    $('#order_mak_id').val(orderMakId);
-    $('#is_split').prop('checked', is_split == 1);
+    $.ajax({
+      url: '/get_order_mak/'+orderMakId,
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+        $('#add-mak-modal').modal('show');
+        $('#order_id').val(response.orderMak.order_id??'');
+        $('#mak').val(response.orderMak.mak_id??'').trigger('change');
+        $('#type_form').val(0);
+        $('#order_mak_id').val(response.orderMak.id??'');
+        $('#is_split').prop('checked', response.orderMak.is_split === 1);
 
-    if (is_split == 1) {
-      $('#div_split_to').show();
-      $('#split_to').val(split_to).trigger('change');
-    } else {
-      $('#div_split_to').hide();
-      $('#split_to').val(-1).trigger('change');
-    }
+        if (response.orderMak.is_split == 1) {
+          $('#div_split_to').show();
+          $('#split_to').val(response.orderMak.split_to).trigger('change');
+        } else {
+          $('#div_split_to').hide();
+          $('#split_to').val(-1).trigger('change');
+        }
 
-    $('#is_split').on('change', function () {
-      if ($(this).prop('checked')) {
-        $('#div_split_to').show();
-      } else {
-        $('#div_split_to').hide();
-        $('#split_to').val(-1).trigger('change');
+        $('#is_split').on('change', function () {
+          if ($(this).prop('checked')) {
+            $('#div_split_to').show();
+          } else {
+            $('#div_split_to').hide();
+            $('#split_to').val(-1).trigger('change');
+          }
+        });
+
+      },
+      error: function (xhr) {
+        toastr.error('Something went wrong!', 'Error');
+        console.error(xhr.responseText);
       }
     });
+
+ 
   });
 
   $('#button-save-mak').on('click', function () {
@@ -252,7 +263,7 @@ $(document).ready(function () {
   $(document).on('click', '.add-title', function () {
     var orderMakId = $(this).data('order-mak-id');
     var dataMak = $(this).data('mak');
-    $('#add-title-modal').modal('show');
+    $('#add-title-modal').modal('show').attr("aria-hidden", "false");
     $('#type_form_title').val(1);
     $('#order_label_mak').html(`Mak: ${dataMak}`);
     $('#order_title_mak_id').val(orderMakId);
@@ -261,16 +272,27 @@ $(document).ready(function () {
   });
 
   $(document).on('click', '.edit-title', function () {
-    var orderMakId = $(this).data('order-mak-id');
     var orderTitleId = $(this).data('order-title-id');
-    var dataMak = $(this).data('mak');
-    var dataTitle = $(this).data('title');
-    $('#add-title-modal').modal('show');
-    $('#type_form_title').val(0);
-    $('#order_label_mak').html(`Mak: ${dataMak}`);
-    $('#order_title_mak_id').val(orderMakId);
-    $('#order_title_id').val(orderTitleId);
-    $('#order_title').val(dataTitle);
+
+    $.ajax({
+      url: '/get_order_title/'+orderTitleId,
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+        $('#add-title-modal').modal('show').attr("aria-hidden", "false");
+        $('#type_form_title').val(0);
+        $('#order_label_mak').html(`Mak: ${response.orderTitle.order_mak?.mak?.mak_name??''}`);
+        $('#order_title_mak_id').val(response.orderTitle?.order_mak_id??'');
+        $('#order_title_id').val(response.orderTitle?.id??'');
+        $('#order_title').val(response.orderTitle?.title??'');
+
+      },
+      error: function (xhr) {
+        toastr.error('Something went wrong!', 'Error');
+        console.error(xhr.responseText);
+      }
+    });
+
   });
 
   $('#button-save-title').on('click', function () {
@@ -346,7 +368,7 @@ $(document).ready(function () {
     var dataMak = $(this).data('mak');
     var dataTitle = $(this).data('title');
 
-    $('#add-item-modal').modal('show');
+    $('#add-item-modal').modal('show').removeAttr("aria-hidden");;
 
     $('#order_label_mak_item').html(`Mak: ${dataMak}`);
     $('#order_label_title').html(`Title: ${dataTitle}`);
@@ -368,45 +390,47 @@ $(document).ready(function () {
   });
 
   $(document).on('click', '.edit-item', function () {
-    var orderTitleId = $(this).data('order-title-id');
     var orderItemId = $(this).data('order-item-id');
-    var dataMak = $(this).data('mak');
-    var dataTitle = $(this).data('title');
-    var dataOrderItem = $(this).data('order-item');
-    var dataQty1 = $(this).data('qty-1');
-    var dataUnit1 = $(this).data('unit-1');
-    var dataQty2 = $(this).data('qty-2');
-    var dataUnit2 = $(this).data('unit-2');
-    var dataQty3 = $(this).data('qty-3');
-    var dataUnit3 = $(this).data('unit-3');
-    var dataTotalQty = $(this).data('total-qty');
-    var dataTotalUnit = $(this).data('total-unit');
-    var dataPriceUnit = $(this).data('price-unit');
-    var dataTotalPrice = $(this).data('total-price');
 
-    $('#add-item-modal').modal('show');
+    $.ajax({
+      url: '/get_order_item/'+orderItemId,
+      type: 'GET',
+      dataType: 'json',
+      success: function (response) {
+        $('#add-item-modal').modal('show').removeAttr("aria-hidden");;
 
-    $('#order_label_mak_item').html(`Mak: ${dataMak}`);
-    $('#order_label_title').html(`Title: ${dataTitle}`);
+        $('#order_label_mak_item').html(`Mak: ${response.orderItem?.order_title?.order_mak?.mak?.mak_name??''}`);
+        $('#order_label_title').html(`Title: ${response.orderItem?.order_title?.title??''}`);
 
-    $('#type_form_item').val(0);
-    $('#order_title_id_item').val(orderTitleId);
-    $('#order_item_id').val(orderItemId);
-    $('#order_item').val(dataOrderItem);
-    $('#order_item_qty_1').val(dataQty1);
-    $('#order_item_unit_1').val(dataUnit1);
-    $('#order_item_qty_2').val(dataQty2);
-    $('#order_item_unit_2').val(dataUnit2);
-    $('#order_item_qty_3').val(dataQty3);
-    $('#order_item_unit_3').val(dataUnit3);
-    $('#qty_total').val(dataTotalQty);
-    $('#qty_unit').val(dataTotalUnit);
+        $('#type_form_item').val(0);
+        $('#order_title_id_item').val(response.orderItem?.title_id??'');
+        $('#order_item_id').val(response.orderItem?.id??'');
+        $('#order_item').val(response.orderItem?.item??'');
+        $('#order_item_qty_1').val(response.orderItem?.qty_1??'');
+        $('#order_item_unit_1').val(response.orderItem?.unit_1??'');
+        $('#order_item_qty_2').val(response.orderItem?.qty_2??'');
+        $('#order_item_unit_2').val(response.orderItem?.unit_2??'');
+        $('#order_item_qty_3').val(response.orderItem?.qty_3??'');
+        $('#order_item_unit_3').val(response.orderItem?.unit_3??'');
+        $('#qty_total').val(response.orderItem?.qty_total??'');
+        $('#qty_unit').val(response.orderItem?.qty_unit??'');
 
-    var totalDataPriceUnitFormated = 'Rp ' + dataPriceUnit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    var totalDataTotalPrice = 'Rp ' + dataTotalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        var dataPriceUnit = Math.floor(response.orderItem?.price_unit??'0');
+        var dataTotalPrice = Math.floor(response.orderItem?.total_price??'0');
+        var totalDataPriceUnitFormated = 'Rp ' + dataPriceUnit.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        var totalDataTotalPrice = 'Rp ' + dataTotalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
-    $('#price_unit').val(totalDataPriceUnitFormated);
-    $('#total_price').val(totalDataTotalPrice);
+        $('#price_unit').val(totalDataPriceUnitFormated);
+        $('#total_price').val(totalDataTotalPrice);
+
+      },
+      error: function (xhr) {
+        toastr.error('Something went wrong!', 'Error');
+        console.error(xhr.responseText);
+      }
+    });
+
+   
   });
 
   $('#order_item_qty_1, #order_item_qty_2, #order_item_qty_3').on('change keyup', updateTotalQty);
