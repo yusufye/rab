@@ -72,6 +72,9 @@ class ReportController extends Controller
             ->when($request->end_date, function ($query) use ($request) {
                 $query->whereDate('date_to', '<=', $request->end_date);
             })
+            ->when(auth()->user()->hasRole('admin'), function ($query) use ($request) {
+                $query->where('created_by',auth()->user()->id);
+            })
             ->orderBy('job_number')
             ->orderBy('rev')
             ->get();
