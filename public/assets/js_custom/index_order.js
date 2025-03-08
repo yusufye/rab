@@ -31,7 +31,10 @@ $(document).ready(function () {
       {
         data: 'status',
         orderable: true,
-        className: 'text-center'
+        className: 'text-center',
+        render: function (data, type, row) {
+          return `<a href="#" class="btn-status-order" data-order-id="${row.id}">${data}</a>`;
+        }
       },
       {
         data: 'customer',

@@ -57,9 +57,11 @@
         <div class="col-12">
             <div class="row">
                 <div class="col-sm-3">
-                    <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
-                        {{ $order->status }}
-                    </span>
+                    <a href="#" class="btn-status-order" data-order-id="{{$order->id}}">
+                        <span class="badge rounded-pill {{ $badgeClass }} m-2 fw-semibold text-center">
+                            {{ $order->status }}
+                        </span>                        
+                    </a>
                 </div>
                 
             </div>
@@ -80,9 +82,11 @@
                     
                     <div class="d-flex align-items-center ms-auto">
                         
-                       
+                        <button type="button" class="btn btn-danger ms-2" id="button-batal" title="Batal"
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-cancel"></span></button>
+                        
                         <button type="button" class="btn btn-secondary ms-2" id="button-edit" title="Simpan Draft"
-                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-content-save"></span></button>
+                        {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-content-save"></span></button>                       
 
                         <button type="button" class="btn btn-primary ms-2" id="button-to-review" title="Kirim"
                         {{ $order->status !== 'DRAFT' ? 'disabled' : '' }}><span class="mdi mdi-send"></span></button>
@@ -91,6 +95,21 @@
                 </div>
 
                 <div class="card-body">
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" maxlength="25" class="form-control" placeholder="No. Kontrak" id="contract_number" value="{{old('contract_number',$order->contract_number??'')}}" name="contract_number" />
+                                    <label for="contract_number">{{ __('No. Kontrak') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control format-currency" placeholder="Nilai Kontrak" id="contract_price" name="contract_price" value="{{ old('contract_price', isset($order) ? number_format($order->contract_price, 0, ',', '') : '') }}"/>
+                                    <label for="contract_price">{{ __('Nilai Kontrak') }}</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col">
                             <div class="form-floating form-floating-outline mb-4">
@@ -231,20 +250,6 @@
                             @endforelse
                             </div>
                         </div> --}}
-                    </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" maxlength="25" class="form-control" placeholder="Contract Number" id="contract_number" value="{{old('contract_number',$order->contract_number??'')}}" name="contract_number" />
-                                    <label for="contract_number">{{ __('Contract Number') }}</label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control format-currency" placeholder="Contract Price" id="contract_price" name="contract_price" value="{{ old('contract_price', isset($order) ? number_format($order->contract_price, 0, ',', '') : '') }}"/>
-                                    <label for="contract_price">{{ __('Contract Price') }}</label>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

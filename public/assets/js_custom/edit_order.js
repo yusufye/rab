@@ -23,7 +23,7 @@ $(document).ready(function () {
   });
 
   if (statusOrder !== 'DRAFT') {
-    $('button')
+    $('button:not(#modal_status_order button)')
       .prop('disabled', true)
       .on('click', function (e) {
         e.preventDefault();
@@ -36,6 +36,70 @@ $(document).ready(function () {
     mode: 'range',
     defaultDate: dateFrom && dateTo ? [dateFrom, dateTo] : null,
     dateFormat: 'd-M-Y'
+  });
+
+  $('#button-batal').on('click', function () {
+    var isValid = true;
+
+    if (!validateRequiredFields()) {
+      isValid = false;
+    }
+
+    if (isValid) {
+      Swal.fire({
+        title: '<h4>Apakah anda yakin membatalkan dokumen order ini?</h4>',
+        // footer: 'Setelah simpan draft berhasil, anda masih dapat merubah kembali dokumen order ini',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-danger'
+        },
+        buttonsStyling: false
+      }).then(value => {
+        if (value.isConfirmed) {
+          var formData = {
+            order_id: orderId,
+            status: 'CANCELLED'
+          };
+  
+          $.ajax({
+            url: '/order/update_status/submit',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function (response) {
+              if (response.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                  text: response.msg,
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                }).then(() => {
+                  window.location.href = '/order';
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.msg,
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                });
+              }
+            },
+            error: function (xhr) {
+              toastr.error('Something went wrong!', 'Error');
+              console.error(xhr.responseText);
+            }
+          });
+        }
+      });
+    }
   });
 
   $('#button-edit').on('click', function () {
@@ -99,7 +163,7 @@ $(document).ready(function () {
                   confirmButton: 'btn btn-success'
                 }
               }).then(() => {
-                window.location.reload();
+                window.location.href = '/order';
 
                 // window.Livewire.dispatch('refreshPercentage');
                 // window.Livewire.dispatch('refreshOrderMak');

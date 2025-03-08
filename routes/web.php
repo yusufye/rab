@@ -63,6 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/get_order_mak/{order_mak}', [OrderController::class, 'getOrderMak']);
     Route::get('/get_order_title/{id}', [OrderController::class, 'getOrderTitle']);
     Route::get('/get_order_item/{id}', [OrderController::class, 'getOrderItem']);
+    Route::get('/get-status-order/{id}', [OrderController::class, 'getStatusOrderHistory']);
 
 
 

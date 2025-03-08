@@ -63,6 +63,7 @@ class OrderController extends Controller
                     'RELEASED'  => 'bg-info',
                     'APPROVED'  => 'bg-primary',
                     'REVISED'   => 'bg-dark',
+                    'CANCELLED'   => 'bg-danger',
                     default     => 'bg-secondary',
                 };
                 
@@ -111,6 +112,8 @@ class OrderController extends Controller
                 $reviseUrl  = url('order/' . $row->id . '/revise');
                 $pdf        = url('order/' . $row->id . '/download/pdf');
                 $excel      = url('order/' . $row->id . '/download/excel');
+                $list_auth = auth()->user()->hasAnyRole(['reviewer','head_reviewer','approval_satu','approval_dua','approval_tiga']);
+                $disabled_button_pdf = $list_auth ? '' : 'btn-disabled';
 
                 if ($user->hasAnyRole(['admin', 'Super_admin'])) {
                     $list_disabled_btn_revise = ['DRAFT','CLOSED','REVISED'];
@@ -118,23 +121,48 @@ class OrderController extends Controller
                     ? 'btn-disabled' 
                     : '';
 
-
                     return '
-                        <a href="'.$editUrl.'" class="btn btn-sm btn-warning" title="Edit"><span class="mdi mdi-square-edit-outline"></span></a>
-                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info" title="View"><span class="mdi mdi-file-outline"></span></a>
-                        <a data-url="'.$reviseUrl.'" class="btn btn-sm btn-dark btn-revise ' . $disabled_button_revise . '" title="Revise"><span class="mdi mdi-autorenew"></span></a>
-                        <div class="btn-group" id="hover-dropdown-demo">
-                            <button type="button" class="btn btn-success dropdown-toggle waves-effect waves-light" data-bs-toggle="dropdown" data-trigger="hover" aria-expanded="false"><span class="mdi mdi-file"></span></button>
-                            <ul class="dropdown-menu" style="">
-                                <li><a href="'.$pdf.'" class="dropdown-item waves-effect" title="Pdf">Pdf</a></li>
-                                <li><a href="'.$excel.'" class="dropdown-item waves-effect" title="Excel">Excel</a></li>
-                            </ul>
+                    <div class="dropdown dropstart">
+                        <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                            <span class="mdi mdi-dots-vertical"></span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="'.$editUrl.'" class="dropdown-item" title="Edit">
+                                <span class="mdi mdi-square-edit-outline"></span> Edit
+                            </a>
+                            <a href="'.$viewUrl.'" class="dropdown-item" title="View">
+                                <span class="mdi mdi-file-outline"></span> View
+                            </a>
+                            <a href="'.$reviseUrl.'" class="dropdown-item '.$disabled_button_revise.'" title="Revise">
+                                <span class="mdi mdi-autorenew"></span> Revise
+                            </a>
+                            <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
+                                <span class="mdi mdi-file-pdf-box"></span> Pdf
+                            </a>
+                            <a href="'.$excel.'" class="dropdown-item" title="Excel">
+                                <span class="mdi mdi-file-excel-box"></span> Excel
+                            </a>
+
                         </div>
-                    ';                    
+                    </div>';                
                 }else{
                     return '
-                        <a href="'.$viewUrl.'" class="btn btn-sm btn-info">View</a>
-                    ';                    
+                      <div class="dropdown dropstart">
+                       <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                            <span class="mdi mdi-dots-vertical"></span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="'.$viewUrl.'" class="dropdown-item" title="View">
+                                <span class="mdi mdi-file-outline"></span> View
+                            </a>
+                            <a href="'.$pdf.'" class="dropdown-item '. $disabled_button_pdf.'" title="Pdf">
+                                <span class="mdi mdi-file-pdf-box"></span> Pdf
+                            </a>
+                            <a href="'.$excel.'" class="dropdown-item" title="Excel">
+                                <span class="mdi mdi-file-excel-box"></span> Excel
+                            </a>
+                         </div>  
+                     </div>';              
 
                 }              
 
@@ -727,6 +755,19 @@ class OrderController extends Controller
                 $message = 'Order berhasil di Submit';
             }
 
+            // admin batal
+            if($request->status == 'CANCELLED'){    
+
+                if($order->status != 'DRAFT'){
+                    return response()->json(['success' => false, 'msg' => 'Status Order harus DRAFT']);
+                }
+                
+                $data_update= [
+                    'status' => $request->status,
+                ];         
+                $message = 'Order berhasil di Batalkan';
+            }
+
             // reject head_reviewer and approver 1,2,3
             if($request->status == 'DRAFT'){
 
@@ -1048,6 +1089,19 @@ class OrderController extends Controller
         }
     
         return response()->json(['orderItem' => $orderItem],200);
+
+    }
+
+    public function getStatusOrderHistory($id)
+    {               
+        try{
+            $status_logs = ApprovalLog::with('user')->where('order_id',$id)->orderByDesc('updated_at')->get();
+            return response()->json(['success'=>true,'msg'=> 'Status Order berhasil diambil','data'=> $status_logs],200);      
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info($e);
+            return response()->json(['success'=>false,'msg'=> 'Status Order gagal diambil','data'=>[]],500);
+        }
 
     }
 }
