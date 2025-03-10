@@ -50,7 +50,7 @@
                                     <label for="contract_number">{{ __('No. Kontrak') }}</label>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-lg-6 col-sm-12"">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="study_lab" placeholder="{{ __('Judul Kontrak') }}"
                                     name="study_lab" aria-label="Judul Kontrak" required value="{{ old('study_lab') }}" data-required="Judul Kontrak">
@@ -60,13 +60,13 @@
                         
                     </div>
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                     <input type="text" class="form-control format-currency" placeholder="Nilai Kontrak" id="contract_price" name="contract_price" />
                                     <label for="contract_price">{{ __('Nilai Kontrak') }}</label>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
                                     name="customer" aria-label="Customer" required value="{{ old('customer') }}" data-required="Customer">
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <div class="row">
-                    <div class="col">
+                    <div class="col-lg-6 col-sm-12">
                         <div class="form-floating form-floating-outline mb-4">
                             <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
                                 name="title" aria-label="Title" required value="{{ old('title') }}" data-required="Title">
@@ -83,16 +83,17 @@
                         </div>
                     </div>
                     
-                    <div class="col">
+                    <div class="col-lg-6 col-sm-12">
                         <div class="form-floating form-floating-outline mb-4">
                             <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('Job Number') }}"
                                 name="job_number" aria-label="Name" required value="{{ old('job_number') }}" data-required="Job Number">
                             <label for="job_number" class="required">{{ __('No. Job') }}</label>
                         </div>
                     </div>
+                    </div>
                     
                     <div class="row">
-                        <div class="col">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                             <select id="category_id" class="select2 form-select required-field" data-required="Category" name="category_id"
                                 data-placeholder="{{ __('Select Category') }}" required>
@@ -115,7 +116,10 @@
                             </div>
                         </div>
                     </div>                     
-                        <div class="col">
+                        
+                    
+                    <div class="row">
+                    <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" data-required="Date" placeholder="YYYY-MM-DD to YYYY-MM-DD" id="date_range" name="date_range" />
                                 <label for="customer" class="required">{{ __('Tanggal') }}</label>

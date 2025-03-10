@@ -107,20 +107,23 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('No. Job') }}</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Nilai Kontrak') }}</td>
                                     <td style="width: 5%;">:</td>
-                                    <td>{{$order->job_number??'-'}}</td>
+                                    <td>
+                                        {{ $order->contract_price ? 'Rp ' . number_format((float) $order->contract_price, 0, ',', '.') : '-' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Judul') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->title??'-'}}</td>
                                 </tr>
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">{{ __('Kategori') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>{{$order->category ? $order->category->category_name : '-'}}</td>
                                 </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('Pelanggan') }}</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->customer??'-'}}</td>
-                                </tr>
+                                
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">{{ __('Tanggal') }}</td>
                                     <td style="width: 5%;">:</td>
@@ -128,16 +131,16 @@
                                 </tr>
                                 
                                 
-                                @if(!empty($divisions_by_order_header))
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">{{ __('Split ke-') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>
+                                        @if(!empty($divisions_by_order_header))
                                             {{ $divisions_by_order_header->pluck('division_name')->implode(', ') }}
+                                        @endif
                                     </td>
 
                                 </tr>
-                                @endif
                                 
                                 {{--
                                 @forelse($sum_array as $key => $sum)
@@ -162,34 +165,36 @@
                                
                             </table>
                         </div>
+
                         <div class="col-lg-6 col-sm-12">
-                            <table class="table">
+                            <table class="table">                                       
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('Nilai Kontrak') }}</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Judul Kontrak') }}</td>
                                     <td style="width: 5%;">:</td>
-                                    <td>
-                                        {{ $order->contract_price ? 'Rp ' . number_format((float) $order->contract_price, 0, ',', '.') : '-' }}
-                                    </td>
+                                    <td>{{$order->study_lab??'-'}}</td>
                                 </tr>
+
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('Judul') }}</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Pelanggan') }}</td>
                                     <td style="width: 5%;">:</td>
-                                    <td>{{$order->title??'-'}}</td>
+                                    <td>{{$order->customer??'-'}}</td>
+                                </tr>                              
+                               
+
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('No. Job') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->job_number??'-'}}</td>
                                 </tr>
+
                                 <tr>
                                     <td style="white-space: nowrap; width: 10%;">{{ __('Kelompok') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>{{$order->group ??'-'}}</td>
                                 </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('Studay/Lab') }}</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->study_lab??'-'}}</td>
-                                </tr>
-
                                 
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">{{ __('Price') }}</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Nilai Job') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>
                                         {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
@@ -227,6 +232,8 @@
             </div>
         </div>
     </div>
+    </div>
+    
     @livewire('order-percentage-calc', ['orderId' => $order->id])
     
     <br>

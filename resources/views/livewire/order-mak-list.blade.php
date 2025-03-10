@@ -33,7 +33,7 @@
                            data-order-split-to="{{$orderMak->split_to}}"
                            class="btn btn-sm btn-success edit-mak" title="Edit Mak"><span class="mdi mdi-view-dashboard-edit"></span>
                     </button>
-                    <button data-order-mak-id="{{$orderMak->id}}"  class="btn btn-sm btn-danger delete-mak" title="Delete Mak"><span class="mdi mdi-table-column-remove"></span></button>
+                    <button data-order-mak-id="{{$orderMak->id}}" onclick="deleteMak({{ $orderMak->id }})" class="btn btn-sm btn-danger delete-mak" title="Delete Mak"><span class="mdi mdi-table-column-remove"></span></button>
                 </div>
             </div>
             <div class="card-body card-body-detail table-responsive" id="accordion-{{ $orderMak->id }}" >
@@ -51,7 +51,7 @@
                             data-mak="{{$orderMak->mak->mak_code}}-{{$orderMak->mak->mak_name}}"
                             data-title="{{$title->title}}"
                             class="btn btn-sm btn-success edit-title" title="Edit Title"><span class="mdi mdi-playlist-edit"></span></button>
-                            <button data-order-title-id="{{$title->id}}" class="btn btn-sm btn-danger delete-title" title="Delete Title"><span class="mdi mdi-playlist-remove"></span></button>
+                            <button data-order-title-id="{{$title->id}}" onclick="deleteTitle({{ $title->id }})" class="btn btn-sm btn-danger delete-title" title="Delete Title"><span class="mdi mdi-playlist-remove"></span></button>
                         </div>
                     </div>
                     <table class="table table-info table-striped table-bordered mb-5">
@@ -108,7 +108,7 @@
                                         data-price-unit="{{ number_format($item->price_unit, 0, ',', '') }}"
                                         data-total-price="{{ number_format($item->total_price, 0, ',', '') }}"
                                         class="btn btn-sm btn-success edit-item" title="Edit Item"><span class="mdi mdi-table-edit"></span></button>
-                                        <button data-order-item-id="{{$item->id}}" class="btn btn-sm btn-danger delete-item" title="Delete Item"><span class="mdi mdi-table-row-remove"></span></button>
+                                        <button data-order-item-id="{{$item->id}}" onclick="deleteItem({{ $item->id }})" class="btn btn-sm btn-danger delete-item" title="Delete Item"><span class="mdi mdi-table-row-remove"></span></button>
                                     </td>
                                 </tr>
                                 @php

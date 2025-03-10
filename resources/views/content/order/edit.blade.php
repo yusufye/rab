@@ -11,6 +11,12 @@
         opacity: 0.7;
         cursor: not-allowed;
     }
+
+    .custom-invalid {
+        border-color: red !important;
+        background-color: #ffdddd !important;
+    }
+
 </style>
 
 @section('content')
@@ -103,29 +109,55 @@
                                     <label for="contract_number">{{ __('No. Kontrak') }}</label>
                             </div>
                         </div>
+
+                        
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control required-field" id="study_lab" placeholder="{{ __('Judul Kontrak') }}"
+                                    name="study_lab" aria-label="Judul Kontrak" required value="{{ old('study_lab',$order->study_lab??'') }}" data-required="Study/Lab">
+                                <label for="study_lab" class="required">{{ __('Judul Kontrak') }}</label>
+                            </div>
+                        </div>
+
+                       
+                    </div>
+                    <div class="row">
+
                         <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                     <input type="text" class="form-control format-currency" placeholder="Nilai Kontrak" id="contract_price" name="contract_price" value="{{ old('contract_price', isset($order) ? number_format($order->contract_price, 0, ',', '') : '') }}"/>
                                     <label for="contract_price">{{ __('Nilai Kontrak') }}</label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
+
                         <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('No. Job') }}"
-                                        name="job_number" aria-label="Name" required value="{{ old('job_number', $order->job_number ?? '') }}" data-required="Job Number">
-                                <label for="job_number" class="required">{{ __('No. Job') }}</label>
+                                <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
+                                    name="customer" aria-label="Customer" required value="{{ old('customer',$order->customer??'') }}" data-required="Customer">
+                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-sm-12">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
-                                    name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
-                                <label for="title" class="required">{{ __('Judul') }}</label>
-                            </div>
-                        </div>
+
+                        
                     </div>
+                    <div class="row">                       
+                     
+                     <div class="col-lg-6 col-sm-12">
+                             <div class="form-floating form-floating-outline mb-4">
+                                     <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('No. Job') }}"
+                                         name="job_number" aria-label="Name" required value="{{ old('job_number', $order->job_number ?? '') }}" data-required="Job Number">
+                                 <label for="job_number" class="required">{{ __('No. Job') }}</label>
+                             </div>
+                         </div>
+                         <div class="col-lg-6 col-sm-12">
+                             <div class="form-floating form-floating-outline mb-4">
+                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
+                                     name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
+                                 <label for="title" class="required">{{ __('Judul') }}</label>
+                             </div>
+                         </div>
+ 
+                     </div>
                     <div class="row">
                     <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
@@ -148,22 +180,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">                       
-                        <div class="col-lg-6 col-sm-12">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
-                                    name="customer" aria-label="Customer" required value="{{ old('customer',$order->customer??'') }}" data-required="Customer">
-                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-sm-12">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="study_lab" placeholder="{{ __('Study/Lab') }}"
-                                    name="study_lab" aria-label="Study/Lab" required value="{{ old('study_lab',$order->study_lab??'') }}" data-required="Study/Lab">
-                                <label for="study_lab" class="required">{{ __('Study/Lab') }}</label>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="row">                        
                         <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
@@ -177,7 +194,7 @@
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
                                     name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
-                                <label for="price" class="required">{{ __('Nilai Anggaran') }}</label>
+                                <label for="price" class="required">{{ __('Nilai Job') }}</label>
                             </div>
                         </div>
                         @php
@@ -301,7 +318,7 @@
                            data-order-is-split="{{$om->is_split}}" 
                            data-order-split-to="{{$om->split_to}}"
                            class="btn btn-sm btn-success edit-mak">Edit Mak</button>
-                           <button data-order-mak-id="{{$om->id}}"  class="btn btn-sm btn-danger delete-mak">Delete Mak</button>
+                           <button data-order-mak-id="{{$om->id}}"  class="btn btn-sm btn-danger">Delete Mak</button>
                         </div>
                     </div>   
                     

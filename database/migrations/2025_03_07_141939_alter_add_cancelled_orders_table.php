@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status',['DRAFT','TO REVIEW','REVIEWED','APPROVED','CLOSED','CANCELLED'])->change();
+            $table->enum('status',['DRAFT','TO REVIEW','REVIEWED','APPROVED','CLOSED','REVISED','CANCELLED'])->change();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status',['DRAFT','TO REVIEW','REVIEWED','APPROVED','CLOSED']);
+            $table->enum('status',['DRAFT','TO REVIEW','REVIEWED','APPROVED','CLOSED','REVISED']);
         });
     }
 };

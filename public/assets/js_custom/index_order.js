@@ -51,7 +51,7 @@ $(document).ready(function () {
         orderable: true
       },
       {
-        data: 'job_number',
+        data: 'job_number_format',
         orderable: true,
         className: 'text-start'
       },
@@ -89,6 +89,10 @@ $(document).ready(function () {
         searchable: false,
         orderable: false,
         className: 'text-center'
+      },
+      {
+        data: 'job_number',
+        visible: false,
       }
     ],
     language: {
