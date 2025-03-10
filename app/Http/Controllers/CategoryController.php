@@ -53,7 +53,8 @@ class CategoryController extends Controller
              DB::beginTransaction();
            
              Category::create([
-                'category_name' => $request->category_name
+                'category_name'       => $request->category_name,
+                'category_percentage' => $request->category_percentage
              ]);
         
             DB::commit();
@@ -83,7 +84,8 @@ class CategoryController extends Controller
              DB::beginTransaction();
 
             $category->update([
-                'category_name' => $request->category_name
+                'category_name'       => $request->category_name,
+                'category_percentage' => $request->category_percentage
              ]);
         
             DB::commit();

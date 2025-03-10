@@ -40,17 +40,25 @@
                         <button type="button" class="btn btn-primary" id="button-add" title="Simpan"><span class="mdi mdi-content-save"></span></button>
                     </div>
                     </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Category Name') }}"
-                                    name="category_name" aria-label="Name" required value="{{ old('category_name') }}" data-required="Category Name">
-                                <label for="category_name" class="required">{{ __('Category Name') }}</label>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Name') }}"
+                                        name="category_name" aria-label="Name" required value="{{ old('category_name') }}" data-required="Category Name">
+                                    <label for="category_name" class="required">{{ __('Name') }}</label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-floating form-floating-outline mb-4">
+                                    <input type="number" class="form-control required-field" id="category_percentage" placeholder="{{ __('Percentage') }}"
+                                        name="category_percentage" aria-label="Name" required value="{{ old('category_percentage') }}" data-required="Category Name">
+                                    <label for="category_percentage" class="required">{{ __('Percentage') }}</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
+                        
                 </div>
             </div>
         </div>

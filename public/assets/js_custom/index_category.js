@@ -13,6 +13,10 @@ $(document).ready(function () {
         data: 'category_name',
         orderable: true
       },
+      {
+        data: 'category_percentage',
+        orderable: true
+      },
 
       {
         data: 'actions',

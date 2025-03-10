@@ -10,6 +10,7 @@
         <thead class="table-primary">
             <tr>
                 <th>Name</th>
+                <th>Percentage</th>
                 <th>Actions</th>
             </tr>
         </thead>

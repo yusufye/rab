@@ -56,9 +56,17 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Category Name') }}"
+                                <input type="text" class="form-control required-field" id="category_name" placeholder="{{ __('Name') }}"
                                     name="category_name" aria-label="category_name" required value="{{ old('name',$category->category_name??'') }}" data-required="category_name">
-                                <label for="category_name" class="required">{{ __('Category Name') }}</label>
+                                <label for="category_name" class="required">{{ __('Name') }}</label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="number" class="form-control required-field" id="category_percentage" placeholder="{{ __('Percentage') }}"
+                                    name="category_percentage" aria-label="category_percentage" required value="{{ old('name',$category->category_percentage??'') }}" data-required="category_percentage">
+                                <label for="category_percentage" class="required">{{ __('Percentage') }}</label>
                             </div>
                         </div>
                     </div>
