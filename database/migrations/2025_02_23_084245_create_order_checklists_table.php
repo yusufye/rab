@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('order_item_id');
-            $table->decimal('amount',18,2);
+            $table->enum('checklist_type', ['PPJ', 'PPB']);
             $table->string('checklist_number',50);
+            $table->decimal('amount',18,2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();

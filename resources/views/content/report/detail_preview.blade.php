@@ -134,10 +134,10 @@
                         <td>{{ number_format($makTotals[$mak->id] ?? 0, 0, ',', '.') }}</td>
                     @endforeach
                     <td>
-                        {{ number_format($profit/$order->price, 2) }}
+                        {{ number_format($profit/$order->price*100, 2) }}
                     </td>
                     <td>
-                        {{ number_format($order->totalOperational()/$order->price, 2) }}
+                        {{ number_format($order->totalOperational()/$order->price*100, 2) }}
                     </td>
                     <td>
 
@@ -156,13 +156,13 @@
                         {{ number_format($rev0['operational'], 0, ',', '.') }}
                     </td>
                     <td class="text-right">
-                        {{ $rev0['operational']/$rev0['job_price'] }}
+                        {{ $rev0['operational']/$rev0['job_price']*100 }}
                     </td>
                     <td>
                         {{ number_format($order->totalOperational(), 0, ',', '.') }}
                     </td>
                     <td>
-                        {{ number_format($order->totalOperational()/$order->price, 2) }}
+                        {{ number_format($order->totalOperational()/$order->price*100, 2) }}
                     </td>
                 </tr>
             @endforeach
