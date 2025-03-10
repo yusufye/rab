@@ -26,8 +26,8 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h4 class="mb-2">Welcome to {{ config('variables.templateName') }}! 👋</h4>
-                    <p class="mb-4">Please sign-in to your account and start the adventure</p>
+                    <h4 class="mb-2">{{ env('APP_NAME'); }}</h4>
+                    <p class="mb-4">Silahkan masuk ke akun anda</p>
 
                     @if (session('status'))
                         <div class="alert alert-success mb-3 rounded" role="alert">
@@ -94,7 +94,7 @@
                                 @endif -->
                             </div>
                             <button class="btn btn-primary d-grid w-100 btn-login">
-                                Sign in
+                                Masuk
                             </button>
                         </form>
                     </div>
