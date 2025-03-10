@@ -91,54 +91,33 @@
         pointer-events: none;
     }
 
-    /* Header utama */
-.page-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start; /* Rata kiri */
-    padding: 15px 20px;
-    
-}
-
-/* Icon di kiri */
-.header-left .header-icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 15px;
-}
-
-/* Teks di kanan */
-.header-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.header-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0;
-}
-
-.header-subtitle {
-    font-size: 14px;
-    margin: 3px 0 0 0;
-}
 </style>
 
 <div class="container {{($order->status=='DRAFT'?'draft-status':'')}}">
 
-    <div class="page-header">
-        <div class="header-left">
-            <img src="icon-left.png" alt="Icon Kiri" class="header-icon">
-        </div>
-        <div class="header-right">
-            <h1 class="header-title">Judul Header</h1>
-            <p class="header-subtitle">Deskripsi atau informasi tambahan</p>
-        </div>
-    </div>
-    <hr>
-    
+    <table width="100%">
+        <tr>
+            <td width="60" style="padding-right: 15px;">
+                <img src="{{ public_path('assets/img/lemigas/logo.png') }}" alt="Logo" width="80">
+            </td>
+            <td>
+                <h3 style="font-size: 14px; font-weight: bold; margin: 0;">
+                    KEMENTERIAN ENERGI DAN SUMBER DAYA MINERAL - REPUBLIK INDONESIA
+                </h3>
+                <p style="font-size: 14px; margin: 3px 0 0 0;">
+                    DIREKTORAT JENDERAL MINYAK DAN GAS BUMI
+                </p>
+                <p style="font-size: 14px; margin: 3px 0 0 0;">
+                    BALAI BESAR PENGUJIAN MINYAK DAN GAS BUMI
+                </p>
+                <p style="font-size: 14px; margin: 3px 0 0 0;">
+                    LEMIGAS
+                </p>
+            </td>
+        </tr>
+    </table>
+    <hr style="border: 1px solid black; margin-bottom: 2px;">
+    <hr style="border: 1px solid black; margin-top: 0;">
 <!-- Header Section -->
     <div class="header-section">
         <table>

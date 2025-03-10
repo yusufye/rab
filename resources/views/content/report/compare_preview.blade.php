@@ -41,12 +41,14 @@
 
     @foreach ($orderGroup->pluck('orderMak')->flatten()->groupBy(fn($mak) => json_encode([
         'mak_name' => $mak->mak->mak_name,
+        'mak_code' => $mak->mak->mak_code,
         'division' => $mak->is_split ? ($mak->division->division_name ?? 'Tanpa Divisi') : 'Tidak Terbagi'
     ])) as $groupKey => $ordersByMak)
 
         @php
             $groupKeys    = json_decode($groupKey, true);
             $makName      = $groupKeys['mak_name'];
+            $makCode      = $groupKeys['mak_code'];
             $divisionInfo = $groupKeys['division'];
             
             // Menyimpan total per MAK per revisi
@@ -56,8 +58,8 @@
         {{-- Header MAK --}}
         <tr class="mak_header">
             <td colspan="{{ count($revisions) * 12 + 1 }}">
-                {!! $divisionInfo !== 'Tidak Terbagi' ? "(Split ke: $divisionInfo)<br>" : '' !!}
-                <strong>{{ $makName }}</strong>
+                {!! $divisionInfo !== 'Tidak Terbagi' ? "($divisionInfo)" : '' !!}
+                <strong>{{ $makCode }} - {{ $makName }}</strong>
             </td>
         </tr>
 

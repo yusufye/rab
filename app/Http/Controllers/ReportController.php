@@ -17,7 +17,10 @@ class ReportController extends Controller
     public function filter($type){
         if ($type=='compare') {
             $divisions = Division::all();
-            $order = Order::groupBy('job_number')->pluck('job_number');
+            $order = Order::when(auth()->user()->hasRole('admin'), function ($query) {
+                $query->where('created_by',auth()->user()->id);
+            })
+            ->groupBy('job_number')->pluck('job_number');
 
             return view('content.report.compare_filter',compact('type','divisions','order'));
         }elseif ($type=='detail') {
