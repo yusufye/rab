@@ -16,11 +16,12 @@ class ReportDetail implements FromView,WithEvents
     protected $divisions;
     protected $maks;
 
-    public function __construct($orders, $maks, $divisions)
+    public function __construct($orders, $maks, $divisions, $categorys)
     {
         $this->orders    = $orders;
         $this->divisions = $divisions;
         $this->maks      = $maks;
+        $this->categorys = $categorys;
     }
 
     public function view(): View
@@ -28,7 +29,8 @@ class ReportDetail implements FromView,WithEvents
         $orders    = $this->orders ;
         $divisions = $this->divisions ;
         $maks      = $this->maks ;
-        return view('content.report.detail_excel', compact('orders','maks','divisions'));
+        $categorys = $this->categorys ;
+        return view('content.report.detail_excel', compact('orders','maks','divisions','categorys'));
     }
 
     public function registerEvents(): array

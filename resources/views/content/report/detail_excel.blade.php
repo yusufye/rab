@@ -11,6 +11,11 @@
                     Nilai Split {{$division->division_name}}
                 </th>
             @endforeach
+            <th>Nomor Job</th>
+            <th>Status Job</th>
+            <th>Kategori Job</th>
+            <th>Tipe Job</th>
+            <th>Nama Job</th>
             <th>Tanggal Mulai Pekerjaan</th>
             <th>Tanggal Akhir Pekerjaan</th>
             <th>Nilai Job</th>
@@ -36,7 +41,18 @@
     <tbody>
         @foreach ($orders as $order)
         @php
-            $splitTotals = $order->totalSplitPerDivision();
+            $splitTotals         = $order->totalSplitPerDivision();
+            $profit              = $order->price-$order->totalOperational();
+            $category_percentage = 0;
+            if (strtolower($order->category->category_name)=='special case') {
+                $category_percentage=$profit/$order->price*100;
+            }else {
+                foreach ($categorys as $category) {
+                    if (strtolower($order->category->category_name)==strtolower($category['category_name'])) {
+                        $category_percentage=$category['category_percentage'];
+                    }
+                }
+            }
         @endphp
             <tr>
                 <td>
@@ -59,6 +75,21 @@
                     <td>{{ $splitTotals['split_per_division'][$division->id] ?? 0 }}</td>
                 @endforeach
                 <td>
+                    {{$order->job_number}}
+                </td>
+                <td>
+                    {{($order->rev==0?'BARU':'REVISI '.$order->rev)}}
+                </td>
+                <td>
+                    {{$order->category->category_name}}
+                </td>
+                <td>
+                    {{$order->job_type}}
+                </td>
+                <td>
+                    {{$order->title}}
+                </td>
+                <td>
                     {{\Carbon\Carbon::parse($order->date_from)->format('d-M-Y')}}
                 </td>
                 <td>
@@ -68,9 +99,6 @@
                     {{ $order->price }}
                 </td>
                 <td>
-                    @php
-                        $profit=$order->price-$order->totalOperational();
-                    @endphp
                     {{ $profit }}
                 </td>
                 <td>{{ $order->totalOperational() }}</td>
@@ -88,13 +116,13 @@
                     {{ $order->totalOperational()/$order->price*100 }}
                 </td>
                 <td>
-
+                    {{$category_percentage}}
                 </td>
                 <td>
-
+                    {{$category_percentage*$order->price/100}}
                 </td>
                 <td>
-
+                    {{$profit-($category_percentage*$order->price/100)}}
                 </td>
 
                 @php

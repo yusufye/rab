@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mak;
 use App\Models\Order;
+use App\Models\Category;
 use App\Models\Division;
 use Illuminate\Http\Request;
 use App\Exports\ReportDetail;
@@ -83,16 +84,17 @@ class ReportController extends Controller
             ->get();
             // dd($orders->toArray());
 
-            $maks= Mak::get();
-            $divisions= Division::get();
-            
+            $maks      = Mak::get();
+            $divisions = Division::get();
+            $categorys = Category::get()->toArray();
+
             if($request->action == 'view'){
-                return view('content.report.detail_preview',compact('orders','maks','divisions'));
+                return view('content.report.detail_preview',compact('orders','maks','divisions','categorys'));
             }
            
             if($request->action == 'download'){
                     
-                    return Excel::download(new ReportDetail($orders,$maks,$divisions), "orders-detail.xlsx");
+                    return Excel::download(new ReportDetail($orders,$maks,$divisions,$categorys), "orders-detail.xlsx");
             }
         }
         

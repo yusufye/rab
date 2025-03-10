@@ -13,11 +13,12 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $category = ['Laboratorium', 'Studi', 'Kajian (desk job)', 'Dominan Lab', 'Dominan Studi', 'Special Case',];
+        $category = ['Laboratorium'=>70, 'Studi'=>40, 'Kajian (desk job)'=>65, 'Dominan Lab'=>55, 'Dominan Studi'=>50, 'Special Case'=>0];
 
-        foreach($category as $div){
+        foreach($category as $key=>$val){
             Category::create([
-                'category_name' => $div
+                'category_name' => $key,
+                'category_percentage' => $val
             ]);
         }
     }
