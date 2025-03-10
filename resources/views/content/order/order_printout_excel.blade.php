@@ -1,10 +1,22 @@
 
         <table>
             <tr>
-                <td><strong>Job Number </strong></td>
+                <td><strong>No. Kontrak </strong></td>
+                <td>{{ $order->contract_number }}</td>
+                <td><strong>Judul Kontrak </strong></td>
+                <td>{{$order->study_lab}}</td>
+            </tr>
+            <tr>
+                <td><strong>No. Job </strong></td>
                 <td>{{ $order->job_number }}</td>
-                <td><strong>Title </strong></td>
+                <td><strong>Judul Job </strong></td>
                 <td>{{ $order->title }}</td>
+            </tr>
+            <tr>
+                <td><strong>Nilai Kontrak </strong></td>
+                <td>{{ number_format($order->price, 0, ',', '.') }}</td>
+                <td><strong>Nilai Job </strong></td>
+                <td>{{ number_format($order->contract_price, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td><strong>Category </strong></td>
@@ -15,14 +27,9 @@
             <tr>
                 <td><strong>Customer </strong></td>
                 <td>{{ $order->customer }}</td>
-                <td><strong>Study/Lab </strong></td>
-                <td>{{ $order->study_lab }}</td>
-            </tr>
-            <tr>
+
                 <td><strong>Date </strong></td>
                 <td>{{ \Carbon\Carbon::parse($order->start_date)->format('d-M-Y')}} - {{ \Carbon\Carbon::parse($order->end_date)->format('d-M-Y') }}</td>
-                <td><strong>Price </strong></td>
-                <td>Rp {{ number_format($order->price, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td><strong>Split </strong></td>
