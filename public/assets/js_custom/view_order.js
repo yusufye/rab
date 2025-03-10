@@ -205,7 +205,7 @@ $(document).ready(function () {
           $('#repeater-checklist').html('');
           if (response.data.length > 0) {
             response.data.forEach(item => {
-              addRowChecklist(item.amount, item.checklist_number);
+              addRowChecklist(item.amount, item.checklist_number, item.checklist_type);
             });
           } else {
             addRowChecklist();
@@ -228,6 +228,7 @@ $(document).ready(function () {
     $('#repeater-checklist .row').each(function () {
       var checklist_number = $(this).find('[name="checklist_number[]"]').val().trim();
       var amount = $(this).find('[name="amount[]"]').val().replace(/\D/g, '');
+      var checklist_type = $(this).find('[name="checklist_type[]"]').val();
 
       // Validasi: Checklist number tidak boleh kosong
       if (checklist_number === '') {
@@ -254,7 +255,8 @@ $(document).ready(function () {
 
       checklistData.push({
         checklist_number: checklist_number,
-        amount: amount
+        amount: amount,
+        checklist_type: checklist_type
       });
     });
 
@@ -320,21 +322,32 @@ $(document).ready(function () {
   const repeaterChecklist = document.getElementById('repeater-checklist');
   const addItemChecklist = document.getElementById('add-item-checklist');
 
-  function addRowChecklist(amount = '', checklistNumber = '') {
+  function addRowChecklist(amount = '', checklistNumber = '', checklistType = '') {
+    var checklistTypeSend = checklistType == '' ? 'PPB' : checklistType;
+
     rowNumCheckList++;
     const newRow = document.createElement('div');
     newRow.setAttribute('data-repeater-item-contact', '');
     newRow.id = `row-checklist${rowNumCheckList}`;
     newRow.innerHTML = `
              <div class="row">
-                 <div class="mb-3 col-lg-5 col-12 mb-0"> 
+                 <div class="mb-3 col-lg-2 col-12 mb-0"> 
+                     <div class="form-floating form-floating-outline">
+                         <select class="form-select" name="checklist_type[]"  aria-label="Default select example" id="checklist_type${rowNumCheckList}">
+                          <option value="PPB" ${checklistTypeSend == 'PPB' ? 'selected' : ''}>PPB</option>
+                          <option value="PPJ" ${checklistTypeSend == 'PPJ' ? 'selected' : ''}>PPJ</option>
+                        </select>
+                         <label for="checklist_type${rowNumCheckList}">Type</label>
+                     </div>
+                 </div>
+                 <div class="mb-3 col-lg-4 col-12 mb-0"> 
                      <div class="form-floating form-floating-outline">
                          <input type="text" name="checklist_number[]" class="form-control" placeholder="Checklist Number" id="checklist_number${rowNumCheckList}" maxlength="50" value="${checklistNumber}">
                          <label for="checklist_number${rowNumCheckList}">No. PPB/PPJ </label>
                      </div>
                  </div>
               
-                 <div class="mb-3 col-lg-5 col-12 mb-0">
+                 <div class="mb-3 col-lg-4 col-12 mb-0">
                      <div class="form-floating form-floating-outline">
                          <input type="text" name="amount[]" class="form-control format-currency" 
                          placeholder="Amount" id="amount${rowNumCheckList}" value="${amount ? Math.floor(amount) : ''}">
@@ -342,7 +355,7 @@ $(document).ready(function () {
                      </div>
                  </div>
               
-                 <div class="mb-3 col-lg-2 col-12 mb-0">
+                 <div class="mb-1 col-lg-2 col-12 mb-0">
                      <button type="button" class="btn btn-outline-danger" onclick="deleteChecklist(${rowNumCheckList})">
                      <i class="mdi mdi-delete-alert me-1"></i>
                       </button>

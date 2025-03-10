@@ -1041,6 +1041,7 @@ class OrderController extends Controller
                     'order_item_id' => $order_item_id,
                     'checklist_number' => $item['checklist_number'],
                     'amount' => $item['amount'],
+                    'checklist_type' => $item['checklist_type'],
                     'created_by' => auth()->user()->id,
                     'updated_by' => auth()->user()->id,
                 ]);
