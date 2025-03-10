@@ -155,30 +155,19 @@ $(document).ready(function () {
           dataType: 'json',
           success: function (response) {
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                window.location.href = '/order';
-
-                // window.Livewire.dispatch('refreshPercentage');
-                // window.Livewire.dispatch('refreshOrderMak');
-                // window.Livewire.dispatch('refreshOrderSummary');
-              });
+              $('#button-save-item').prop('disabled', false);
+              $('#add-item-modal').modal('hide');          
+  
+              localStorage.setItem('toastrMessage', response.msg);
+              localStorage.setItem('toastrType', 'info'); 
+              window.location.href = '/order';
+              
             } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
+              toastr.error(response.msg, 'Error');
             }
+            
+              
+   
           },
           error: function (xhr) {
             toastr.error('Something went wrong!', 'Error');
@@ -285,37 +274,33 @@ $(document).ready(function () {
         data: formData,
         dataType: 'json',
         success: function (response) {
+
+          toastr.options = {
+            progressBar: true,
+            showMethod: 'slideDown',
+            hideMethod: 'slideUp'
+          };
+          
           if (response.success) {
             $('#button-save-mak').prop('disabled', false);
-            $('#add-mak-modal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            }).then(() => {
-              // location.reload();
 
-              window.Livewire.dispatch('refreshPercentage');
-              window.Livewire.dispatch('refreshOrderMak');
-              window.Livewire.dispatch('refreshOrderSummary');
-              loadDivisions();
-            });
+            $('#add-mak-modal').modal('hide');
+
+            window.Livewire.dispatch('refreshPercentage');
+            window.Livewire.dispatch('refreshOrderMak');
+            window.Livewire.dispatch('refreshOrderSummary');
+            loadDivisions();
+
+            toastrSuccess(response.msg);
+            
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            });
+            toastrError(response.msg);
           }
         },
         error: function (xhr) {
-          toastr.error('Something went wrong!', 'Error');
+          $('#button-save-mak').prop('disabled', false);
+          $('#add-mak-modal').modal('hide');
+          toastrError('Something went wrong!');
           console.error(xhr.responseText);
         }
       });
@@ -595,32 +580,24 @@ $(document).ready(function () {
         data: formData,
         dataType: 'json',
         success: function (response) {
+          toastr.options = {
+            progressBar: true,
+            showMethod: 'slideDown',
+            hideMethod: 'slideUp'
+          };
+
           if (response.success) {
             $('#button-save-item').prop('disabled', false);
-            $('#add-item-modal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            }).then(() => {
-              // location.reload();
+            $('#add-item-modal').modal('hide');          
 
-              window.Livewire.dispatch('refreshPercentage');
-              window.Livewire.dispatch('refreshOrderMak');
-              window.Livewire.dispatch('refreshOrderSummary');
-            });
+            toastr.info(response.msg);  
+
+            window.Livewire.dispatch('refreshPercentage');
+            window.Livewire.dispatch('refreshOrderMak');
+            window.Livewire.dispatch('refreshOrderSummary');
+           
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            });
+            toastr.error(response.msg, 'Error');
           }
         },
         error: function (xhr) {
@@ -659,34 +636,19 @@ $(document).ready(function () {
           dataType: 'json',
           success: function (response) {
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                // location.reload();
+     
+              toastrSuccess(response.msg);
+              window.Livewire.dispatch('refreshPercentage');
+              window.Livewire.dispatch('refreshOrderMak');
+              window.Livewire.dispatch('refreshOrderSummary');
+              loadDivisions();
 
-                window.Livewire.dispatch('refreshPercentage');
-                window.Livewire.dispatch('refreshOrderMak');
-                window.Livewire.dispatch('refreshOrderSummary');
-                loadDivisions();
-              });
             } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
+              toastrError(response.msg);
             }
           },
           error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
+            toastrError('Something went wrong!');
             console.error(xhr.responseText);
           }
         });
@@ -951,3 +913,22 @@ function loadDivisions() {
   });
 }
 
+function toastrSuccess(message){
+    toastr.options = {
+      progressBar: true,
+      showMethod: 'slideDown',
+      hideMethod: 'slideUp'
+    };
+
+    toastr.success(message);
+}
+
+function toastrError(message){
+    toastr.options = {
+      progressBar: true,
+      showMethod: 'slideDown',
+      hideMethod: 'slideUp'
+    };
+
+    toastr.error(message);
+}

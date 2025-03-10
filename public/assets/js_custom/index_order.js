@@ -5,6 +5,33 @@ $(document).ready(function () {
     dt_order.ajax.reload();
   });
 
+  
+    let message = localStorage.getItem('toastrMessage');
+    let type = localStorage.getItem('toastrType');
+
+    if (message) {
+        toastr.options = {
+            progressBar: true,
+            showMethod: 'slideDown',
+            hideMethod: 'slideUp'
+        };
+
+        if (type === 'info') {
+            toastr.info(message);
+        } else if (type === 'success') {
+            toastr.success(message);
+        } else if (type === 'error') {
+            toastr.error(message);
+        } else if (type === 'warning') {
+            toastr.warning(message);
+        }
+
+        // Hapus dari localStorage setelah ditampilkan
+        localStorage.removeItem('toastrMessage');
+        localStorage.removeItem('toastrType');
+    }
+
+
   var addOrder = 'order/create';
 
   var dt_order = $('.datatables-orders').DataTable({

@@ -17,7 +17,7 @@
                     @php
                         $split_to='';
                         if ($orderMak->is_split == 1) {
-                            $split_to= ('<div class="m-0 badge rounded-pill bg-label-primary text-center">'.$orderMak->division->division_name.'</div>' ?? '');
+                            $split_to= ('<div class="m-0 badge rounded-pill bg-label-primary text-center">'.$orderMak->division?->division_name.'</div>' ?? '');
                         }
                     @endphp
                     {!!$split_to!!}

@@ -388,6 +388,9 @@ class OrderController extends Controller
             'mak' => 'required',
         ]);
 
+        if($request->is_split && empty($request->split_to)){
+            return response()->json(['success'=>false,'msg'=> 'Split To tidak boleh kosong','data'=> []]);
+        }
         
         try{
              DB::beginTransaction();
