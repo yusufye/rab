@@ -8,8 +8,8 @@ $configData = Helper::appClasses();
   @if(!isset($navbarFull))
   <div class="app-brand demo">
     <a href="{{url('/')}}" class="app-brand-link">
-      {{-- <span class="app-brand-logo demo">RAB</span> --}}
-      <span class="app-brand-text demo menu-text fw-bold ms-2">{{config('variables.templateName')}}</span>
+      <span class="app-brand-logo demo"><image src="{{ asset('assets/img/lemigas/logo.png') }}" style="max-width:50px;"></span>
+      <span class="app-brand-text demo menu-text fw-bold ms-2">RAB RO</span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
