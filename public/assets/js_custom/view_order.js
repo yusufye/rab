@@ -12,7 +12,7 @@ $(document).ready(function () {
 
   $('#btn-rejected-notes').on('click', function () {
     Swal.fire({
-      title: 'Are you sure you want to Reject?',
+      title: 'Apakah anda yakin ingin menolak dokumen ini ?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Reject',
@@ -36,29 +36,18 @@ $(document).ready(function () {
           dataType: 'json',
           success: function (response) {
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                window.location.href = '/order';
-              });
+
+              localStorage.setItem('toastrMessage', response.msg);
+              localStorage.setItem('toastrType', 'info'); 
+
+              window.location.href = '/order';
+              
             } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
+              toastrError(response.msg);
             }
           },
           error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
+            toastrError('Something went wrong!');
             console.error(xhr.responseText);
           }
         });
@@ -77,7 +66,7 @@ $(document).ready(function () {
     $('#modal-notes-approval').modal('hide');
 
     Swal.fire({
-      title: 'Are you sure you want to Release?',
+      title: 'Apakah anda yakin ingin merilis dokumen ini ?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Relase',
@@ -104,29 +93,20 @@ $(document).ready(function () {
           success: function (response) {
             $('#button-save-title').prop('disabled', false);
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
+
+                localStorage.setItem('toastrMessage', response.msg);
+                localStorage.setItem('toastrType', 'info'); 
+  
                 window.location.href = '/order';
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
-            }
+                
+              } else {
+                toastrError(response.msg);
+              
+            }            
           },
           error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
+            $('#button-save-title').prop('disabled', false);
+            toastrError('Something went wrong!');
             console.error(xhr.responseText);
           }
         });
@@ -137,7 +117,7 @@ $(document).ready(function () {
   //   button reject
   $('#button-approve').on('click', function () {
     Swal.fire({
-      title: 'Are you sure you want to Approve?',
+      title: 'Apakah anda yakin untuk menyetujui dokumen ini ?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Approve',
@@ -159,30 +139,21 @@ $(document).ready(function () {
           data: formData,
           dataType: 'json',
           success: function (response) {
+
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                window.location.href = '/order';
-              });
+
+              localStorage.setItem('toastrMessage', response.msg);
+              localStorage.setItem('toastrType', 'info'); 
+
+              window.location.href = '/order';
+              
             } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
-            }
+              toastrError(response.msg);
+            
+            }   
           },
           error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
+            toastrError('Something went wrong!');
             console.error(xhr.responseText);
           }
         });
@@ -410,3 +381,23 @@ $(document).ready(function () {
     return prefix ? prefix + rupiah : rupiah;
   }
 });
+
+function toastrSuccess(message){
+  toastr.options = {
+    progressBar: true,
+    showMethod: 'slideDown',
+    hideMethod: 'slideUp'
+  };
+
+  toastr.success(message);
+}
+
+function toastrError(message){
+  toastr.options = {
+    progressBar: true,
+    showMethod: 'slideDown',
+    hideMethod: 'slideUp'
+  };
+
+  toastr.error(message);
+}

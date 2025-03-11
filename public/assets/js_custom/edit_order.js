@@ -71,29 +71,16 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (response) {
               if (response.success) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Success',
-                  text: response.msg,
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                }).then(() => {
-                  window.location.href = '/order';
-                });
+                localStorage.setItem('toastrMessage', response.msg);
+                localStorage.setItem('toastrType', 'info'); 
+
+                window.location.href = '/order';
               } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: response.msg,
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                });
+                toastrError(response.msg);
               }
             },
             error: function (xhr) {
-              toastr.error('Something went wrong!', 'Error');
+              toastrError('Something went wrong!');
               console.error(xhr.responseText);
             }
           });
@@ -155,32 +142,22 @@ $(document).ready(function () {
           dataType: 'json',
           success: function (response) {
             if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                window.location.href = '/order';
-
-                // window.Livewire.dispatch('refreshPercentage');
-                // window.Livewire.dispatch('refreshOrderMak');
-                // window.Livewire.dispatch('refreshOrderSummary');
-              });
+              $('#button-save-item').prop('disabled', false);
+              $('#add-item-modal').modal('hide');          
+              
+              localStorage.setItem('toastrMessage', response.msg);
+              localStorage.setItem('toastrType', 'info'); 
+              window.location.href = '/order';
+              
             } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
+              toastr.error(response.msg, 'Error');
             }
+            
+            
+            
           },
           error: function (xhr) {
+            $('#button-save-item').prop('disabled', false);
             toastr.error('Something went wrong!', 'Error');
             console.error(xhr.responseText);
           }
@@ -196,6 +173,7 @@ $(document).ready(function () {
     $('#type_form').val(1);
 
     $('#mak').val(-1).trigger('change');
+    $('#mak').next('.select2-container').removeClass('is-invalid'); 
     $('#order_mak_id').val('');
     $('#is_split').prop('checked', false);
     $('#split_to').val(-1).trigger('change');
@@ -213,6 +191,7 @@ $(document).ready(function () {
 
   $(document).on('click', '.edit-mak', function () {
     var orderMakId = $(this).data('order-mak-id');
+    $('#mak').next('.select2-container').removeClass('is-invalid'); 
 
     $.ajax({
       url: '/get_order_mak/'+orderMakId,
@@ -257,16 +236,13 @@ $(document).ready(function () {
     var isValid = true;
 
     if ($('#mak').val() === '' || $('#mak').val() === null) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Mak tidak boleh kosong',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+      $('#mak').next('.select2-container').addClass('is-invalid'); 
+      toastrError('Mak tidak boleh kosong');
       isValid = false;
+    }else{
+      $('#mak').next('.select2-container').removeClass('is-invalid');
     }
+    
 
     if (isValid) {
       var formData = {
@@ -285,37 +261,27 @@ $(document).ready(function () {
         data: formData,
         dataType: 'json',
         success: function (response) {
+           
+          window.Livewire.dispatch('refreshPercentage');
+          window.Livewire.dispatch('refreshOrderMak');
+          window.Livewire.dispatch('refreshOrderSummary');
+          loadDivisions();
+
           if (response.success) {
             $('#button-save-mak').prop('disabled', false);
-            $('#add-mak-modal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            }).then(() => {
-              // location.reload();
 
-              window.Livewire.dispatch('refreshPercentage');
-              window.Livewire.dispatch('refreshOrderMak');
-              window.Livewire.dispatch('refreshOrderSummary');
-              loadDivisions();
-            });
+            $('#add-mak-modal').modal('hide');        
+
+            toastrSuccess(response.msg);
+            
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            });
+            $('#button-save-mak').prop('disabled', false);
+            toastrError(response.msg);
           }
         },
         error: function (xhr) {
-          toastr.error('Something went wrong!', 'Error');
+          $('#button-save-mak').prop('disabled', false);
+          toastrError('Something went wrong!');
           console.error(xhr.responseText);
         }
       });
@@ -333,10 +299,13 @@ $(document).ready(function () {
     $('#order_title_mak_id').val(orderMakId);
     $('#order_title_id').val('');
     $('#order_title').val('');
+
+    $('#order_title').removeClass('is-invalid'); 
   });
 
   $(document).on('click', '.edit-title', function () {
     var orderTitleId = $(this).data('order-title-id');
+    $('#order_title').removeClass('is-invalid'); 
 
     $.ajax({
       url: '/get_order_title/'+orderTitleId,
@@ -363,15 +332,11 @@ $(document).ready(function () {
     var isValid = true;
 
     if ($('#order_title').val() === '' || $('#order_title').val() === null) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Title tidak boleh kosong',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+      $('#order_title').addClass('is-invalid'); 
+      toastrError('Title tidak boleh kosong');
       isValid = false;
+    }else{
+      $('#order_title').removeClass('is-invalid'); 
     }
 
     if (isValid) {
@@ -392,33 +357,20 @@ $(document).ready(function () {
           if (response.success) {
             $('#button-save-title').prop('disabled', false);
             $('#add-title-modal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            }).then(() => {
-              // location.reload();
 
-              window.Livewire.dispatch('refreshPercentage');
-              window.Livewire.dispatch('refreshOrderMak');
-              window.Livewire.dispatch('refreshOrderSummary');
-            });
+            toastrSuccess(response.msg);
+
+            window.Livewire.dispatch('refreshPercentage');
+            window.Livewire.dispatch('refreshOrderMak');
+            window.Livewire.dispatch('refreshOrderSummary');
+
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            });
+            toastrError(response.msg);
           }
         },
         error: function (xhr) {
-          toastr.error('Something went wrong!', 'Error');
+          $('#button-save-title').prop('disabled', false);
+          toastrError('Something went wrong!');
           console.error(xhr.responseText);
         }
       });
@@ -436,6 +388,13 @@ $(document).ready(function () {
 
     $('#order_label_mak_item').html(`Mak: ${dataMak}`);
     $('#order_label_title').html(`Title: ${dataTitle}`);
+
+    $('#order_item').removeClass('is-invalid');
+    $('#order_item_qty_1').removeClass('is-invalid');
+    $('#order_item_qty_2').removeClass('is-invalid');
+    $('#order_item_qty_3').removeClass('is-invalid');
+    $('#qty_unit').removeClass('is-invalid');
+
 
     $('#type_form_item').val(1);
     $('#order_title_id_item').val(orderTitleId);
@@ -455,6 +414,12 @@ $(document).ready(function () {
 
   $(document).on('click', '.edit-item', function () {
     var orderItemId = $(this).data('order-item-id');
+    $('#order_item').removeClass('is-invalid');
+    $('#order_item_qty_1').removeClass('is-invalid');
+    $('#order_item_qty_2').removeClass('is-invalid');
+    $('#order_item_qty_3').removeClass('is-invalid');
+    $('#qty_unit').removeClass('is-invalid');
+
 
     $.ajax({
       url: '/get_order_item/'+orderItemId,
@@ -509,16 +474,12 @@ $(document).ready(function () {
   $('#button-save-item').on('click', function () {
     var isValid = true;
 
-    if ($('#order_item').val() === '' || $('#order_item').val() === null) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Item tidak boleh kosong',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+    if ($('#order_item').val() === '' || $('#order_item').val() === null) { 
+      $('#order_item').addClass('is-invalid');   
+      toastrError('Item tidak boleh kosong');
       isValid = false;
+    }else{
+      $('#order_item').removeClass('is-invalid');   
     }
 
     var qty1 = $('#order_item_qty_1').val();
@@ -526,15 +487,11 @@ $(document).ready(function () {
     var valQty1 = isValidNumber(qty1);
 
     if (qty1 !== '' && !valQty1) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Qty 1 tidak boleh minus (-)',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+      $('#order_item_qty_1').addClass('is-invalid');   
+      toastrError('Qty 1 tidak boleh minus (-)');
       isValid = false;
+    }else{
+      $('#order_item_qty_1').removeClass('is-invalid');   
     }
 
     var qty2 = $('#order_item_qty_2').val();
@@ -542,15 +499,11 @@ $(document).ready(function () {
     var valQty2 = isValidNumber(qty2);
 
     if (qty2 !== '' && !valQty2) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Qty 2 tidak boleh minus (-)',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+      $('#order_item_qty_2').addClass('is-invalid');   
+      toastrError('Qty 2 tidak boleh minus (-)');
       isValid = false;
+    }else{
+      $('#order_item_qty_2').removeClass('is-invalid');   
     }
 
     var qty3 = $('#order_item_qty_3').val();
@@ -558,15 +511,31 @@ $(document).ready(function () {
     var valQty3 = isValidNumber(qty3);
 
     if (qty3 !== '' && !valQty3) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Qty 3 tidak boleh minus (-)',
-        customClass: {
-          confirmButton: 'btn btn-success'
-        }
-      });
+      $('#order_item_qty_3').addClass('is-invalid');   
+      toastrError('Qty 3 tidak boleh minus (-)');
       isValid = false;
+    }else{
+      $('#order_item_qty_3').removeClass('is-invalid');   
+    }
+
+    if(qty1 === '' && qty2 === '' && qty3 === ''){  
+      $('#order_item_qty_1').addClass('is-invalid');   
+      $('#order_item_qty_2').addClass('is-invalid');   
+      $('#order_item_qty_3').addClass('is-invalid');   
+      toastrError('Masukan minimal satu Qty');
+      isValid = false;
+    }else{
+      $('#order_item_qty_1').removeClass('is-invalid');   
+      $('#order_item_qty_2').removeClass('is-invalid');   
+      $('#order_item_qty_3').removeClass('is-invalid'); 
+    }
+
+    if($('#qty_unit').val() === ''){
+      $('#qty_unit').addClass('is-invalid');   
+      toastrError('Unit tidak boleh kosong');
+      isValid = false;
+    }else{
+      $('#qty_unit').removeClass('is-invalid');     
     }
 
     if (isValid) {
@@ -595,227 +564,37 @@ $(document).ready(function () {
         data: formData,
         dataType: 'json',
         success: function (response) {
+          
+          window.Livewire.dispatch('refreshPercentage');
+          window.Livewire.dispatch('refreshOrderMak');
+          window.Livewire.dispatch('refreshOrderSummary');
+
           if (response.success) {
             $('#button-save-item').prop('disabled', false);
-            $('#add-item-modal').modal('hide');
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            }).then(() => {
-              // location.reload();
+            $('#add-item-modal').modal('hide');          
 
-              window.Livewire.dispatch('refreshPercentage');
-              window.Livewire.dispatch('refreshOrderMak');
-              window.Livewire.dispatch('refreshOrderSummary');
-            });
+            toastrSuccess(response.msg);  
+
+          
+           
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.msg,
-              customClass: {
-                confirmButton: 'btn btn-success'
-              }
-            });
+            $('#button-save-item').prop('disabled', false);
+            toastrError(response.msg);
           }
+
         },
         error: function (xhr) {
-          toastr.error('Something went wrong!', 'Error');
+          $('#button-save-item').prop('disabled', false);
+          toastrError('Something went wrong!');
           console.error(xhr.responseText);
         }
       });
     }
   });
 
-  // order item
 
-  // delete mak
-  $(document).on('click', '.delete-mak', function () {
-    var makId = $(this).data('order-mak-id');
 
-    Swal.fire({
-      title: 'Konfirmasi Penghapusan?',
-      text: 'Data ini beserta semua Order Title dan Order Item terkait akan dihapus secara permanen',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      customClass: {
-        confirmButton: 'btn btn-primary me-3',
-        cancelButton: 'btn btn-label-secondary'
-      },
-      buttonsStyling: false
-    }).then(value => {
-      if (value.isConfirmed) {
-        $.ajax({
-          url: '/order/mak/delete',
-          type: 'POST',
-          data: {
-            id: makId
-          },
-          dataType: 'json',
-          success: function (response) {
-            if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                // location.reload();
 
-                window.Livewire.dispatch('refreshPercentage');
-                window.Livewire.dispatch('refreshOrderMak');
-                window.Livewire.dispatch('refreshOrderSummary');
-                loadDivisions();
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
-            }
-          },
-          error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
-            console.error(xhr.responseText);
-          }
-        });
-      }
-    });
-  });
-  // delete mak
-
-  // delete title
-  $(document).on('click', '.delete-title', function () {
-    var titleId = $(this).data('order-title-id');
-
-    Swal.fire({
-      title: 'Konfirmasi Penghapusan?',
-      text: 'Data ini beserta semua Order Item terkait akan dihapus secara permanen',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      customClass: {
-        confirmButton: 'btn btn-primary me-3',
-        cancelButton: 'btn btn-label-secondary'
-      },
-      buttonsStyling: false
-    }).then(value => {
-      if (value.isConfirmed) {
-        $.ajax({
-          url: '/order/title/delete',
-          type: 'POST',
-          data: {
-            id: titleId
-          },
-          dataType: 'json',
-          success: function (response) {
-            if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                // location.reload();
-
-                window.Livewire.dispatch('refreshPercentage');
-                window.Livewire.dispatch('refreshOrderMak');
-                window.Livewire.dispatch('refreshOrderSummary');
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
-            }
-          },
-          error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
-            console.error(xhr.responseText);
-          }
-        });
-      }
-    });
-  });
-  // delete title
-
-  // delete item
-  $(document).on('click', '.delete-item', function () {
-    var itemId = $(this).data('order-item-id');
-
-    Swal.fire({
-      title: 'Konfirmasi Penghapusan?',
-      text: 'Data ini akan dihapus secara permanen',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      customClass: {
-        confirmButton: 'btn btn-primary me-3',
-        cancelButton: 'btn btn-label-secondary'
-      },
-      buttonsStyling: false
-    }).then(value => {
-      if (value.isConfirmed) {
-        $.ajax({
-          url: '/order/item/delete',
-          type: 'POST',
-          data: {
-            id: itemId
-          },
-          dataType: 'json',
-          success: function (response) {
-            if (response.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              }).then(() => {
-                // location.reload();
-
-                window.Livewire.dispatch('refreshPercentage');
-                window.Livewire.dispatch('refreshOrderMak');
-                window.Livewire.dispatch('refreshOrderSummary');
-              });
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.msg,
-                customClass: {
-                  confirmButton: 'btn btn-success'
-                }
-              });
-            }
-          },
-          error: function (xhr) {
-            toastr.error('Something went wrong!', 'Error');
-            console.error(xhr.responseText);
-          }
-        });
-      }
-    });
-  });
-  // delete item
 });
 
 function validateRequiredFields() {
@@ -875,16 +654,22 @@ function formatRupiah(value, prefix) {
 }
 
 function updateTotalQty() {
-  var qty1 = parseInt($('#order_item_qty_1').val()) || 0;
-  var qty2 = parseInt($('#order_item_qty_2').val()) || 0;
-  var qty3 = parseInt($('#order_item_qty_3').val()) || 0;
+  var qty1 = Number($('#order_item_qty_1').val()) || 0;
+  var qty2 = Number($('#order_item_qty_2').val()) || 0;
+  var qty3 = Number($('#order_item_qty_3').val()) || 0;
 
-  var qty_total = qty1 * qty2 * qty3;
+  var filledValues = [qty1, qty2, qty3].filter(qty => qty > 0);
+
+  var qty_total = filledValues.length > 0 ? filledValues.reduce((a, b) => a * b, 1) : 0;
 
   $('#qty_total').val(qty_total);
 
   updateTotalPrice(); // Hitung ulang total harga
 }
+
+// Event listener agar perubahan langsung terdeteksi
+$('#order_item_qty_1, #order_item_qty_2, #order_item_qty_3').on('input', updateTotalQty);
+
 
 function updateTotalPrice() {
   var qty_total = parseInt($('#qty_total').val()) || 0;
@@ -951,3 +736,144 @@ function loadDivisions() {
   });
 }
 
+function toastrSuccess(message){
+  toastr.options = {
+    progressBar: true,
+    showMethod: 'slideDown',
+    hideMethod: 'slideUp'
+  };
+
+  toastr.success(message);
+}
+
+function toastrError(message){
+  toastr.options = {
+    progressBar: true,
+    showMethod: 'slideDown',
+    hideMethod: 'slideUp'
+  };
+
+  toastr.error(message);
+}
+
+window.deleteMak = function(makId) {
+  console.log("Menghapus ID:", makId);
+
+  Swal.fire({
+      title: 'Konfirmasi Penghapusan?',
+      text: 'Data ini dihapus secara permanen.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Hapus',
+      cancelButtonText: 'Batal',
+      customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+      },
+      buttonsStyling: false
+  }).then(value => {
+      if (value.isConfirmed) {
+          $.ajax({
+              url: '/order/mak/delete',
+              type: 'POST',
+              data: { id: makId },
+              dataType: 'json',
+              success: function (response) {
+                  if (response.success) {
+                      toastrSuccess(response.msg);
+                      window.Livewire.dispatch('refreshPercentage');
+                      window.Livewire.dispatch('refreshOrderMak');
+                      window.Livewire.dispatch('refreshOrderSummary');
+                      loadDivisions();
+                  } else {
+                      toastrError(response.msg);
+                  }
+              },
+              error: function (xhr) {
+                  toastrError('Terjadi kesalahan saat menghapus data!');
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+  });
+}
+
+// Delete Order Title
+window.deleteTitle = function (titleId) {
+  Swal.fire({
+      title: 'Konfirmasi Penghapusan?',
+      text: 'Data ini akan dihapus secara permanen.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Batal',
+      customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+      },
+      buttonsStyling: false
+  }).then(value => {
+      if (value.isConfirmed) {
+          $.ajax({
+              url: '/order/title/delete',
+              type: 'POST',
+              data: { id: titleId },
+              dataType: 'json',
+              success: function (response) {
+                  if (response.success) {
+                      toastrSuccess(response.msg);
+                      window.Livewire.dispatch('refreshPercentage');
+                      window.Livewire.dispatch('refreshOrderMak');
+                      window.Livewire.dispatch('refreshOrderSummary');
+                  } else {
+                      toastrError(response.msg);
+                  }
+              },
+              error: function (xhr) {
+                  toastrError('Terjadi kesalahan saat menghapus data!');
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+  });
+}
+
+// Delete Order Item
+window.deleteItem = function (itemId) {
+  Swal.fire({
+      title: 'Konfirmasi Penghapusan?',
+      text: 'Data ini akan dihapus secara permanen.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Batal',
+      customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+      },
+      buttonsStyling: false
+  }).then(value => {
+      if (value.isConfirmed) {
+          $.ajax({
+              url: '/order/item/delete',
+              type: 'POST',
+              data: { id: itemId },
+              dataType: 'json',
+              success: function (response) {
+                  if (response.success) {
+                      toastrSuccess(response.msg);
+                      window.Livewire.dispatch('refreshPercentage');
+                      window.Livewire.dispatch('refreshOrderMak');
+                      window.Livewire.dispatch('refreshOrderSummary');
+                  } else {
+                      toastrError(response.msg);
+                  }
+              },
+              error: function (xhr) {
+                  toastrError('Terjadi kesalahan saat menghapus data!');
+                  console.error(xhr.responseText);
+              }
+          });
+      }
+  });
+}

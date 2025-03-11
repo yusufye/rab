@@ -98,43 +98,49 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6 col-sm-12">
-                            <table class="table">
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Job Number</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->job_number??'-'}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Category</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->category ? $order->category->category_name : '-'}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Customer</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->customer??'-'}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Date</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>From: {{\Carbon\Carbon::parse($order->date_from)->format('d-M-Y')}} - To: {{\Carbon\Carbon::parse($order->date_to)->format('d-M-Y')}}</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Price</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>
-                                        {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Contract Number</td>
+                            <table class="table">                                
+                                 <tr>
+                                    <td style="white-space: nowrap; width: 10%;">No. Kontrak</td>
                                     <td style="width: 5%;">:</td>
                                     <td>
                                         {{$order->contract_number??'' }}
                                     </td>
                                 </tr>
-                           
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Nilai Kontrak') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>
+                                        {{ $order->contract_price ? 'Rp ' . number_format((float) $order->contract_price, 0, ',', '.') : '-' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Judul') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->title??'-'}}</td>
+                                </tr>
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Kategori') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->category ? $order->category->category_name : '-'}}</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Tanggal') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>From: {{\Carbon\Carbon::parse($order->date_from)->format('d-M-Y')}} - To: {{\Carbon\Carbon::parse($order->date_to)->format('d-M-Y')}}</td>
+                                </tr>
+                                
+                                
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Split ke-') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>
+                                        @if(!empty($divisions_by_order_header))
+                                            {{ $divisions_by_order_header->pluck('division_name')->implode(', ') }}
+                                        @endif
+                                    </td>
+
+                                </tr>
                                 
                                 {{--
                                 @forelse($sum_array as $key => $sum)
@@ -159,49 +165,51 @@
                                
                             </table>
                         </div>
+
                         <div class="col-lg-6 col-sm-12">
-                            <table class="table">
+                            <table class="table">                                       
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Title</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->title??'-'}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Group</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>{{$order->group ??'-'}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Studay/Lab</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Judul Kontrak') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>{{$order->study_lab??'-'}}</td>
                                 </tr>
-                                @if(!empty($divisions_by_order_header))
+
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Division</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Pelanggan') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->customer??'-'}}</td>
+                                </tr>                              
+                               
+
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('No. Job') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->job_number??'-'}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Kelompok') }}</td>
+                                    <td style="width: 5%;">:</td>
+                                    <td>{{$order->group ??'-'}}</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Nilai Job') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>
-                                            {{ $divisions_by_order_header->pluck('division_name')->implode(', ') }}
+                                        {{ $order->price ? 'Rp ' . number_format((float) $order->price, 0, ',', '.') : '-' }}
                                     </td>
-
                                 </tr>
-                                @endif
+                           
 
                                 <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Job Type</td>
+                                    <td style="white-space: nowrap; width: 10%;">{{ __('Job Type') }}</td>
                                     <td style="width: 5%;">:</td>
                                     <td>
                                         {{$order->job_type??'' }}
                                     </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td style="white-space: nowrap; width: 10%;">Contract Price</td>
-                                    <td style="width: 5%;">:</td>
-                                    <td>
-                                        {{ $order->contract_price ? 'Rp ' . number_format((float) $order->contract_price, 0, ',', '.') : '-' }}
-                                    </td>
-                                </tr>
+                                </tr>                                
+                               
 
                                 {{--
                                 @forelse($sum_array['split_totals'] as $key => $sum)
@@ -224,6 +232,8 @@
             </div>
         </div>
     </div>
+    </div>
+    
     @livewire('order-percentage-calc', ['orderId' => $order->id])
     
     <br>

@@ -37,7 +37,7 @@
         toastr.options.progressBar = true;
         toastr.options.showMethod = 'slideDown';
         toastr.options.hideMethod = 'slideUp';
-        toastr.info("{{ Session::get('success') }}")
+        toastr.success("{{ Session::get('success') }}")
     </script>
 @endif
 

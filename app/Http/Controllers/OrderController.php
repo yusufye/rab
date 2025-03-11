@@ -52,9 +52,24 @@ class OrderController extends Controller
 
             return datatables()
             ->of($orders)
-            ->addColumn('job_number', function ($row) {
-                return $row->job_number.'<span class="mx-2 badge pill bg-label-dark py-2 px-3 fw-semibold text-center">R-'.$row->rev.'</span>';
-            })->escapeColumns([])
+            ->addColumn('job_number_format', function ($row) {
+                $job_number = $row->job_number;
+            
+                $divisions = $row->split_to ? Division::whereIn('id', (array) $row->split_to)->pluck('division_name')->toArray() : [];
+            
+                $division_badges = array_map(function ($division) {
+                    return '<span class="badge pill bg-label-info py-2 px-3 fw-semibold text-center">' . $division . '</span>';
+                }, $divisions);
+            
+                $division_badge_html = implode(' ', $division_badges);
+            
+                $rev = '<span class="badge pill bg-label-dark py-2 px-3 fw-semibold text-center">R-'.$row->rev.'</span>';
+            
+                $result = $job_number . '<br>' . $division_badge_html . ' ' . $rev;
+            
+                return $result;
+            })
+            ->escapeColumns([])
             ->addColumn('status', function ($row) {
                 $badgeClass = match ($row->status) {
                     'DRAFT'     => 'bg-secondary',
@@ -171,7 +186,7 @@ class OrderController extends Controller
 
             
             })
-            ->rawColumns(['price_formatted', 'biaya_operasional_formatted', 'profit_formatted','actions'])
+            ->rawColumns(['price_formatted', 'biaya_operasional_formatted', 'profit_formatted','actions','job_number_format'])
             ->toJson();
         }
        
@@ -191,7 +206,7 @@ class OrderController extends Controller
 
     public function create()  {       
         
-        $divisions = Division::all();
+        $divisions = Division::where('id','!=',auth()->user()->division_id)->get();
         $categorys = Category::all();
 
         return view('content.order.add',compact('divisions','categorys'));
@@ -262,7 +277,7 @@ class OrderController extends Controller
 
     public function edit(Order $order){
 
-        $divisions = Division::all();
+        $divisions = Division::where('id','!=',auth()->user()->division_id)->get();
         $categorys = Category::all();
         $maks = Mak::all();
 
@@ -388,6 +403,9 @@ class OrderController extends Controller
             'mak' => 'required',
         ]);
 
+        if($request->is_split && empty($request->split_to)){
+            return response()->json(['success'=>false,'msg'=> 'Split To tidak boleh kosong','data'=> []]);
+        }
         
         try{
              DB::beginTransaction();
@@ -462,8 +480,7 @@ class OrderController extends Controller
 
              $price_unit = Helpers::parseCurrency($request->price_unit);
              $total_price = Helpers::parseCurrency($request->total_price);
-
-             Log::info([$price_unit,$total_price]);
+             
 
             if($request->type_form){
                 $order_item = OrderItem::create([
@@ -475,13 +492,22 @@ class OrderController extends Controller
                     'unit_2' => $request->order_item_unit_2,
                     'qty_3' => $request->order_item_qty_3,
                     'unit_3' => $request->order_item_unit_3,
-                    'qty_total' => $request->qty_total,
+                    'qty_total' => $request->qty_total??0,
                     'qty_unit' => $request->qty_unit,
                     'price_unit' => $price_unit,
                     'total_price' => $total_price,
-                 ]);                
+                 ]);         
+
             }else{
                 $order_item = OrderItem::find($request->order_item_id);
+
+                $order_checklist = $order_item->orderChecklist->sum('amount');
+                $order_checklist_format = Helpers::parseCurrency($order_checklist); 
+
+                if($order_checklist_format > $total_price){
+                    return response()->json(['success'=>false,'msg'=> 'Total Price tidak boleh lebih kecil dari Total Checked','data'=>$order_item]);      
+                }
+
                 $order_item->update([
                     'item' => $request->order_item,
                     'qty_1' => $request->order_item_qty_1,
@@ -495,6 +521,9 @@ class OrderController extends Controller
                     'price_unit' => $price_unit,
                     'total_price' => $total_price,
                 ]);
+
+               
+
             }
 
         
@@ -515,15 +544,15 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $order = OrderMak::findOrFail($id); 
+            $order = OrderMak::find($id);
 
-            // Hapus semua OrderItem terkait melalui OrderTitle
-            foreach ($order->orderTitle as $title) {
-                $title->orderItem()->delete();
+            if (!$order) {
+                return response()->json(['success' => false, 'msg' => 'Order Mak tidak ditemukan!']);
             }
-    
-            // Hapus semua OrderTitle terkait
-            $order->orderTitle()->delete();
+
+            if ($order->orderTitle?->isNotEmpty()) {
+                return response()->json(['success'=>false, 'msg' => 'Order Mak tidak dapat dihapus karna memiliki Title']);
+            }
 
             // Hapus entitas utama
             $order->delete();
@@ -545,7 +574,12 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $orderTitle = OrderTitle::findOrFail($id); 
+            $orderTitle = OrderTitle::with('orderItem')->find($id); 
+
+            if ($orderTitle->orderItem->isNotEmpty()) {
+                return response()->json(['success'=>false,'msg' => 'Order Title tidak dapat dihapus karna memiliki Item']);
+            }
+
     
             // Hapus semua OrderTitle terkait
             $orderTitle->orderItem()->delete();
@@ -570,7 +604,11 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $orderItem = OrderItem::findOrFail($id); 
+            $orderItem = OrderItem::find($id); 
+
+            if ($orderItem->orderChecklist->isNotEmpty()) {
+                return response()->json(['success'=>false,'msg' => 'Order Item tidak dapat dihapus karna memiliki Checklist']);
+            }
 
             // Hapus entitas utama
             $orderItem->delete();
@@ -768,6 +806,15 @@ class OrderController extends Controller
                 if($order->status != 'DRAFT'){
                     return response()->json(['success' => false, 'msg' => 'Status Order harus DRAFT']);
                 }
+
+                $hasChecklist = $order->orderMak()
+                    ->whereHas('orderTitle.orderItem.orderChecklist')
+                    ->exists();
+
+                if ($hasChecklist) {
+                    return response()->json(['success' => false, 'msg' => 'Order tidak bisa dibatalkan karena sudah memiliki checklist']);
+                }
+
                 
                 $data_update= [
                     'status' => $request->status,
@@ -967,7 +1014,7 @@ class OrderController extends Controller
     }
 
     public function getDivisions(Order $order){
-        $divisions = Division::all();
+        $divisions = Division::where('id','!=',auth()->user()->division_id)->get();
 
         $split_to_mak = OrderMak::where('order_id',$order->id)->pluck('split_to')->toArray(); 
         $selected_divisions  = isset($order->split_to) && is_array($order->split_to)

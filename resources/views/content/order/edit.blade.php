@@ -11,6 +11,12 @@
         opacity: 0.7;
         cursor: not-allowed;
     }
+
+    .custom-invalid {
+        border-color: red !important;
+        background-color: #ffdddd !important;
+    }
+
 </style>
 
 @section('content')
@@ -97,37 +103,63 @@
                 <div class="card-body">
                     
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                     <input type="text" maxlength="25" class="form-control" placeholder="No. Kontrak" id="contract_number" value="{{old('contract_number',$order->contract_number??'')}}" name="contract_number" />
                                     <label for="contract_number">{{ __('No. Kontrak') }}</label>
                             </div>
                         </div>
-                        <div class="col-6">
+
+                        
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control required-field" id="study_lab" placeholder="{{ __('Judul Kontrak') }}"
+                                    name="study_lab" aria-label="Judul Kontrak" required value="{{ old('study_lab',$order->study_lab??'') }}" data-required="Study/Lab">
+                                <label for="study_lab" class="required">{{ __('Judul Kontrak') }}</label>
+                            </div>
+                        </div>
+
+                       
+                    </div>
+                    <div class="row">
+
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                     <input type="text" class="form-control format-currency" placeholder="Nilai Kontrak" id="contract_price" name="contract_price" value="{{ old('contract_price', isset($order) ? number_format($order->contract_price, 0, ',', '') : '') }}"/>
                                     <label for="contract_price">{{ __('Nilai Kontrak') }}</label>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
+
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
-                                    <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('Job Number') }}"
-                                        name="job_number" aria-label="Name" required value="{{ old('job_number', $order->job_number ?? '') }}" data-required="Job Number">
-                                <label for="job_number" class="required">{{ __('No. Number') }}</label>
+                                <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
+                                    name="customer" aria-label="Customer" required value="{{ old('customer',$order->customer??'') }}" data-required="Customer">
+                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
-                                    name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
-                                <label for="title" class="required">{{ __('Judul') }}</label>
-                            </div>
-                        </div>
+
+                        
                     </div>
+                    <div class="row">                       
+                     
+                     <div class="col-lg-6 col-sm-12">
+                             <div class="form-floating form-floating-outline mb-4">
+                                     <input type="text" class="form-control required-field" id="job_number" placeholder="{{ __('No. Job') }}"
+                                         name="job_number" aria-label="Name" required value="{{ old('job_number', $order->job_number ?? '') }}" data-required="Job Number">
+                                 <label for="job_number" class="required">{{ __('No. Job') }}</label>
+                             </div>
+                         </div>
+                         <div class="col-lg-6 col-sm-12">
+                             <div class="form-floating form-floating-outline mb-4">
+                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
+                                     name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
+                                 <label for="title" class="required">{{ __('Judul') }}</label>
+                             </div>
+                         </div>
+ 
+                     </div>
                     <div class="row">
-                    <div class="col">
+                    <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                             <select id="category_id" class="select2 form-select required-field" data-required="Category" name="category_id"
                                 data-placeholder="{{ __('Select Category') }}" required>
@@ -140,7 +172,7 @@
                             <label for="category_id" class="required">{{ __('Kategori') }}</label>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Grup') }}"
                                     name="group" aria-label="Group" required value="{{ old('group',$order->group??'') }}" data-required="Group">
@@ -148,33 +180,30 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">                       
-                        <div class="col">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="customer" placeholder="{{ __('Customer') }}"
-                                    name="customer" aria-label="Customer" required value="{{ old('customer',$order->customer??'') }}" data-required="Customer">
-                                <label for="customer" class="required">{{ __('Pelanggan') }}</label>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="study_lab" placeholder="{{ __('Study/Lab') }}"
-                                    name="study_lab" aria-label="Study/Lab" required value="{{ old('study_lab',$order->study_lab??'') }}" data-required="Study/Lab">
-                                <label for="study_lab" class="required">{{ __('Study/Lab') }}</label>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="row">                        
-                        <div class="col">
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
                                 <input type="text" class="form-control required-field" data-required="Date" placeholder="YYYY-MM-DD to YYYY-MM-DD" id="date_range" name="date_range"/>
                                 <label for="customer" class="required">{{ __('Tanggal') }}</label>
                             </div>
                         </div>
+
+                        
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-floating form-floating-outline mb-4">
+                                <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
+                                    name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
+                                <label for="price" class="required">{{ __('Nilai Job') }}</label>
+                            </div>
+                        </div>
                         @php
                             $split_to_mak = $order->orderMak->pluck('split_to')->toArray();
-                        @endphp
-                        <div class="col-6">
+                        @endphp                       
+                    </div>
+                    <div class="row">  
+
+                        <div class="col-lg-6 col-sm-12 mb-4">
                             <div class="form-floating form-floating-outline">                            
                             <select id="division" class="select2 form-select" multiple name="division[]"
                                 data-placeholder="{{ __('Select Division') }}" required>
@@ -193,18 +222,8 @@
                             <label for="division" class="required">{{ __('Split ke-') }}</label>
                             
                         </div>
-                        </div>                        
-                    </div>
-                    <div class="row">  
-                        <div class="col-6">
-                            <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control format-currency" id="price" placeholder="{{ __('Price') }}"
-                                    name="price" aria-label="Price" required value="{{ old('price', isset($order) ? number_format($order->price, 0, ',', '') : '') }}">
-                                <label for="price" class="required">{{ __('Nilai Anggaran') }}</label>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
+                        </div> 
+                        <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline">
                                 <select id="job_type" class="select2 form-select" name="job_type"
                                     data-placeholder="{{ __('Select Job Type') }}">
@@ -237,7 +256,7 @@
                             @empty
                             @endforelse --}}
 
-                        {{-- <div class="col-6">
+                        {{-- <div class="col-lg-6 col-sm-12">
                             <div class="row">
                             @forelse($sum_array['split_totals'] as $key => $sum)
                                 <div class="col-12">
@@ -288,7 +307,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="row mb-2">
-                        <div class="col-6">
+                        <div class="col-lg-6 col-sm-12">
                             <h6>{{$om->mak->mak_code}} - {{$om->mak->mak_name}}</h6>
                         </div>
                         <div class="col-6 text-end">
@@ -299,7 +318,7 @@
                            data-order-is-split="{{$om->is_split}}" 
                            data-order-split-to="{{$om->split_to}}"
                            class="btn btn-sm btn-success edit-mak">Edit Mak</button>
-                           <button data-order-mak-id="{{$om->id}}"  class="btn btn-sm btn-danger delete-mak">Delete Mak</button>
+                           <button data-order-mak-id="{{$om->id}}"  class="btn btn-sm btn-danger">Delete Mak</button>
                         </div>
                     </div>   
                     
@@ -308,7 +327,7 @@
                     @forelse($om->orderTitle as $title)
                     <div class="row mb-2 mt-2">
                         
-                        <div class="col-6">
+                        <div class="col-lg-6 col-sm-12">
                                 <h6>{{$title->title}}</h6>
                             </div>
                         <div class="col-6 text-end">
