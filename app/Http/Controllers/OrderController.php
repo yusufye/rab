@@ -55,15 +55,11 @@ class OrderController extends Controller
             ->addColumn('job_number_format', function ($row) {
                 $job_number = $row->job_number;
             
-                $divisions = $row->split_to ? Division::whereIn('id', (array) $row->split_to)->pluck('division_name')->toArray() : [];
+                $user_division = $row->createdBy->division->division_name;
             
-                $division_badges = array_map(function ($division) {
-                    return '<span class="badge pill bg-label-info py-2 px-3 fw-semibold text-center">' . $division . '</span>';
-                }, $divisions);
+                $division_badge_html = '<span class="badge rounded-pill bg-label-info py-2 px-3 fw-semibold text-center">' . $user_division . '</span>';
             
-                $division_badge_html = implode(' ', $division_badges);
-            
-                $rev = '<span class="badge pill bg-label-dark py-2 px-3 fw-semibold text-center">R-'.$row->rev.'</span>';
+                $rev = '<span class="badge rounded-pill bg-label-dark py-2 px-3 fw-semibold text-center">R-'.$row->rev.'</span>';
             
                 $result = $job_number . '<br>' . $division_badge_html . ' ' . $rev;
             

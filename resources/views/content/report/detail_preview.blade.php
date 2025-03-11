@@ -185,7 +185,7 @@
                         {{ number_format($rev0['operational'], 0, ',', '.') }}
                     </td>
                     <td class="text-right">
-                        {{ $rev0['operational']/$rev0['job_price']*100 }}
+                        {{ number_format($rev0['operational']/$rev0['job_price']*100,2) }}
                     </td>
                     <td>
                         {{ number_format($order->totalOperational(), 0, ',', '.') }}

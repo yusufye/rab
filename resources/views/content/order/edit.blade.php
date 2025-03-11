@@ -151,9 +151,9 @@
                          </div>
                          <div class="col-lg-6 col-sm-12">
                              <div class="form-floating form-floating-outline mb-4">
-                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Title') }}"
+                                 <input type="text" class="form-control required-field" id="title" placeholder="{{ __('Judul Job') }}"
                                      name="title" aria-label="Title" required value="{{ old('title',$order->title??'') }}" data-required="Title">
-                                 <label for="title" class="required">{{ __('Judul') }}</label>
+                                 <label for="title" class="required">{{ __('Judul Job') }}</label>
                              </div>
                          </div>
  
@@ -169,14 +169,14 @@
                                 @empty
                                 @endforelse
                             </select>
-                            <label for="category_id" class="required">{{ __('Kategori') }}</label>
+                            <label for="category_id" class="required">{{ __('Kategori Job') }}</label>
                             </div>
                         </div>
                         <div class="col-lg-6 col-sm-12">
                             <div class="form-floating form-floating-outline mb-4">
-                                <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Grup') }}"
+                                <input type="text" class="form-control required-field" id="group" placeholder="{{ __('Kelompok Job') }}"
                                     name="group" aria-label="Group" required value="{{ old('group',$order->group??'') }}" data-required="Group">
-                                <label for="group" class="required">{{ __('Kelompok') }}</label>
+                                <label for="group" class="required">{{ __('Kelompok Job') }}</label>
                             </div>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                                     <option value="Retail" {{ old('job_type', $order->job_type) == 'Retail' ? 'selected' : '' }}>Retail</option>
                                     <option value="Gabungan" {{ old('job_type', $order->job_type) == 'Gabungan' ? 'selected' : '' }}>Gabungan</option>
                                 </select>
-                                <label for="job_type">{{ __('Job Type') }}</label>
+                                <label for="job_type">{{ __('Tipe Job') }}</label>
                             </div>
                         </div>
 
