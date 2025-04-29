@@ -8,8 +8,8 @@ $configData = Helper::appClasses();
   @if(!isset($navbarFull))
   <div class="app-brand demo">
     <a href="{{url('/')}}" class="app-brand-link">
-      <span class="app-brand-logo demo">@include('_partials.macros',["width"=>25,"withbg"=>'var(--bs-primary)'])</span>
-      <span class="app-brand-text demo menu-text fw-bold ms-2">{{config('variables.templateName')}}</span>
+      <span class="app-brand-logo demo"><image src="{{ asset('assets/img/lemigas/logo.png') }}" style="max-width:50px;"></span>
+      <span class="app-brand-text demo menu-text fw-bold ms-2">RAB RO</span>
     </a>
 
     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -59,7 +59,47 @@ $configData = Helper::appClasses();
         }
 
       }
+
+      if (auth()->check()) {
+            $permissions = Auth::user()->getAllPermissions();
+        } else {
+            $permissions = []; 
+        }
+
+        $userPermissions = $permissions->pluck('name')->toArray();
+
+       
+        $checkSubmenuPermissions = function ($submenu, $userPermissions) use (&$checkSubmenuPermissions) {
+            foreach ($submenu as $sub) {
+                $submenuPermission = 'read_' . str_replace(' ', '_', strtolower($sub->permission_name));
+                
+                // Jika submenu ini memiliki permission, return true
+                if (in_array($submenuPermission, $userPermissions)) {
+                    return true;
+                }
+
+                // Jika ada submenu lagi, cek secara rekursif
+                if (isset($sub->submenu) && !empty($sub->submenu)) {
+                    if ($checkSubmenuPermissions($sub->submenu, $userPermissions)) {
+                        return true;
+                    }
+                }
+
+                
+            }
+            return false;
+        };
+
+        
+        $groupPermission = 'read_' . str_replace(' ', '_', strtolower($menu->permission_name));
+        $hasGroupPermission = in_array($groupPermission, $userPermissions);
+        $hasSubmenu = isset($menu->submenu) && !empty($menu->submenu);
+        $hasSubmenuPermission = $hasSubmenu ? $checkSubmenuPermissions($menu->submenu, $userPermissions) : false;
+        $shouldDisplayGroup = $hasGroupPermission || $hasSubmenuPermission;
     @endphp
+
+ 
+    @if ($shouldDisplayGroup)
 
     {{-- main menu --}}
     <li class="menu-item {{$activeClass}}">
@@ -76,10 +116,38 @@ $configData = Helper::appClasses();
 
       {{-- submenu --}}
       @isset($menu->submenu)
-      @include('layouts.sections.menu.submenu',['menu' => $menu->submenu])
+          @php
+              $filterAllowedSubmenus = function ($submenu, $userPermissions) use (&$filterAllowedSubmenus) {
+                  $filteredSubmenu = [];
+
+                  foreach ($submenu as $sub) {
+                      $submenuPermission = 'read_' . str_replace(' ', '_', strtolower($sub->permission_name));
+
+                      // Jika user memiliki permission untuk submenu ini
+                      if (in_array($submenuPermission, $userPermissions)) {
+                          $sub->submenu = isset($sub->submenu) ? $filterAllowedSubmenus($sub->submenu, $userPermissions) : [];
+                          $filteredSubmenu[] = $sub;
+                      } elseif (isset($sub->submenu) && !empty($sub->submenu)) {
+                          // Jika tidak memiliki izin langsung, cek apakah ada anak dengan izin
+                          $sub->submenu = $filterAllowedSubmenus($sub->submenu, $userPermissions);
+                          if (!empty($sub->submenu)) {
+                              $filteredSubmenu[] = $sub;
+                          }
+                      }
+                  }
+                  return $filteredSubmenu;
+              };
+
+              $filteredSubmenu = $filterAllowedSubmenus($menu->submenu, $userPermissions);
+              @endphp
+
+              @if (!empty($filteredSubmenu))
+                @include('layouts.sections.menu.submenu',['menu' => $filteredSubmenu])
+              @endif
       @endisset
     </li>
     @endif
+     @endif
     @endforeach
   </ul>
 

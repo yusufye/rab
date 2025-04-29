@@ -93,7 +93,7 @@ $navbarDetached = ($navbarDetached ?? '');
                       John Doe
                       @endif
                     </span>
-                    <small class="text-muted">Admin</small>
+                    <small class="text-muted">{{Auth::user()->division->division_name}}</small>
                   </div>
                 </div>
               </a>
@@ -115,12 +115,7 @@ $navbarDetached = ($navbarDetached ?? '');
               </a>
             </li>
             @endif
-            <li>
-              <a class="dropdown-item" href="javascript:void(0);">
-                <i class="mdi mdi-credit-card-outline me-2"></i>
-                <span class="align-middle">Billing</span>
-              </a>
-            </li>
+            
             @if (Auth::User() && Laravel\Jetstream\Jetstream::hasTeamFeatures())
             <li>
               <div class="dropdown-divider"></div>

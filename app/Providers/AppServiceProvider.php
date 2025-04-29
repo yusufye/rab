@@ -20,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
+    if(!$this->app->environment('local')) {
+        \URL::forceScheme('https');
+    }
+
     Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
       if ($src !== null) {
         return [

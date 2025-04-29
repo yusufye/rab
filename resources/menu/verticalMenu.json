@@ -4,34 +4,63 @@
       "url": "/",
       "name": "Home",
       "icon": "menu-icon tf-icons mdi mdi-home-outline",
-      "slug": "pages-home"
+      "slug": "pages-home",
+      "permission_name": "home"
     },
     {
-      "url": "/page-2",
+      "url": "/order",
+      "icon": "menu-icon tf-icons mdi mdi-cart-outline",
+      "name": "Order",
+      "slug": "order",
+      "permission_name": "order"
+    },
+    {
+      "url": "/mak",
+      "icon": "menu-icon tf-icons mdi mdi-format-list-text",
+      "name": "MAK",
+      "slug": "mak",
+      "permission_name": "mak"
+    },
+    {
+      "url": "/category",
+      "icon": "menu-icon tf-icons mdi mdi-list-box-outline",
+      "name": "Category",
+      "slug": "category",
+      "permission_name": "category"
+    },
+    {
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
-      "name": "Page 2",
-      "slug": "pages-page-2"
+      "name": "Report",
+      "slug": "report",
+      "permission_name": "report",
+      "submenu": [
+        {
+          "url": "report/filter/detail",
+          "name": "Detail",
+          "slug": "report-detail",
+          "permission_name": "report"
+        },
+        {
+          "url": "report/filter/compare",
+          "name": "Compare",
+          "slug": "report-compare",
+          "permission_name": "report"
+        }
+      ]
     },
     {
-      "url": "/pages/misc-error",
-      "name": "Error",
-      "icon": "menu-icon tf-icons mdi mdi-alert-circle-outline",
-      "slug": "pages-misc-error",
-      "target": "_blank"
+      "url": "/user",
+      "name": "User",
+      "icon": "menu-icon tf-icons mdi mdi-account-group",
+      "slug": "user",
+      "permission_name": "user"
     },
     {
-      "url": "/auth/login-basic",
-      "name": "Login",
-      "icon": "menu-icon tf-icons mdi mdi-login",
-      "slug": "auth-login-basic",
-      "target": "_blank"
-    },
-    {
-      "url": "/auth/register-basic",
-      "name": "Register",
-      "icon": "menu-icon tf-icons mdi mdi-account-outline",
-      "slug": "auth-register-basic",
-      "target": "_blank"
+      "url": "/roles-and-permission",
+      "name": "Role & Permission",
+      "icon": "menu-icon tf-icons mdi mdi-security",
+      "slug": "role-and-permission",
+      "permission_name": "Role & Permission"
     }
   ]
 }
